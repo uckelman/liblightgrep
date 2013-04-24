@@ -1,7 +1,6 @@
 language: cpp
 compiler:
   - gcc
-  - i686-w64-mingw32-gcc
   - clang
 before_install:
   - git submodule update --init
@@ -12,4 +11,4 @@ script: autoreconf -i && ./configure && make -j2 check
 matrix:
   include:
     - compiler: i686-w64-mingw32-gcc
-      env: CXX=i686-w64-mingw32-gcc
+      script: autoreconf -i && ./configure CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ && make -j2 check
