@@ -1,11 +1,11 @@
 language: cpp
 compiler:
   - gcc
-  - i586-mingw32msvc-gcc
+  - i686-w64-mingw32-gcc
   - clang
 before_install:
   - git submodule update --init
   - yes | sudo add-apt-repository ppa:mapnik/boost
   - sudo apt-get update
-install: sudo apt-get install libicu-dev boost1.49 libboost-chrono1.49-dev libboost-filesystem1.49-dev libboost-program-options1.49-dev libboost-system1.49-dev libboost-thread1.49-dev gcc-mingw-w64-i686  gcc-mingw-w64-x86-64 gcc-mingw-w64 binutils-mingw-w64-x86-64 binutils-mingw-w64-i686 gcc-mingw32
+install: sudo apt-get install libicu-dev boost1.49 libboost-chrono1.49-dev libboost-filesystem1.49-dev libboost-program-options1.49-dev libboost-system1.49-dev libboost-thread1.49-dev gcc-mingw-w64-i686  gcc-mingw-w64-x86-64 gcc-mingw-w64 binutils-mingw-w64-x86-64 binutils-mingw-w64-i686
 script: autoreconf -i && ./configure && make -j2 check
