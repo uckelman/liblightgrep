@@ -127,7 +127,9 @@ Vm::Vm(ProgramPtr prog):
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),
   MatchEnds(prog->MaxLabel+1), MatchEndsMax(0),
-  CurHitFn(nullptr), UserData(nullptr)
+  CurHitFn(nullptr), UserData(nullptr),
+//  Filter{Prog->FilterOff, Prog->Filter}
+  Filter{Prog->ShiftOr}
 {
 // FIXME: should do these checks inside SparseSet::resize()?
   if (Live.size() > Live.max_size()) {
@@ -456,7 +458,8 @@ inline void Vm::_executeNewThreads(const Instruction* const base, ThreadList::it
   }
 }
 
-inline void Vm::_executeFrame(const std::bitset<256*256>& filter, ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
+template <typename T, T Vm::*fptr>
+inline ssize_t Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
   // run old threads at this offset
   // uint32_t count = 0;
 
@@ -466,11 +469,15 @@ inline void Vm::_executeFrame(const std::bitset<256*256>& filter, ThreadList::it
   }
 
   // create new threads at this offset
-  if (filter[*reinterpret_cast<const uint16_t* const>(cur+Prog->FilterOff)]) {
+  const uint32_t skip = (this->*fptr).skip(cur);
+  if (skip == 0) {
     _executeNewThreads(base, t, cur, offset);
   }
+
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
+
+  return skip;
 }
 
 inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
@@ -523,20 +530,21 @@ void Vm::executeFrame(const byte* const cur, uint64_t offset, HitCallback hitFn,
   CurHitFn = hitFn;
   UserData = userData;
   ThreadList::iterator t = Active.begin();
-  _executeFrame(Prog->Filter, t, &(*Prog)[0], cur, offset);
+  _executeFrame<decltype(Filter), &Vm::Filter>(t, &(*Prog)[0], cur, offset);
 }
 
 void Vm::startsWith(const byte* const beg, const byte* const end, const uint64_t startOffset, HitCallback hitFn, void* userData) {
+  _startsWith<decltype(Filter), &Vm::Filter>(beg, end, startOffset, hitFn, userData);
+}
+
+template <typename T, T Vm::*fptr>
+void Vm::_startsWith(const byte* const beg, const byte* const end, const uint64_t startOffset, HitCallback hitFn, void* userData) {
   CurHitFn = hitFn;
   UserData = userData;
   const Instruction* const base = &(*Prog)[0];
   uint64_t offset = startOffset;
 
-  const byte* const filterOff = beg+Prog->FilterOff;
-
-  if (end - beg == 1 || (filterOff < end - 1 &&
-      Prog->Filter[*(reinterpret_cast<const uint16_t*>(filterOff))]))
-  {
+  if (end - beg < (this->*fptr).width() || !(this->*fptr).skip(beg)) {
     for (ThreadList::const_iterator t(First.begin()); t != First.end(); ++t) {
       Active.emplace_back(t->PC, Thread::NOLABEL, offset, Thread::NONE);
     }
@@ -578,24 +586,33 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
   UserData = userData;
   const Instruction* const base = &(*Prog)[0];
 
-  const std::bitset<256*256>& filter = Prog->Filter;
-  const byte* const filterEnd = end - Prog->FilterOff - 1;
-
   uint64_t offset = startOffset;
 
   const byte* cur = beg;
-  for ( ; cur < filterEnd; ++cur, ++offset) {
-    #ifdef LBT_TRACE_ENABLED
-    open_frame_json(std::clog, offset, cur);
-    #endif
+  const byte* const filterEnd = end - Filter.width() + 1;
 
-    _executeFrame(filter, Active.begin(), base, cur, offset);
+  if (beg < filterEnd) {
+    // prime the pump
+    for (off_t i = Filter.width() - 1; i > 0; --i) {
+      Filter.skip(cur-i);
+    }
 
-    #ifdef LBT_TRACE_ENABLED
-    close_frame_json(std::clog, offset);
-    #endif
+    for ( ; cur < filterEnd; ++cur, ++offset) {
+      #ifdef LBT_TRACE_ENABLED
+      open_frame_json(std::clog, offset, cur);
+      #endif
 
-    _cleanup();
+      const ssize_t skip = _executeFrame<decltype(Filter), &Vm::Filter>(Active.begin(), base, cur, offset) - 1;
+      if (skip > 0 && Next.empty()) {
+        cur += skip; offset += skip;
+      }
+
+      #ifdef LBT_TRACE_ENABLED
+      close_frame_json(std::clog, offset);
+      #endif
+
+      _cleanup();
+    }
   }
 
   for ( ; cur < end; ++cur, ++offset) {

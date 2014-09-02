@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "basic.h"
+#include "filter.h"
 #include "sparseset.h"
 #include "vm_interface.h"
 #include "thread.h"
@@ -84,12 +85,19 @@ private:
 
   void _executeNewThreads(const Instruction* const base, ThreadList::iterator t, const byte* const cur, const uint64_t offset);
 
-  void _executeFrame(const std::bitset<256*256>& filter, ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset);
+  template <typename T, T Vm::*fptr>
+  ssize_t _executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset);
+
   void _executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset);
 
   void _cleanup();
 
+  template <typename T, T Vm::*fptr>
+  void _startsWith(const byte* const beg, const byte* const end, const uint64_t startOffset, HitCallback hitFn, void* userData);
+
   uint64_t _startOfLeftmostLiveThread(const uint64_t offset) const;
+
+  size_t _filter(const byte* const cur);
 
   #ifdef LBT_TRACE_ENABLED
   void open_init_epsilon_json(std::ostream& out);
@@ -129,4 +137,7 @@ private:
 
   HitCallback CurHitFn;
   void* UserData;
+
+//  BestTwoByte Filter;
+  ShiftOr Filter;
 };

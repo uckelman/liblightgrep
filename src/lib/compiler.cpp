@@ -169,6 +169,7 @@ ProgramPtr Compiler::createProgram(const NFA& graph) {
   ProgramPtr ret(new Program);
 
   std::tie(ret->FilterOff, ret->Filter) = bestPair(graph);
+  ret->ShiftOr = shiftOrPrep(graph);
 
   const uint32_t numVs = graph.verticesSize();
   CodeGenHelper cg(numVs);

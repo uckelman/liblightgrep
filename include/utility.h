@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "automata.h"
+#include "byteset.h"
 #include "pattern.h"
 
 struct SearchInfo {};
@@ -54,6 +55,8 @@ uint32_t estimateGraphSize(const std::vector<T>& keywords) {
 }
 
 std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph);
+
+std::vector<ByteSet> shiftOrPrep(const NFA& graph);
 
 std::vector<std::vector<NFA::VertexDescriptor>> pivotStates(NFA::VertexDescriptor source, const NFA& graph);
 

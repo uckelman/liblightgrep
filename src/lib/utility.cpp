@@ -19,7 +19,70 @@
 #include "utility.h"
 
 #include <algorithm>
+#include <iostream>
 #include <set>
+
+std::vector<ByteSet> shiftOrPrep(const NFA& graph) {
+  std::set<std::pair<uint32_t,NFA::VertexDescriptor>> next;
+  next.emplace(0, 0);
+
+  std::vector<ByteSet> b;
+
+  uint32_t lmin = std::numeric_limits<uint32_t>::max();
+
+  uint32_t depth;
+  NFA::VertexDescriptor h;
+
+  while (!next.empty()) {
+    std::tie(depth, h) = *next.begin();
+    next.erase(next.begin());
+
+    if (depth > lmin) {
+      break;
+    }
+
+    if (graph[h].IsMatch && depth < lmin) {
+      lmin = depth;
+    }
+
+    // put successors in the queue if they're at lmin or less
+    if (depth < lmin) {
+      for (const NFA::VertexDescriptor t : graph.outVertices(h)) {
+        next.emplace(depth+1, t);
+      }
+    }
+
+    // ensure that b[depth] exists
+    if (b.size() <= depth) {
+      b.resize(depth+1);
+    }
+  
+    for (const NFA::VertexDescriptor t0 : graph.outVertices(h)) {
+      graph[t0].Trans->orBytes(b[depth]);
+    }
+  }
+
+  if (b.size() < lmin) {
+    // Don't go beyond the end of the vector. This can happen with some
+    // tests where we have no match states.
+    lmin = b.size();
+  }
+  else if (lmin < b.size()) {
+    // Don't start pairs after offset lmin-1, as [lmin,lmin+2) is
+    // guaranteed to be informationless.
+    b.resize(lmin);
+  }
+
+/*
+  std::cerr << "lmin == " << lmin << '\n'; 
+  for (const auto& x: b) {
+    std::cerr << x << '\n';
+  }
+  std::cerr << std::endl;
+*/
+
+  return std::move(b);
+}
 
 std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph) {
   std::set<std::pair<uint32_t,NFA::VertexDescriptor>> next;

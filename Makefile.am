@@ -85,6 +85,7 @@ src_lib_liblightgrep_la_HEADERS = \
 noinst_PROGRAMS = \
 	c_example/cex \
 	src/enc/enc \
+	src/filter/filter \
 	src/re_gen/debruijn \
 	src/re_gen/forms \
 	src/re_gen/inst \
@@ -111,6 +112,9 @@ src_val_val_LDADD = $(LG_LIB_INT) $(ICU_LIBS) $(STDCXX_LIB)
 
 src_what_what_SOURCES = src/what/what.cpp
 src_what_what_LDADD = $(LG_LIB_INT) $(ICU_LIBS) $(STDCXX_LIB)
+
+src_filter_filter_SOURCES = src/filter/filter.cpp
+src_filter_filter_LDADD = $(STDCXX_LIB) $(LG_LIB)
 
 check_PROGRAMS = test/test
 TESTS = $(check_PROGRAMS)
