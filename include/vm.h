@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "basic.h"
+#include "prefix.h"
 #include "sparseset.h"
 #include "vm_interface.h"
 #include "thread.h"
@@ -56,7 +57,7 @@ public:
   void executeFrame(const byte* const cur, uint64_t offset, HitCallback hitFn, void* userData);
   void cleanup();
 
-  const ThreadList& first() const { return First; }
+  const std::vector<const Instruction*>& first() const { return PrefixMatcher.First; }
   const ThreadList& active() const { return Active; }
   const ThreadList& next() const { return Next; }
 
@@ -82,9 +83,7 @@ private:
 
   void _executeThread(const Instruction* const base, ThreadList::iterator t, const byte* const cur, const uint64_t offset);
 
-  void _executeNewThreads(const Instruction* const base, ThreadList::iterator t, const byte* const cur, const uint64_t offset);
-
-  void _executeFrame(const std::bitset<256*256>& filter, ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset);
+  size_t _executePrefixFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset);
   void _executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset);
 
   void _cleanup();
@@ -115,8 +114,10 @@ private:
   const ProgramPtr Prog;
   const Instruction* const ProgEnd;
 
-  ThreadList First,
-             Active,
+//  MultiBNDM PrefixMatcher;
+  TwoByte PrefixMatcher;
+
+  ThreadList Active,
              Next;
 
   SparseSet CheckLabels;

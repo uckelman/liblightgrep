@@ -123,7 +123,8 @@ Vm::Vm(ProgramPtr prog):
   BeginDebug(Thread::NONE), EndDebug(Thread::NONE), NextId(0),
   #endif
   Prog(prog), ProgEnd(&prog->back()-1),
-  First(), Active(1, &(*prog)[0]), Next(),
+  PrefixMatcher{Prog->Filter, Prog->FilterOff, {}},
+  Active(1, &(*prog)[0]), Next(),
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),
   MatchEnds(prog->MaxLabel+1), MatchEndsMax(0),
@@ -138,16 +139,17 @@ Vm::Vm(ProgramPtr prog):
     throw std::runtime_error("Too many checked states.");
   }
 
-  ThreadList::iterator t(Active.begin());
-
   #ifdef LBT_TRACE_ENABLED
   open_init_epsilon_json(std::clog);
   new_thread_json.insert(Active.front().Id);
   pre_run_thread_json(std::clog, 0, Active.front(), &(*Prog)[0]);
   #endif
 
-  if (_executeEpSequence<0>(&(*Prog)[0], t, 0)) {
-    Next.push_back(*t);
+  {
+    ThreadList::iterator t(Active.begin());
+    if (_executeEpSequence<0>(&(*Prog)[0], t, 0)) {
+      Next.push_back(*t);
+    }
   }
 
   #ifdef LBT_TRACE_ENABLED
@@ -155,7 +157,9 @@ Vm::Vm(ProgramPtr prog):
   close_init_epsilon_json(std::clog);
   #endif
 
-  First.swap(Next);
+  for (const Thread& t: Next) {
+    PrefixMatcher.First.push_back(t.PC);
+  }
 
   reset();
 }
@@ -433,57 +437,62 @@ inline bool Vm::_executeEpSequence(const Instruction* const base, ThreadList::it
   return t->PC;
 }
 
-inline void Vm::_executeNewThreads(const Instruction* const base, ThreadList::iterator t, const byte* const cur, const uint64_t offset) {
-  const size_t oldsize = Active.size();
-
-  for (t = First.begin(); t != First.end(); ++t) {
-    Active.emplace_back(
-      t->PC, Thread::NOLABEL,
-      #ifdef LBT_TRACE_ENABLED
-      NextId++,
-      #endif
-      offset, Thread::NONE
-    );
-
-    #ifdef LBT_TRACE_ENABLED
-    new_thread_json.insert(Active.back().Id);
-    #endif
-  }
-
-  for (t = Active.begin() + oldsize; t != Active.end(); ++t) {
-    _executeThread(base, t, cur, offset);
-    // ++count;
-  }
-}
-
-inline void Vm::_executeFrame(const std::bitset<256*256>& filter, ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
-  // run old threads at this offset
+inline size_t Vm::_executePrefixFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
   // uint32_t count = 0;
 
-  for ( ; t != Active.end(); ++t) {
+  const auto r = PrefixMatcher.search(cur);
+  if (r.first) {
+    // create new threads at this offset
+    for (const Instruction* pc: *r.first) {
+      Active.emplace_back(
+        pc, Thread::NOLABEL,
+        #ifdef LBT_TRACE_ENABLED
+        NextId++,
+        #endif
+        offset, Thread::NONE
+      );
+    
+      #ifdef LBT_TRACE_ENABLED
+      new_thread_json.insert(Active.back().Id);
+      #endif
+    }
+  }
+  
+  // run threads at this offset
+  for (t = Active.begin(); t != Active.end(); ++t) {
     _executeThread(base, t, cur, offset);
     // ++count;
   }
 
-  // create new threads at this offset
-  if (filter[*reinterpret_cast<const uint16_t* const>(cur+Prog->FilterOff)]) {
-    _executeNewThreads(base, t, cur, offset);
-  }
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
+
+  return r.second;
 }
 
 inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
   // run old threads at this offset
   // uint32_t count = 0;
 
-  for ( ; t != Active.end(); ++t) {
+  // create new threads at this offset
+  for (const Instruction* pc: PrefixMatcher.First) {
+    Active.emplace_back(
+    pc, Thread::NOLABEL,
+    #ifdef LBT_TRACE_ENABLED
+    NextId++,
+    #endif
+    offset, Thread::NONE
+  );
+    
+  #ifdef LBT_TRACE_ENABLED
+  new_thread_json.insert(Active.back().Id);
+  #endif
+  }
+
+  for (t = Active.begin(); t != Active.end(); ++t) {
     _executeThread(base, t, cur, offset);
     // ++count;
   }
-
-  // create new threads at this offset
-  _executeNewThreads(base, t, cur, offset);
 
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
@@ -523,7 +532,7 @@ void Vm::executeFrame(const byte* const cur, uint64_t offset, HitCallback hitFn,
   CurHitFn = hitFn;
   UserData = userData;
   ThreadList::iterator t = Active.begin();
-  _executeFrame(Prog->Filter, t, &(*Prog)[0], cur, offset);
+  _executeFrame(t, &(*Prog)[0], cur, offset);
 }
 
 void Vm::startsWith(const byte* const beg, const byte* const end, const uint64_t startOffset, HitCallback hitFn, void* userData) {
@@ -537,8 +546,8 @@ void Vm::startsWith(const byte* const beg, const byte* const end, const uint64_t
   if (end - beg == 1 || (filterOff < end - 1 &&
       Prog->Filter[*(reinterpret_cast<const uint16_t*>(filterOff))]))
   {
-    for (ThreadList::const_iterator t(First.begin()); t != First.end(); ++t) {
-      Active.emplace_back(t->PC, Thread::NOLABEL, offset, Thread::NONE);
+    for (const Instruction* pc: PrefixMatcher.First) {
+      Active.emplace_back(pc, Thread::NOLABEL, offset, Thread::NONE);
     }
 
     for (const byte* cur = beg; cur < end; ++cur, ++offset) {
@@ -578,18 +587,20 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
   UserData = userData;
   const Instruction* const base = &(*Prog)[0];
 
-  const std::bitset<256*256>& filter = Prog->Filter;
-  const byte* const filterEnd = end - Prog->FilterOff - 1;
+  const byte* const prefixEnd = end - PrefixMatcher.width();
 
   uint64_t offset = startOffset;
 
   const byte* cur = beg;
-  for ( ; cur < filterEnd; ++cur, ++offset) {
+  for ( ; cur < prefixEnd; ++cur, ++offset) {
     #ifdef LBT_TRACE_ENABLED
     open_frame_json(std::clog, offset, cur);
     #endif
 
-    _executeFrame(filter, Active.begin(), base, cur, offset);
+    const size_t skip = _executePrefixFrame(Active.begin(), base, cur, offset);
+    if (skip && Active.empty()) {
+      cur += skip;
+    }
 
     #ifdef LBT_TRACE_ENABLED
     close_frame_json(std::clog, offset);

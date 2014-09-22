@@ -394,10 +394,10 @@ SCOPE_TEST(testInit) {
 
   Vm s(p);
   SCOPE_ASSERT_EQUAL(4u, s.first().size());
-  SCOPE_ASSERT_EQUAL(&prog[11], s.first()[0].PC);
-  SCOPE_ASSERT_EQUAL(&prog[6], s.first()[1].PC);
-  SCOPE_ASSERT_EQUAL(&prog[13], s.first()[2].PC);
-  SCOPE_ASSERT_EQUAL(&prog[12], s.first()[3].PC);
+  SCOPE_ASSERT_EQUAL(&prog[11], s.first()[0]);
+  SCOPE_ASSERT_EQUAL(&prog[6], s.first()[1]);
+  SCOPE_ASSERT_EQUAL(&prog[13], s.first()[2]);
+  SCOPE_ASSERT_EQUAL(&prog[12], s.first()[3]);
 }
 
 SCOPE_TEST(simpleLitMatch) {
