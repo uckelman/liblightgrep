@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "basic.h"
+#include "prefix.h"
 #include "instructions.h"
 #include "fwd_pointers.h"
 
@@ -41,6 +42,8 @@ public:
 
   uint32_t FilterOff;
   std::bitset<256*256> Filter;
+
+  MultiBNDM MBNDM;
 
   int bufSize() const;
 

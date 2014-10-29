@@ -57,7 +57,7 @@ public:
   void executeFrame(const byte* const cur, uint64_t offset, HitCallback hitFn, void* userData);
   void cleanup();
 
-  const std::vector<const Instruction*>& first() const { return PrefixMatcher.First; }
+//  const std::vector<const Instruction*>& first() const { return PrefixMatcher.First; }
   const ThreadList& active() const { return Active; }
   const ThreadList& next() const { return Next; }
 
@@ -68,6 +68,8 @@ public:
 
   uint32_t numActive() const { return Active.size(); }
   uint32_t numNext() const { return Next.size(); }
+
+  void _createThread(const Instruction* const pc, const uint32_t label, const uint64_t offset);
 
 private:
   void _markLive(const uint32_t label);
@@ -114,8 +116,8 @@ private:
   const ProgramPtr Prog;
   const Instruction* const ProgEnd;
 
-//  MultiBNDM PrefixMatcher;
-  TwoByte PrefixMatcher;
+//  TwoByte PrefixMatcher;
+  MultiBNDM PrefixMatcher;
 
   ThreadList Active,
              Next;

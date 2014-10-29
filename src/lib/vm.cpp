@@ -123,8 +123,10 @@ Vm::Vm(ProgramPtr prog):
   BeginDebug(Thread::NONE), EndDebug(Thread::NONE), NextId(0),
   #endif
   Prog(prog), ProgEnd(&prog->back()-1),
-  PrefixMatcher{Prog->Filter, Prog->FilterOff, {}},
-  Active(1, &(*prog)[0]), Next(),
+//  PrefixMatcher{Prog->Filter, Prog->FilterOff, {}},
+  PrefixMatcher{Prog->MBNDM},
+//  Active(1, &(*prog)[0]), Next(),
+  Active(), Next(),
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),
   MatchEnds(prog->MaxLabel+1), MatchEndsMax(0),
@@ -139,6 +141,7 @@ Vm::Vm(ProgramPtr prog):
     throw std::runtime_error("Too many checked states.");
   }
 
+/*
   #ifdef LBT_TRACE_ENABLED
   open_init_epsilon_json(std::clog);
   new_thread_json.insert(Active.front().Id);
@@ -162,6 +165,7 @@ Vm::Vm(ProgramPtr prog):
   }
 
   reset();
+*/
 }
 
 void Vm::reset() {
@@ -440,24 +444,8 @@ inline bool Vm::_executeEpSequence(const Instruction* const base, ThreadList::it
 inline size_t Vm::_executePrefixFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
   // uint32_t count = 0;
 
-  const auto r = PrefixMatcher.search(cur);
-  if (r.first) {
-    // create new threads at this offset
-    for (const Instruction* pc: *r.first) {
-      Active.emplace_back(
-        pc, Thread::NOLABEL,
-        #ifdef LBT_TRACE_ENABLED
-        NextId++,
-        #endif
-        offset, Thread::NONE
-      );
-    
-      #ifdef LBT_TRACE_ENABLED
-      new_thread_json.insert(Active.back().Id);
-      #endif
-    }
-  }
-  
+  const uint32_t skip = PrefixMatcher.search(base, cur - PrefixMatcher.width() + 1, offset - PrefixMatcher.width() + 1, Active, [this](const Instruction* const pc, const uint32_t label, const uint64_t offset){ _createThread(pc, label, offset); });
+
   // run threads at this offset
   for (t = Active.begin(); t != Active.end(); ++t) {
     _executeThread(base, t, cur, offset);
@@ -467,27 +455,35 @@ inline size_t Vm::_executePrefixFrame(ThreadList::iterator t, const Instruction*
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
 
-  return r.second;
+  return skip;
 }
 
-inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
-  // run old threads at this offset
-  // uint32_t count = 0;
-
-  // create new threads at this offset
-  for (const Instruction* pc: PrefixMatcher.First) {
-    Active.emplace_back(
-    pc, Thread::NOLABEL,
+inline void Vm::_createThread(const Instruction* const pc, const uint32_t label, const uint64_t offset) {
+  Active.emplace_back(
+    pc, label,
     #ifdef LBT_TRACE_ENABLED
     NextId++,
     #endif
     offset, Thread::NONE
   );
     
+  std::cerr << "creating " << Active.back() << std::endl;
+ 
   #ifdef LBT_TRACE_ENABLED
   new_thread_json.insert(Active.back().Id);
   #endif
+}
+
+inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
+  // run old threads at this offset
+  // uint32_t count = 0;
+
+/*
+  // create new threads at this offset
+  for (const Instruction* pc: PrefixMatcher.First) {
+    _createThread(pc, Thread::NOLABEL, offset);
   }
+*/
 
   for (t = Active.begin(); t != Active.end(); ++t) {
     _executeThread(base, t, cur, offset);
@@ -546,9 +542,11 @@ void Vm::startsWith(const byte* const beg, const byte* const end, const uint64_t
   if (end - beg == 1 || (filterOff < end - 1 &&
       Prog->Filter[*(reinterpret_cast<const uint16_t*>(filterOff))]))
   {
+/*
     for (const Instruction* pc: PrefixMatcher.First) {
       Active.emplace_back(pc, Thread::NOLABEL, offset, Thread::NONE);
     }
+*/
 
     for (const byte* cur = beg; cur < end; ++cur, ++offset) {
       for (ThreadList::iterator t(Active.begin()); t != Active.end(); ++t) {
@@ -587,38 +585,27 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
   UserData = userData;
   const Instruction* const base = &(*Prog)[0];
 
-  const byte* const prefixEnd = end - PrefixMatcher.width();
-
   uint64_t offset = startOffset;
 
-  const byte* cur = beg;
-  for ( ; cur < prefixEnd; ++cur, ++offset) {
-    #ifdef LBT_TRACE_ENABLED
-    open_frame_json(std::clog, offset, cur);
-    #endif
-
-    const size_t skip = _executePrefixFrame(Active.begin(), base, cur, offset);
-    if (skip && Active.empty()) {
-      cur += skip;
-    }
-
-    #ifdef LBT_TRACE_ENABLED
-    close_frame_json(std::clog, offset);
-    #endif
-
-    _cleanup();
-  }
-
+  const byte* cur = beg + PrefixMatcher.width() - 1;
+  offset += PrefixMatcher.width() - 1;
   for ( ; cur < end; ++cur, ++offset) {
     #ifdef LBT_TRACE_ENABLED
     open_frame_json(std::clog, offset, cur);
     #endif
 
-    _executeFrame(Active.begin(), base, cur, offset);
+// TODO: don't run PrefixMatch when skip > 0 and !Active.empty() 
+// FIXME: zeroZeroSearch fails
+    const size_t skip = _executePrefixFrame(Active.begin(), base, cur, offset);
 
     #ifdef LBT_TRACE_ENABLED
     close_frame_json(std::clog, offset);
     #endif
+
+    if (skip && Active.empty()) {
+      cur += skip;
+      offset += skip;
+    }
 
     _cleanup();
   }

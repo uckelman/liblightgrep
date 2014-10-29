@@ -190,5 +190,7 @@ ProgramPtr Compiler::createProgram(const NFA& graph) {
   // last instruction will always be Finish, for handling matches
   ret->push_back(Instruction::makeFinish());
 
+  ret->MBNDM = multiBNDMPrep(graph, cg.Snippets);
+
   return ret;
 }

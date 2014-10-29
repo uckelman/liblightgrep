@@ -20,11 +20,17 @@
 
 #include "basic.h"
 
+#include <set>
 #include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
 #include "automata.h"
 #include "pattern.h"
+#include "prefix.h"
+
+struct StateLayoutInfo;
 
 struct SearchInfo {};
 
@@ -52,6 +58,10 @@ uint32_t estimateGraphSize(const std::vector<T>& keywords) {
   ret += fudgeFactor;
   return ret;
 }
+
+std::pair<std::set<std::tuple<NFA::VertexDescriptor,uint32_t,std::vector<ByteSet>>>,size_t> prefixPrep(const NFA& graph);
+
+MultiBNDM multiBNDMPrep(const NFA& graph, const std::vector<StateLayoutInfo>& snippets);
 
 std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph);
 
