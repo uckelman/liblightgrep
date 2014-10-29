@@ -116,8 +116,8 @@ public:
             // match
             any = true;
 
-            for (size_t j = Lmin - 1 + (((i*64)/Lmin)*Lmin); j < (i+1)*64; j += Lmin) {
-              if (D[j/64] & (1ul << (j % 64))) {
+            for (size_t k = Lmin - 1 + (((i*64)/Lmin)*Lmin); k < (i+1)*64; k += Lmin) {
+              if (D[k/64] & (1ul << (k % 64))) {
 //                tlist.emplace_back(
 //                  base + PCMap[i/Lmin].first,
 //                  PCMap[i/Lmin].second,
@@ -133,8 +133,8 @@ public:
 //                #endif
 
                 createThread(
-                  base + PCMap[j/Lmin].first,
-                  PCMap[j/Lmin].second,
+                  base + PCMap[k/Lmin].first,
+                  PCMap[k/Lmin].second,
                   offset
                 );
               }
