@@ -73,6 +73,7 @@ public:
       }
     }
 
+/*
     std::cerr << "CL == ";
     for (int j = Dwidth-1; j >= 0; --j) {
       std::cerr << std::bitset<64>(CL[j]);
@@ -84,6 +85,7 @@ public:
       std::cerr << std::bitset<64>(DF[j]);
     }
     std::cerr << '\n';
+*/
   }
 
   uint32_t search(const Instruction* const base, const byte* const cur, const uint64_t offset, std::vector<Thread>& /* tlist */, std::function<void(const Instruction* const pc, const uint32_t label, const uint64_t offset)> createThread) {
@@ -98,34 +100,36 @@ public:
       }
       --j;
 
-      for (size_t i = 0; i < Dwidth; ++i) {
-        if (D[i] & DF[i]) {
-          if (j > 0) {
+      if (j > 0) {
+        for (size_t i = 0; i < Dwidth; ++i) {
+          if (D[i] & DF[i]) {
             last = j;
             break;
           }
-          else {
-            std::cerr << "D[" << i << "] & DF[" << i << "], j == " << j << std::endl;
+        }
+      }
+      else {
+        for (size_t i = 0; i < Dwidth; ++i) {
+          if (D[i] & DF[i]) {
+            //            std::cerr << "D[" << i << "] & DF[" << i << "], j == " << j << std::endl;
 
             // match
             // TODO: don't bother looking at D[x] for x < i
             for (i = Lmin - 1; i < Dwidth*64; i += Lmin) {
               if (D[i/64] & (1ul << (i % 64))) {
-/*
-                tlist.emplace_back(
-                  base + PCMap[i/Lmin].first,
-                  PCMap[i/Lmin].second,
-                  #ifdef LBT_TRACE_ENABLED
-                  NextId++,
-                  #endif
-                  offset, Thread::NONE
-                );
-//                std::cerr << base << ' ' << tlist.back() << std::endl; 
-    
-                #ifdef LBT_TRACE_ENABLED
-                new_thread_json.insert(tlist.back().Id);
-                #endif
-*/
+//                tlist.emplace_back(
+//                  base + PCMap[i/Lmin].first,
+//                  PCMap[i/Lmin].second,
+//                  #ifdef LBT_TRACE_ENABLED
+//                  NextId++,
+//                  #endif
+//                  offset, Thread::NONE
+//                );
+////                std::cerr << base << ' ' << tlist.back() << std::endl; 
+//    
+//                #ifdef LBT_TRACE_ENABLED
+//                new_thread_json.insert(tlist.back().Id);
+//                #endif
 
                 createThread(
                   base + PCMap[i/Lmin].first,
