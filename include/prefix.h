@@ -114,8 +114,7 @@ public:
             //            std::cerr << "D[" << i << "] & DF[" << i << "], j == " << j << std::endl;
 
             // match
-            // TODO: don't bother looking at D[x] for x < i
-            for (i = Lmin - 1; i < Dwidth*64; i += Lmin) {
+            for (i = Lmin - 1 + (((i*64)/Lmin)*Lmin); i < Dwidth*64; i += Lmin) {
               if (D[i/64] & (1ul << (i % 64))) {
 //                tlist.emplace_back(
 //                  base + PCMap[i/Lmin].first,
