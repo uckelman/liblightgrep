@@ -109,13 +109,14 @@ public:
         }
       }
       else {
+        any = false;
+
         for (size_t i = 0; i < Dwidth; ++i) {
           if (D[i] & DF[i]) {
-            //            std::cerr << "D[" << i << "] & DF[" << i << "], j == " << j << std::endl;
+            any = true;
 
-            // match
-            for (i = Lmin - 1 + (((i*64)/Lmin)*Lmin); i < Dwidth*64; i += Lmin) {
-              if (D[i/64] & (1ul << (i % 64))) {
+            for (size_t j = Lmin - 1 + (((i*64)/Lmin)*Lmin); j < (i+1)*64; j += Lmin) {
+              if (D[j/64] & (1ul << (j % 64))) {
 //                tlist.emplace_back(
 //                  base + PCMap[i/Lmin].first,
 //                  PCMap[i/Lmin].second,
@@ -131,21 +132,23 @@ public:
 //                #endif
 
                 createThread(
-                  base + PCMap[i/Lmin].first,
-                  PCMap[i/Lmin].second,
+                  base + PCMap[j/Lmin].first,
+                  PCMap[j/Lmin].second,
                   offset
                 );
               }
             }
-
-            // shift
-            for (int k = Dwidth - 1; k > 0; --k) {
-              D[k] = ((D[k] << 1) | (D[k-1] >> 63)) & CL[k];
-            }
-            D[0] = (D[0] << 1) & CL[0];
-
-            return 0;
           }
+        }
+
+        if (any) {
+          // shift
+          for (int k = Dwidth - 1; k > 0; --k) {
+            D[k] = ((D[k] << 1) | (D[k-1] >> 63)) & CL[k];
+          }
+          D[0] = (D[0] << 1) & CL[0];
+
+          return 0;
         }
       }
 
