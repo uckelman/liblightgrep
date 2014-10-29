@@ -109,10 +109,11 @@ public:
         }
       }
       else {
+        // we've run out to lmin; either we have matches or not
         any = false;
-
         for (size_t i = 0; i < Dwidth; ++i) {
           if (D[i] & DF[i]) {
+            // match
             any = true;
 
             for (size_t j = Lmin - 1 + (((i*64)/Lmin)*Lmin); j < (i+1)*64; j += Lmin) {
@@ -141,17 +142,10 @@ public:
           }
         }
 
-        if (any) {
-          // shift
-          for (int k = Dwidth - 1; k > 0; --k) {
-            D[k] = ((D[k] << 1) | (D[k-1] >> 63)) & CL[k];
-          }
-          D[0] = (D[0] << 1) & CL[0];
-
-          return 0;
-        }
+        return any ? 0 : last - 1;
       }
 
+      // shift
       any = false;
       for (int i = Dwidth - 1; i > 0; --i) {
         any |= (D[i] = ((D[i] << 1) | (D[i-1] >> 63)) & CL[i]);
