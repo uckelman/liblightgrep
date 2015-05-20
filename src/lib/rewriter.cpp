@@ -656,3 +656,21 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* root) {
   std::stack<ParseNode*> branch;
   return reduceTrailingNongreedyThenEmpty(root, branch);
 }
+
+bool shoveLookbehindsLeft(ParseNode* root, std::stack<ParseNode*>& branch) {
+  return false;
+}
+
+bool shoveLookbehindsLeft(ParseNode* root) {
+  std::stack<ParseNode*> branch;
+  return shoveLookbehindsLeft(root, branch);
+}
+
+bool shoveLookaheadsRight(ParseNode* root, std::stack<ParseNode*>& branch) {
+  return false;
+}
+
+bool shoveLookaheadsRight(ParseNode* root) {
+  std::stack<ParseNode*> branch;
+  return shoveLookaheadsRight(root, branch);
+}
