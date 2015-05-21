@@ -31,7 +31,7 @@ bool is_binary(const ParseNode* n) {
 
 bool is_atomic(const ParseNode* n) {
   return n->Type == ParseNode::DOT || n->Type == ParseNode::CHAR_CLASS
-                              || n->Type == ParseNode::LITERAL;
+                                   || n->Type == ParseNode::LITERAL;
 }
 
 //
