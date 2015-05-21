@@ -760,6 +760,12 @@ SCOPE_TEST(byteToCharacterString) {
   }
 }
 
+SCOPE_TEST(parseUnparse_LPLBPxyzRPabc_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<=xyz)abc", false, false}, tree));
+  SCOPE_ASSERT_EQUAL("(?<=xyz)abc", unparse(tree));
+}
+
 SCOPE_TEST(byteSet_a_ToCharacterClassTest) {
   ByteSet bs;
   bs['a'] = true;

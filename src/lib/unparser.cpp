@@ -284,6 +284,30 @@ void unparse(std::ostream& out, const ParseNode* n) {
     unparse(out, n->Child.Left);
     break;
 
+  case ParseNode::LOOKBEHIND_POS:
+    out << "(?<=";
+    unparse(out, n->Child.Left);
+    out << ')';
+    break;
+
+  case ParseNode::LOOKBEHIND_NEG:
+    out << "(?<!";
+    unparse(out, n->Child.Left);
+    out << ')';
+    break;
+
+  case ParseNode::LOOKAHEAD_POS:
+    out << "(?=";
+    unparse(out, n->Child.Left);
+    out << ')';
+    break;
+
+  case ParseNode::LOOKAHEAD_NEG:
+    out << "(?!";
+    unparse(out, n->Child.Left);
+    out << ')';
+    break;
+
   case ParseNode::ALTERNATION:
     unparse(out, n->Child.Left);
     out << '|';
