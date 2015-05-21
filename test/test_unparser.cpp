@@ -766,6 +766,24 @@ SCOPE_TEST(parseUnparse_LPLBPxyzRPabc_Test) {
   SCOPE_ASSERT_EQUAL("(?<=xyz)abc", unparse(tree));
 }
 
+SCOPE_TEST(parseUnparse_LPLBNxyzRPabc_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<!xyz)abc", false, false}, tree));
+  SCOPE_ASSERT_EQUAL("(?<!xyz)abc", unparse(tree));
+}
+
+SCOPE_TEST(parseUnparse_abcLPLAPxyzRP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"abc(?=xyz)", false, false}, tree));
+  SCOPE_ASSERT_EQUAL("abc(?=xyz)", unparse(tree));
+}
+
+SCOPE_TEST(parseUnparse_abcLPLANxyzRP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"abc(?!xyz)", false, false}, tree));
+  SCOPE_ASSERT_EQUAL("abc(?!xyz)", unparse(tree));
+}
+
 SCOPE_TEST(byteSet_a_ToCharacterClassTest) {
   ByteSet bs;
   bs['a'] = true;
