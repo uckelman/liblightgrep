@@ -657,6 +657,56 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* root) {
   return reduceTrailingNongreedyThenEmpty(root, branch);
 }
 
+ParseNode* previousAtom(std::stack<ParseNode*>& branch) {
+  // ascend until we reach a concatenation via its right child
+  ParseNode* c = branch.top();
+  branch.pop();
+
+  ParseNode* p;
+  while (true) {
+    if (branch.empty()) {
+      return nullptr;
+    }
+
+    p = branch.top();
+    branch.pop();
+ 
+    if (p->Type == ParseNode::CONCATENATION) {
+      if (c == p->Child.Right) {
+        // found the concatenation
+        break;
+      }
+      else {
+        // child was left child, keep ascending
+        c = p;
+      }
+    }
+    else {
+      return nullptr;
+    }
+  }
+
+  // descend until we reach an atom 
+  c = p->Child.Left;
+
+  while (true) {
+    switch (c->Type) {
+    case ParseNode::CONCATENATION:
+      c = c->Child.Right;
+      break;
+
+    case ParseNode::DOT:
+    case ParseNode::CHAR_CLASS:
+    case ParseNode::LITERAL:
+    case ParseNode::BYTE:
+      return c;
+
+    default:
+      return nullptr;
+    }      
+  }
+}
+
 bool shoveLookbehindsLeft(ParseNode* n, std::stack<ParseNode*>& branch) {
   // Make sure that every lookbehind has only lookbehinds to its left
 

@@ -546,6 +546,144 @@ SCOPE_TEST(makeBinopsRightAssociative_aOrLPbOrcRP_Test) {
   SCOPE_ASSERT_EQUAL("a|b|c", unparse(tree));
 }
 
+SCOPE_TEST(previousAtom_a_Test) {
+  /*
+        r
+        |
+        a
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            root(ParseNode::REGEXP, &a);
+
+  std::stack<ParseNode*> branch;
+
+  branch.push(&root);
+  branch.push(&a);
+  SCOPE_ASSERT_EQUAL((ParseNode*) nullptr, previousAtom(branch));
+}
+
+SCOPE_TEST(previousAtom_ab_bTest) {
+  /*
+        r
+        |
+        &
+       / \
+      a   b
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            a_b(ParseNode::CONCATENATION, &a, &b),
+            root(ParseNode::REGEXP, &a_b);
+
+  std::stack<ParseNode*> branch;
+  branch.push(&root);
+  branch.push(&a_b);
+  branch.push(&b);
+  SCOPE_ASSERT_EQUAL(&a, previousAtom(branch));
+
+  {
+    std::stack<ParseNode*> branch;
+    branch.push(&root);
+    branch.push(&a_b);
+    branch.push(&a);
+    SCOPE_ASSERT_EQUAL((ParseNode*) nullptr, previousAtom(branch));
+  }
+}
+
+SCOPE_TEST(previousAtom_ab_aTest) {
+  /*
+        r
+        |
+        &
+       / \
+      a   b
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            a_b(ParseNode::CONCATENATION, &a, &b),
+            root(ParseNode::REGEXP, &a_b);
+
+  std::stack<ParseNode*> branch;
+  branch.push(&root);
+  branch.push(&a_b);
+  branch.push(&a);
+  SCOPE_ASSERT_EQUAL((ParseNode*) nullptr, previousAtom(branch));
+}
+
+SCOPE_TEST(previousAtom_abc_aTest) {
+  /*
+        r
+        |
+        &
+       / \
+      a   &
+         / \
+        b   c
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            b_c(ParseNode::CONCATENATION, &b, &c),
+            a_bc(ParseNode::CONCATENATION, &a, &b_c),
+            root(ParseNode::REGEXP, &a_bc);
+
+  std::stack<ParseNode*> branch;
+  branch.push(&root);
+  branch.push(&a_bc);
+  branch.push(&a);
+  SCOPE_ASSERT_EQUAL((ParseNode*) nullptr, previousAtom(branch));
+}
+
+SCOPE_TEST(previousAtom_abc_bTest) {
+  /*
+        r
+        |
+        &
+       / \
+      a   &
+         / \
+        b   c
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            b_c(ParseNode::CONCATENATION, &b, &c),
+            a_bc(ParseNode::CONCATENATION, &a, &b_c),
+            root(ParseNode::REGEXP, &a_bc);
+
+  std::stack<ParseNode*> branch;
+  branch.push(&root);
+  branch.push(&a_bc);
+  branch.push(&b_c);
+  branch.push(&b);
+  SCOPE_ASSERT_EQUAL(&a, previousAtom(branch));
+}
+
+SCOPE_TEST(previousAtom_abc_cTest) {
+  /*
+        r
+        |
+        &
+       / \
+      a   &
+         / \
+        b   c
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            b_c(ParseNode::CONCATENATION, &b, &c),
+            a_bc(ParseNode::CONCATENATION, &a, &b_c),
+            root(ParseNode::REGEXP, &a_bc);
+
+  std::stack<ParseNode*> branch;
+  branch.push(&root);
+  branch.push(&a_bc);
+  branch.push(&b_c);
+  branch.push(&c);
+  SCOPE_ASSERT_EQUAL(&b, previousAtom(branch));
+}
+
 SCOPE_TEST(shoveLookbehindsLeft_aLPLBPaaRP_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"a(?<=aa)", false, false}, tree));
