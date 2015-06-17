@@ -32,10 +32,14 @@ bool reduceTrailingNongreedyThenGreedy(ParseNode* root);
 bool combineConsecutiveRepetitions(ParseNode* root);
 bool makeBinopsRightAssociative(ParseNode* root);
 
+void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c);
+
+
 
 ParseNode* previousAtom(std::stack<ParseNode*>& branch);
+
+bool reduceNegativeLookbehinds(ParseNode* root);
 
 bool shoveLookbehindsLeft(ParseNode* root);
 bool shoveLookaheadsRight(ParseNode* root);
 
-void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c);

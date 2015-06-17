@@ -765,3 +765,7 @@ bool shoveLookaheadsRight(ParseNode* root) {
   std::stack<ParseNode*> branch;
   return shoveLookaheadsRight(root, branch);
 }
+
+bool reduceNegativeLookbehinds(ParseNode* root) {
+  return false;
+}

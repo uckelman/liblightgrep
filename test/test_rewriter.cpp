@@ -711,3 +711,25 @@ SCOPE_TEST(shoveLookaheadsRight_LPLAPaaRPa_Test) {
   SCOPE_ASSERT(shoveLookaheadsRight(tree.Root));
   SCOPE_ASSERT_EQUAL("a(?=a)", unparse(tree));
 }
+
+SCOPE_TEST(reduceNegativeLookbehinds_LPLBaRP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!a)", false, false}, tree));
+  SCOPE_ASSERT(reduceNegativeLookbehinds(tree.Root));
+  SCOPE_ASSERT_EQUAL("\\A|(?<=[^a])", unparse(tree));
+}
+
+SCOPE_TEST(reduceNegativeLookbehinds_LPLBabRP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!ab)", false, false}, tree));
+  SCOPE_ASSERT(reduceNegativeLookbehinds(tree.Root));
+  SCOPE_ASSERT_EQUAL("\\A|(?<=[^b])|(?<=[^a]b)", unparse(tree));
+}
+
+SCOPE_TEST(reduceNegativeLookbehinds_LPLBaOrbRP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!a|b)", false, false}, tree));
+  SCOPE_ASSERT(reduceNegativeLookbehinds(tree.Root));
+  SCOPE_ASSERT_EQUAL("\\A|(?<=[^a])(?<=[^b])", unparse(tree));
+}
+
