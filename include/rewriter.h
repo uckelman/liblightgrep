@@ -19,6 +19,7 @@
 #pragma once
 
 #include "parsenode.h"
+#include "parsetree.h"
 
 #include <stack>
 
@@ -34,12 +35,22 @@ bool makeBinopsRightAssociative(ParseNode* root);
 
 void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c);
 
-
-
 ParseNode* previousAtom(std::stack<ParseNode*>& branch);
-
-bool reduceNegativeLookbehinds(ParseNode* root);
 
 bool shoveLookbehindsLeft(ParseNode* root);
 bool shoveLookaheadsRight(ParseNode* root);
 
+
+bool reduceNegativeLookarounds(ParseNode* root, ParseTree& tree);
+
+void reduceNegativeLookbehindLiteral(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookbehindConcatenation(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookbehindAlternation(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookbehindRepetition(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookbehindLookaround(ParseNode* n, ParseTree& tree);
+
+void reduceNegativeLookaheadLiteral(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookaheadConcatenation(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookaheadAlternation(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree);

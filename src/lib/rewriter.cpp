@@ -26,6 +26,10 @@
 void print_tree(std::ostream& out, const ParseNode& n) {
   switch (n.Type) {
   case ParseNode::REGEXP:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
   case ParseNode::REPETITION:
@@ -766,6 +770,415 @@ bool shoveLookaheadsRight(ParseNode* root) {
   return shoveLookaheadsRight(root, branch);
 }
 
-bool reduceNegativeLookbehinds(ParseNode* root) {
-  return false;
+ParseNode* copy_subtree(ParseNode* n, ParseTree& tree) {
+  ParseNode* c = tree.add(*n);
+  switch (c->Type) {
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    c->Child.Right = copy_subtree(n->Child.Right, tree);
+
+  case ParseNode::REGEXP:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    c->Child.Left = copy_subtree(n->Child.Left, tree);
+
+  default:
+    break;
+  }  
+
+  return c;
+}
+
+void reduceNegativeLookbehindLiteral(ParseNode* n, ParseTree& tree) {
+  // (?<![l]) => \A|(?<=[^l])
+  
+  ParseNode* l = n->Child.Left;
+
+  if (l->Type == ParseNode::DOT) {
+    // this is an \A, do nothing
+    return;
+  }
+  
+  n->Type = ParseNode::ALTERNATION;
+  n->Child.Left =
+    tree.add(ParseNode::LOOKBEHIND_NEG, tree.add(ParseNode::DOT, '.'));
+ 
+  switch (l->Type) {
+  case ParseNode::CHAR_CLASS:
+// FIXME: this is probably wrong in the presence of breakout bytes
+    l->Set.CodePoints.flip();
+    break;
+
+  case ParseNode::LITERAL:
+    *l = ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet(l->Val)); 
+    break;
+
+  case ParseNode::BYTE:
+    *l = ParseNode(ParseNode::CHAR_CLASS, UnicodeSet(), ~ByteSet(l->Val), true);
+    break;
+
+  default:
+    throw std::logic_error("wtf");
+  }
+  
+  n->Child.Right = tree.add(ParseNode::LOOKBEHIND_POS, l); 
+}
+
+void reduceNegativeLookbehindConcatenation(ParseNode* n, ParseTree& tree) {
+  // (?<!ST) => (?<!T)|(?<=(?<!S)T)
+  ParseNode* c = n->Child.Left;
+  ParseNode* s = c->Child.Left;
+  ParseNode* t = c->Child.Right;
+
+  n->Type = ParseNode::ALTERNATION;
+
+  c->Type = ParseNode::LOOKBEHIND_NEG;
+  c->Child.Left = t;
+
+  n->Child.Right = tree.add(ParseNode::LOOKBEHIND_POS,
+    tree.add(ParseNode::CONCATENATION,
+      tree.add(ParseNode::LOOKBEHIND_NEG, s),
+      copy_subtree(t, tree)
+    )
+  );
+}
+
+void reduceNegativeLookbehindAlternation(ParseNode* n, ParseTree& tree) {
+  // (?<!S|T) => (?<!S)(?<!T)
+  ParseNode* a = n->Child.Left;
+  ParseNode* s = a->Child.Left;
+  ParseNode* t = a->Child.Right;  
+
+  n->Type = ParseNode::CONCATENATION;
+  a->Type = ParseNode::LOOKBEHIND_NEG;
+  a->Child.Left = s;
+  a->Child.Right = nullptr;
+  n->Child.Right = tree.add(ParseNode::LOOKBEHIND_NEG, t); 
+}
+
+void reduceNegativeLookbehindRepetition(ParseNode* n, ParseTree& tree) {
+  // (?<!S{n,m}), (?<!S{n,m}?) => (?<!S...S)
+  //                                  \___/
+  //                                    n
+
+  // (?<!S{n,m}), (?<!S{n,m}?) => (?<!S{n-1}S)   for n > 2
+  // (?<!S{n,m}), (?<!S{n,m}?) => (?<!SS)        for n = 2
+  // (?<!S{n,m}), (?<!S{n,m}?) => (?<!S)         for n = 1
+  // (?<!S{n,m}), (?<!S{n,m}?) => nothing        for n = 0
+  
+  ParseNode* r = n->Child.Left;
+  ParseNode* s = r->Child.Left;
+
+  const uint32_t rep = r->Child.Rep.Min;
+  switch (rep) {
+  case 0:
+    n->Child.Left = s;
+    n->Type = ParseNode::REPETITION;
+    n->Child.Rep.Min = n->Child.Rep.Max = 0;
+    break;
+  case 1:
+    n->Child.Left = s;
+    break;
+  case 2:
+    r->Type = ParseNode::CONCATENATION;
+    r->Child.Right = copy_subtree(s, tree);
+    break;
+  default:
+    r->Type = ParseNode::CONCATENATION;
+    r->Child.Right =
+      tree.add(ParseNode::REPETITION, copy_subtree(s, tree), rep - 1, rep - 1);
+    break;
+  }
+}
+
+void reduceNegativeLookbehindLookaround(ParseNode* n, ParseTree& tree) {
+  // (?<!(?<!S)) => (?<=S)
+  // (?<!(?<=S)) => (?<!S)
+  // (?<!(?!S))  => (?=S)
+  // (?<!(?=S))  => (?!S)
+
+  ParseNode* c = n->Child.Left;
+  ParseNode* s = c->Child.Left;
+
+  switch (c->Type) {
+  case ParseNode::LOOKAHEAD_POS:
+    n->Type = ParseNode::LOOKAHEAD_NEG;
+    break;
+
+  case ParseNode::LOOKAHEAD_NEG:
+    n->Type = ParseNode::LOOKAHEAD_POS;
+    break;
+
+  case ParseNode::LOOKBEHIND_POS:
+    n->Type = ParseNode::LOOKBEHIND_NEG;
+    break;
+
+  case ParseNode::LOOKBEHIND_NEG:
+    n->Type = ParseNode::LOOKBEHIND_POS;
+    break;
+
+  default:
+    throw std::logic_error("wtf");
+  }
+  
+  n->Child.Left = s;
+}
+
+void reduceNegativeLookaheadLiteral(ParseNode* n, ParseTree& tree) {
+  // (?![l]) => (?=[^l])|\Z
+
+  ParseNode* l = n->Child.Left;
+
+  if (l->Type == ParseNode::DOT) {
+    // this is a \Z, do nothing
+    return;
+  }
+  
+  n->Type = ParseNode::ALTERNATION;
+  n->Child.Right =
+    tree.add(ParseNode::LOOKAHEAD_NEG, tree.add(ParseNode::DOT, '.'));
+ 
+  switch (l->Type) {
+  case ParseNode::CHAR_CLASS:
+// FIXME: this is probably wrong in the presence of breakout bytes
+    l->Set.CodePoints.flip();
+    break;
+
+  case ParseNode::LITERAL:
+    *l = ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet(l->Val)); 
+    break;
+
+  case ParseNode::BYTE:
+    *l = ParseNode(ParseNode::CHAR_CLASS, UnicodeSet(), ~ByteSet(l->Val), true);
+    break;
+
+  default:
+    throw std::logic_error("wtf");
+  }
+  
+  n->Child.Left = tree.add(ParseNode::LOOKAHEAD_POS, l); 
+}
+
+void reduceNegativeLookaheadConcatenation(ParseNode* n, ParseTree& tree) {
+  // (?!ST) => (?!S)|(?=S(?!T))
+  ParseNode* c = n->Child.Left;
+  ParseNode* s = c->Child.Left;
+  ParseNode* t = c->Child.Right;
+
+  n->Type = ParseNode::ALTERNATION;
+
+  c->Type = ParseNode::LOOKAHEAD_NEG;
+  c->Child.Left = s;
+
+  n->Child.Right = tree.add(ParseNode::LOOKAHEAD_POS,
+    tree.add(ParseNode::CONCATENATION,
+      copy_subtree(s, tree),
+      tree.add(ParseNode::LOOKAHEAD_NEG, t)
+    )
+  );
+}
+
+void reduceNegativeLookaheadAlternation(ParseNode* n, ParseTree& tree) {
+  // (?!S|T) => (?!S)(?!T)
+  ParseNode* a = n->Child.Left;
+  ParseNode* s = a->Child.Left;
+  ParseNode* t = a->Child.Right;  
+
+  n->Type = ParseNode::CONCATENATION;
+  a->Type = ParseNode::LOOKAHEAD_NEG;
+  a->Child.Left = s;
+  a->Child.Right = nullptr;
+  n->Child.Right = tree.add(ParseNode::LOOKAHEAD_NEG, t);
+}
+
+void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree) {
+  // (?!S{n,m}), (?!S{n,m}?) => (?!S...S)
+  //                               \___/
+  //                                 n
+  //
+  // (?!S{n,m}), (?!S{n,m}?) => (?!S{n-1}S)   for n > 2
+  // (?!S{n,m}), (?!S{n,m}?) => (?!SS)        for n = 2
+  // (?!S{n,m}), (?!S{n,m}?) => (?!S)         for n = 1
+  // (?!S{n,m}), (?!S{n,m}?) => nothing       for n = 0
+  
+  ParseNode* r = n->Child.Left;
+  ParseNode* s = r->Child.Left;
+
+  const uint32_t rep = r->Child.Rep.Min;
+  switch (rep) {
+  case 0:
+    n->Child.Left = s;
+    n->Type = ParseNode::REPETITION;
+    n->Child.Rep.Min = n->Child.Rep.Max = 0;
+    break;
+  case 1:
+    n->Child.Left = s;
+    break;
+  case 2:
+    r->Type = ParseNode::CONCATENATION;
+    r->Child.Right = copy_subtree(s, tree);
+    break;
+  default:
+    r->Type = ParseNode::CONCATENATION;
+    r->Child.Right =
+      tree.add(ParseNode::REPETITION, copy_subtree(s, tree), rep - 1, rep - 1);
+    break;
+  }
+}
+
+void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree) {
+  // (?!(?<!S)) => (?<=S)
+  // (?!(?<=S)) => (?<!S)
+  // (?!(?!S))  => (?=S)
+  // (?!(?=S))  => (?!S)
+
+  ParseNode* c = n->Child.Left;
+  ParseNode* s = c->Child.Left;
+
+  switch (c->Type) {
+  case ParseNode::LOOKAHEAD_POS:
+    n->Type = ParseNode::LOOKAHEAD_NEG;
+    break;
+
+  case ParseNode::LOOKAHEAD_NEG:
+    n->Type = ParseNode::LOOKAHEAD_POS;
+    break;
+
+  case ParseNode::LOOKBEHIND_POS:
+    n->Type = ParseNode::LOOKBEHIND_NEG;
+    break;
+
+  case ParseNode::LOOKBEHIND_NEG:
+    n->Type = ParseNode::LOOKBEHIND_POS;
+    break;
+
+  default:
+    throw std::logic_error("wtf");
+  }
+  
+  n->Child.Left = s;
+}
+
+bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNode*>& branch) {
+  bool ret = false;
+  branch.push(n);
+
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    if (!n->Child.Left) {
+      return ret;
+    }
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKBEHIND_POS:
+    ret = reduceNegativeLookarounds(n->Child.Left, tree, branch);
+    break;
+
+  case ParseNode::LOOKAHEAD_NEG:
+    switch (n->Child.Left->Type) {
+    case ParseNode::REPETITION:
+    case ParseNode::REPETITION_NG:
+      reduceNegativeLookaheadRepetition(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKAHEAD_NEG:
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKBEHIND_NEG:
+      reduceNegativeLookaheadLookaround(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::ALTERNATION:
+      reduceNegativeLookaheadAlternation(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::CONCATENATION:
+      reduceNegativeLookaheadConcatenation(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::DOT:
+    case ParseNode::CHAR_CLASS:
+    case ParseNode::LITERAL:
+    case ParseNode::BYTE:
+      reduceNegativeLookaheadLiteral(n, tree);
+      break;
+
+    default:
+      throw std::logic_error("wtf");
+    }
+    ret = true;
+    break;
+
+  case ParseNode::LOOKBEHIND_NEG:
+    switch (n->Child.Left->Type) {
+    case ParseNode::REPETITION:
+    case ParseNode::REPETITION_NG:
+      reduceNegativeLookbehindRepetition(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKAHEAD_NEG:
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKBEHIND_NEG:
+      reduceNegativeLookbehindLookaround(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::ALTERNATION:
+      reduceNegativeLookbehindAlternation(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::CONCATENATION:
+      reduceNegativeLookbehindConcatenation(n, tree);
+      reduceNegativeLookarounds(n, tree, branch);
+      break;
+
+    case ParseNode::DOT:
+    case ParseNode::CHAR_CLASS:
+    case ParseNode::LITERAL:
+    case ParseNode::BYTE:
+      reduceNegativeLookbehindLiteral(n, tree);
+      break;
+
+    default:
+      throw std::logic_error("wtf");
+    }
+    ret = true;
+    break;
+
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    ret = reduceNegativeLookarounds(n->Child.Left, tree, branch);
+    ret |= reduceNegativeLookarounds(n->Child.Right, tree, branch);
+    break;
+
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    break;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  }
+
+  branch.pop();
+  return ret;
+}
+
+bool reduceNegativeLookarounds(ParseNode* root, ParseTree& tree) {
+  std::stack<ParseNode*> branch;
+  return reduceNegativeLookarounds(root, tree, branch);
 }
