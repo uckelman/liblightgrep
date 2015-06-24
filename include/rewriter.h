@@ -54,3 +54,5 @@ void reduceNegativeLookaheadConcatenation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadAlternation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree);
+
+bool flattenPositiveLookarounds(ParseNode* root);

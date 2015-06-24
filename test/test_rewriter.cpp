@@ -967,3 +967,59 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LAPa) {
   reduceNegativeLookaheadLookaround(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!a)", unparse(tree));
 }
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLBPLPLBPaRPbRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<=(?<=a)b)", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?<=ab)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLBPaLPLBPbRPRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<=a(?<=b))", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?<=a)(?<=b)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLAPLPLAPaRPbRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?=(?=a)b)", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?=a)(?=b)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLAPaLPLAPbRPRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?=a(?=b))", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?=ab)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLBPLPLBPaRPRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<=(?<=a))", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLBPLPLAPaRPRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<=(?=a))", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLAPLPLAPaRPRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?=(?=a))", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
+}
+
+SCOPE_TEST(flattenPositiveLookarounds_LPLAPLPLBPaRPRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?=(?<=a))", false, false}, tree));
+  flattenPositiveLookarounds(tree.Root);
+  SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
+}
