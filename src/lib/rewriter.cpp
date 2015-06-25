@@ -1334,3 +1334,136 @@ bool flattenPositiveLookarounds(ParseNode* root) {
   return flattenPositiveLookarounds(root, branch);
 }
 
+/*
+bool combineAlternationsOfPositiveLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
+  bool ret = false;
+  branch.push(n);
+
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    if (!n->Child.Left) {
+      return ret;
+    }
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    ret = combineAlternationsOfPositiveLookarounds(n->Child.Left, branch);
+    break;
+
+  case ParseNode::ALTERNATION:
+    if (n->Child.Left.Type == ParseNode::LOOKAHEAD_POS &&
+        n->Child.Right.Type == ParseNode::LOOKAHEAD_POS) {
+
+      break;
+    }
+    else if (n->Child.Left.Type == ParseNode::LOOKBEHIND_POS &&
+             n->Child.Right.Type == ParseNode::LOOKBEHIND_POS) {
+
+      break;
+    }
+
+  case ParseNode::CONCATENATION:
+    ret = combineAlternationsOfPositiveLookarounds(n->Child.Left, branch);
+    ret |= combineAlternationsOfPositiveLookarounds(n->Child.Right, branch);
+    break;
+
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    break;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  }
+
+  branch.pop();
+  return ret;
+}
+
+bool combineAlternationsOfPositiveLookarounds(ParseNode* root) {
+  std::stack<ParseNode*> branch;
+  return combineAlternationsOfPositiveLookarounds(root, branch);
+}
+*/
+
+/*
+bool shoveLookaroundsToEnds(ParseNode* root, std::stack<ParseNode*>& branch) {
+  bool ret = false;
+  branch.push(n);
+
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    if (!n->Child.Left) {
+      return ret;
+    }
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    ret = shoveLookaroundsToEnds(n->Child.Left, branch);
+    break;
+
+  case ParseNode::ALTERNATION:
+
+  case ParseNode::CONCATENATION:
+    ret = shoveLookaroundsToEnds(n->Child.Left, branch);
+    ret |= shoveLookaroundsToEnds(n->Child.Right, branch);
+    break;
+
+  case ParseNode::LOOKAHEAD_POS:
+    break;
+
+  case ParseNode::LOOKBEHIND_POS:
+    break;
+
+  case ParseNode::LOOKAHEAD_NEG:
+    // If this is not \Z, something has gone horribly wrong, as
+    // other negative lookaheads should have been rewritten away.
+    if (n->Child.Left->Type != ParseNode::DOT) {
+      throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+    }
+
+    if (!isLeading(n)) {
+      // replace \Z with [^\z00-\zFF], since this alternative is matchless
+      *n = ParseNode(ParseNode::CHAR_CLASS, ByteSet());
+      ret = true;
+    } 
+    break;
+
+  case ParseNode::LOOKBEHIND_NEG:
+    // If this is not \A, something has gone horribly wrong, as
+    // other negative lookbehinds should have been rewritten away.
+    if (n->Child.Left->Type != ParseNode::DOT) {
+      throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+    }
+
+    if (!isTrailing(n)) {
+      // replace \A with [^\z00-\zFF], since this alternative is matchless
+      *n = ParseNode(ParseNode::CHAR_CLASS, ByteSet());
+      ret = true;
+    }
+    break;
+
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    break;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  }
+
+  branch.pop();
+  return ret;
+}
+
+bool shoveLookaroundsToEnds(ParseNode* root) {
+  std::stack<ParseNode*> branch;
+  return shoveLookaroundsToEnds(root, branch);
+}
+*/
