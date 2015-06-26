@@ -1339,21 +1339,14 @@ void reduceLookaroundRepetitions(ParseNode* n, std::stack<ParseNode*>& branch) {
   // (?<=S){n,m} = x{0}   if n = 0
   // (?<=S){n,m) = (?<=S) o/w
   
-  branch.pop(); // n
-  ParseNode* p = branch.top();
-
-  if (p->Child.Rep.Min == 0) {
-    p->Type = ParseNode::REPETITION;
-    p->Child.Rep.Max = 0;
-    n->Type = ParseNode::LITERAL;
-    n->Val = 'x';
-    branch.push(n);
+  if (n->Child.Rep.Min == 0) {
+    n->Type = ParseNode::REPETITION;
+    n->Child.Rep.Max = 0;
+    n->Child.Left->Type = ParseNode::LITERAL;
+    n->Child.Left->Val = 'x';
   }
   else {
-    branch.pop(); // p
-    spliceOutParent(branch.top(), p, n);
-    branch.push(n);
-    shoveLookaroundsOutward(n->Child.Left, branch);
+    spliceOutParent(branch.top(), n, n->Child.Left);
   }
 }
 
@@ -1362,11 +1355,7 @@ void reduceNestedLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
   // (?=(?<=S)) = (?<=(?<=S)) = (?<=S)
   // (?=\A)     = (?<=\A)     = \A
   // (?=\Z)     = (?<=\Z)     = \Z
-
-  branch.pop(); // n
   spliceOutParent(branch.top(), n, n->Child.Left);
-  branch.top()->Type = n->Type;
-  shoveLookaroundsOutward(n->Child.Left, branch);
 }
 
 bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
@@ -1380,6 +1369,8 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
     }
   case ParseNode::REPETITION:
   case ParseNode::REPETITION_NG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKBEHIND_POS:
     ret = shoveLookaroundsOutward(n->Child.Left, branch);
     break;
 
@@ -1389,59 +1380,121 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
     ret |= shoveLookaroundsOutward(n->Child.Right, branch);
     break;
 
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    break;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  }
+
+  branch.pop();
+
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    break;
+
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    switch (n->Child.Left->Type) {
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKAHEAD_NEG:
+    case ParseNode::LOOKBEHIND_NEG:
+      reduceLookaroundRepetitions(n, branch);
+      ret = true;
+      break;
+    default:
+      break;
+    }
+    break;
+
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    break;
+
   case ParseNode::LOOKAHEAD_POS:
-    {
-      branch.pop(); // n
-      ParseNode* p = branch.top();
-      branch.push(n);
+    switch (n->Child.Left->Type) {
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKAHEAD_NEG:
+    case ParseNode::LOOKBEHIND_NEG:
+      reduceNestedLookarounds(n, branch);
+      ret = true;
+      break; 
 
-      switch (p->Type) {
-      case ParseNode::REPETITION:
-      case ParseNode::REPETITION_NG:
-        reduceLookaroundRepetitions(n, branch);
-        ret = true;
-        break;
+    case ParseNode::CONCATENATION:
+      {
+        /*
+              ?=                ?= 
+               |                 |
+               &                 &
+              / \               / \
+             T0  &       =>    T0  &
+                / \               / \
+               T1 ...            T1 ...
+                   &                 &
+                  / \               / \
+                 Tk ?=             Tk  S
+                     |
+                     S
+        */
 
-      case ParseNode::LOOKBEHIND_POS:
-      case ParseNode::LOOKAHEAD_POS:
-        reduceNestedLookarounds(n, branch);
-        ret = true;
-        break;
+        ParseNode *p = n;
+        ParseNode *c = n->Child.Left;
+        while (c->Type == ParseNode::CONCATENATION) {
+          p = c;
+          c = c->Child.Right;
+        }
 
-      case ParseNode::ALTERNATION:
-      case ParseNode::CONCATENATION:
-      default:
-        ret = shoveLookaroundsOutward(n->Child.Left, branch);
-        break;
+        if (c->Type == ParseNode::LOOKAHEAD_POS) {
+          spliceOutParent(p, c, c->Child.Left);   
+          ret = true;
+        }
       }
+      break;
+
+    default:
+      break;
     }
     break;
 
   case ParseNode::LOOKBEHIND_POS:
-    {
-      branch.pop(); // n
-      ParseNode* p = branch.top();
-      branch.push(n);
+    switch (n->Child.Left->Type) {
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKAHEAD_NEG:
+    case ParseNode::LOOKBEHIND_NEG:
+      reduceNestedLookarounds(n, branch);
+      ret = true;
+      break;
 
-      switch (p->Type) {
-      case ParseNode::REPETITION:
-      case ParseNode::REPETITION_NG:
-        reduceLookaroundRepetitions(n, branch);
+    case ParseNode::CONCATENATION:
+      if (n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS) {
+        /*
+              ?<=         ?<=
+                |           |
+                &     =>    &
+               / \         / \
+             ?<=  T       S   T
+               |
+               S
+        */
+        spliceOutParent(
+          n->Child.Left, n->Child.Left->Child.Left,
+          n->Child.Left->Child.Left->Child.Left
+        );
         ret = true;
-        break;
-
-      case ParseNode::LOOKBEHIND_POS:
-      case ParseNode::LOOKAHEAD_POS:
-        reduceNestedLookarounds(n, branch);
-        ret = true;
-        break;
-
-      case ParseNode::ALTERNATION:
-      case ParseNode::CONCATENATION:
-      default:
-        ret = shoveLookaroundsOutward(n->Child.Left, branch);
-        break;
       }
+      break;
+
+    default:
+      break;
     }
     break;
 
@@ -1488,7 +1541,6 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
     throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
   }
 
-  branch.pop();
   return ret;
 }
 
