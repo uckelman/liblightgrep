@@ -1415,7 +1415,33 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
     break;
 
   case ParseNode::ALTERNATION:
+    // TODO
+    break;
+
   case ParseNode::CONCATENATION:
+    if (n->Child.Left->Type == ParseNode::LOOKAHEAD_POS) {
+      /*
+           &          &
+          / \        / \
+         ?=  T  =>  T' ?=
+          |             |
+          S             S'
+      */
+
+      // TODO
+    }
+    
+    if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
+      /*
+           &           &
+          / \         / \
+         T ?<=  =>  ?<=  T'
+             |        |
+             S        S'
+      */
+
+      // TODO
+    }
     break;
 
   case ParseNode::LOOKAHEAD_POS:
@@ -1430,21 +1456,6 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
 
     case ParseNode::CONCATENATION:
       {
-        /*
-              ?=                ?= 
-               |                 |
-               &                 &
-              / \               / \
-             T0  &       =>    T0  &
-                / \               / \
-               T1 ...            T1 ...
-                   &                 &
-                  / \               / \
-                 Tk ?=             Tk  S
-                     |
-                     S
-        */
-
         ParseNode *p = n;
         ParseNode *c = n->Child.Left;
         while (c->Type == ParseNode::CONCATENATION) {
@@ -1453,6 +1464,20 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
         }
 
         if (c->Type == ParseNode::LOOKAHEAD_POS) {
+          /*
+                ?=                ?=
+                 |                 |
+                 &                 &
+                / \               / \
+               T0  &       =>    T0  &
+                  / \               / \
+                 T1 ...            T1 ...
+                     &                 &
+                    / \               / \
+                   Tk ?=             Tk  S
+                       |
+                       S
+          */
           spliceOutParent(p, c, c->Child.Left);   
           ret = true;
         }
