@@ -37,10 +37,6 @@ void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c);
 
 ParseNode* previousAtom(std::stack<ParseNode*>& branch);
 
-bool shoveLookbehindsLeft(ParseNode* root);
-bool shoveLookaheadsRight(ParseNode* root);
-
-
 bool reduceNegativeLookarounds(ParseNode* root, ParseTree& tree);
 
 void reduceNegativeLookbehindLiteral(ParseNode* n, ParseTree& tree);
@@ -56,3 +52,6 @@ void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree);
 
 bool flattenPositiveLookarounds(ParseNode* root);
+
+bool shoveLookaroundsOutward(ParseNode* root);
+

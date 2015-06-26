@@ -711,65 +711,6 @@ ParseNode* previousAtom(std::stack<ParseNode*>& branch) {
   }
 }
 
-bool shoveLookbehindsLeft(ParseNode* n, std::stack<ParseNode*>& branch) {
-  // Make sure that every lookbehind has only lookbehinds to its left
-
-  bool ret = false;
-  branch.push(n);
-
-  switch (n->Type) {
-  case ParseNode::REGEXP:
-    if (!n->Child.Left) {
-      return ret;
-    }
-  case ParseNode::REPETITION:
-  case ParseNode::REPETITION_NG:
-    ret = shoveLookbehindsLeft(n->Child.Left, branch);
-    break;
-
-  case ParseNode::LOOKAHEAD_POS:
-  case ParseNode::LOOKAHEAD_NEG:
-    break;
-
-  case ParseNode::LOOKBEHIND_POS:
-  case ParseNode::LOOKBEHIND_NEG:
-    break;
-
-  case ParseNode::ALTERNATION:
-  case ParseNode::CONCATENATION:
-    ret = shoveLookbehindsLeft(n->Child.Left, branch);
-    ret |= shoveLookbehindsLeft(n->Child.Right, branch);
-    break;
-
-  case ParseNode::DOT:
-  case ParseNode::CHAR_CLASS:
-  case ParseNode::LITERAL:
-  case ParseNode::BYTE:
-    break;
-
-  default:
-    // WTF?
-    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
-  }
-
-  branch.pop();
-  return ret;
-}
-
-bool shoveLookbehindsLeft(ParseNode* root) {
-  std::stack<ParseNode*> branch;
-  return shoveLookbehindsLeft(root, branch);
-}
-
-bool shoveLookaheadsRight(ParseNode* n, std::stack<ParseNode*>& branch) {
-  return false;
-}
-
-bool shoveLookaheadsRight(ParseNode* root) {
-  std::stack<ParseNode*> branch;
-  return shoveLookaheadsRight(root, branch);
-}
-
 ParseNode* copy_subtree(ParseNode* n, ParseTree& tree) {
   ParseNode* c = tree.add(*n);
   switch (c->Type) {
@@ -1391,8 +1332,7 @@ bool combineAlternationsOfPositiveLookarounds(ParseNode* root) {
 }
 */
 
-/*
-bool shoveLookaroundsToEnds(ParseNode* root, std::stack<ParseNode*>& branch) {
+bool shoveLookaroundsOutwards(ParseNode* root, std::stack<ParseNode*>& branch) {
   bool ret = false;
   branch.push(n);
 
@@ -1462,8 +1402,9 @@ bool shoveLookaroundsToEnds(ParseNode* root, std::stack<ParseNode*>& branch) {
   return ret;
 }
 
-bool shoveLookaroundsToEnds(ParseNode* root) {
+bool shoveLookaroundsOutwards(ParseNode* root) {
   std::stack<ParseNode*> branch;
-  return shoveLookaroundsToEnds(root, branch);
+  return shoveLookaroundsOutwards(root, branch);
 }
-*/
+
+// TODO: remove impossible alternatives
