@@ -145,7 +145,7 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
 
   // is this a full or empty character class?
   if (!hasBoth) {
-    return bs[0] ? "\\x00-\\xFF" : "^\\x00-\\xFF";
+    return bs[0] ? "\\z00-\\zFF" : "^\\z00-\\zFF";
   }
 
   // will char class will be shorter if negated?

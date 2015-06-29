@@ -891,9 +891,9 @@ SCOPE_TEST(byteSet_abcd_ToCharacterClassTest) {
 SCOPE_TEST(byteSet_all_ToCharacterClassTest) {
   ByteSet bs;
   bs.set();
-  SCOPE_ASSERT_EQUAL("\\x00-\\xFF", byteSetToCharacterClass(bs));
+  SCOPE_ASSERT_EQUAL("\\z00-\\zFF", byteSetToCharacterClass(bs));
   bs.flip();
-  SCOPE_ASSERT_EQUAL("^\\x00-\\xFF", byteSetToCharacterClass(bs));
+  SCOPE_ASSERT_EQUAL("^\\z00-\\zFF", byteSetToCharacterClass(bs));
 }
 
 SCOPE_TEST(byteSet_digits_letters_ToCharacterClassTest) {
