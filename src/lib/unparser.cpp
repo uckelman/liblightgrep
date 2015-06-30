@@ -54,7 +54,7 @@ void close_paren(std::ostream& out, const ParseNode* n) {
   }
 }
 
-std::string byteToLiteralString(uint32_t i) {
+std::string cpToLiteralString(uint32_t i) {
   // all the characters fit to print unescaped
   if (i == '\\') {
     return "\\\\";
@@ -83,7 +83,15 @@ std::string byteToLiteralString(uint32_t i) {
   }
 }
 
-std::string byteToCharacterString(uint32_t i) {
+std::string byteToLiteralString(uint32_t i) {
+  // all the characters fit to print unescaped
+  std::ostringstream ss;
+  ss << "\\z" << std::hex << std::uppercase
+              << std::setfill('0') << std::setw(2) << i;
+  return ss.str();
+}
+
+std::string cpToCharacterString(uint32_t i) {
   // all the characters fit to print unescaped
   if (i == '\\') {
     return "\\\\";
@@ -104,9 +112,21 @@ std::string byteToCharacterString(uint32_t i) {
     // otherwise, print the hex code
     default:
       {
+        // pick an even width 
+        int w;
+        if (i < 0x100) {
+          w = 2; 
+        }
+        else if (i < 0x10000) {
+          w = 4;
+        }
+        else {
+          w = 6;
+        }
+
         std::ostringstream ss;
         ss << "\\x" << std::hex << std::uppercase
-                    << std::setfill('0') << std::setw(2) << i;
+           << std::setfill('0') << std::setw(w) << i;
         return ss.str();
       }
     }
@@ -124,7 +144,6 @@ std::string byteToCharacterString(uint32_t i) {
  */
 
 std::string byteSetToCharacterClass(const ByteSet& bs) {
-
   // check relative size of 0 and 1 ranges
   int sizediff = -1; // negated has a 1-char disadvantage due to the '^'
   uint32_t left = 0;
@@ -152,6 +171,71 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
   const bool invert = sizediff > 0;
 
   std::ostringstream ss;
+  ss << std::setfill('0') << std::hex << std::uppercase;
+
+  if (invert) {
+    ss << '^';
+  }
+
+  left = 256;
+  for (uint32_t i = 0; i < 257; ++i) {
+    if (i < 256 && (invert ^ bs[i])) {
+      if (left > 0xFF) {
+        // start a new range
+        left = i;
+      }
+    }
+    else if (left <= 0xFF) {
+      // write a completed range
+      uint32_t right = i-1;
+
+      if (right <= left + 1) {
+        // enumerate small ranges
+        for (uint32_t j = left; j <= right; ++j) {
+          ss << "\\z" << std::setw(2) << j;
+        }
+      }
+      else {
+        // use '-' for large ranges
+        ss << "\\z" << std::setw(2) << left << '-'
+           << "\\z" << std::setw(2) << right;
+      }
+
+      left = 256;
+    }
+  }
+
+  return ss.str();
+}
+
+std::string cpSetToCharacterClass(const UnicodeSet& us) {
+  // check relative size of 0 and 1 ranges
+  int sizediff = -1; // negated has a 1-char disadvantage due to the '^'
+  uint32_t left = 0;
+
+  bool hasBoth = false;
+
+  for (uint32_t i = 1; i < 257; ++i) {
+    if (i < 256 && us[i] ^ us[0]) {
+      hasBoth = true;
+    }
+
+    if (i == 256 || us[i-1] ^ us[i]) {
+      const int len = std::min(i - left, (uint32_t) 3);
+      sizediff += us[i-1] ? len : -len;
+      left = i;
+    }
+  }
+
+  // is this a full or empty character class?
+  if (!hasBoth) {
+    return us[0] ? "\\x00-\\x10FFFF" : "^\\x00-\\x10FFFF";
+  }
+
+  // will char class will be shorter if negated?
+  const bool invert = sizediff > 0;
+
+  std::ostringstream ss;
 
   if (invert) {
     ss << '^';
@@ -164,7 +248,7 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
   left = 256;
 
   for (uint32_t i = 0; i < 257; ++i) {
-    if (i < 256 && (invert ^ bs[i])) {
+    if (i < 256 && (invert ^ us[i])) {
       if (left > 0xFF) {
         // start a new range
         left = i;
@@ -218,7 +302,7 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
             }
           }
 
-          ss << byteToCharacterString(j);
+          ss << cpToCharacterString(j);
         }
       }
       else {
@@ -233,13 +317,13 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
           }
         }
 
-        ss << byteToCharacterString(left) << '-';
+        ss << cpToCharacterString(left) << '-';
 
         if (right == ']') {
           ss << '\\';
         }
 
-        ss << byteToCharacterString(right);
+        ss << cpToCharacterString(right);
       }
 
       left = 256;
@@ -252,14 +336,14 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
     if (caret) {
       // if we haven't written anything, reverse the hyphen and caret
       if (0 == ss.tellp()) {
-        ss << byteToCharacterString('-') << byteToCharacterString('^');
+        ss << cpToCharacterString('-') << cpToCharacterString('^');
       }
       else {
-        ss << byteToCharacterString('^') << byteToCharacterString('-');
+        ss << cpToCharacterString('^') << cpToCharacterString('-');
       }
     }
     else {
-      ss << byteToCharacterString('-');
+      ss << cpToCharacterString('-');
     }
   }
   // if there was a caret, put it at the end
@@ -268,7 +352,7 @@ std::string byteSetToCharacterClass(const ByteSet& bs) {
     if (0 == ss.tellp()) {
       ss << '\\';
     }
-    ss << byteToCharacterString('^');
+    ss << cpToCharacterString('^');
   }
 
   return ss.str();
@@ -354,18 +438,30 @@ void unparse(std::ostream& out, const ParseNode* n) {
     break;
 
   case ParseNode::CHAR_CLASS:
-    {
-      ByteSet bs;
-      for (uint32_t i = 0; i < 256; ++i) {
-        bs.set(i, n->Set.CodePoints.test(i));
-      }
+    out << '[';
+    if (n->Set.CodePoints.any()) {
+      const bool hasBytes = n->Set.Breakout.Bytes.any();
 
-      out << '[' << byteSetToCharacterClass(bs) << ']';
+      if (!n->Set.Breakout.Additive && hasBytes) {
+        out << '[' << cpSetToCharacterClass(n->Set.CodePoints) << "]--["
+                   << byteSetToCharacterClass(n->Set.Breakout.Bytes) << "]";
+      }
+      else {
+        out << cpSetToCharacterClass(n->Set.CodePoints);
+        if (hasBytes) {
+          out << byteSetToCharacterClass(n->Set.Breakout.Bytes);
+        }
+      }
     }
+    else {
+      out << byteSetToCharacterClass(n->Set.Breakout.Bytes);
+    }
+
+    out << ']';
     break;
 
   case ParseNode::LITERAL:
-    out << byteToLiteralString(n->Val);
+    out << cpToLiteralString(n->Val);
     break;
 
   case ParseNode::BYTE:

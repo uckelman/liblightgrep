@@ -23,9 +23,11 @@
 
 #include <string>
 
-std::string byteToCharacterString(uint32_t i);
+std::string cpToCharacterString(uint32_t i);
 std::string byteToLiteralString(uint32_t i);
+std::string cpToLiteralString(uint32_t i);
 std::string byteSetToCharacterClass(const ByteSet& bs);
+std::string cpSetToCharacterClass(const UnicodeSet& us);
 
 std::string unparse(const ParseTree& tree);
 
