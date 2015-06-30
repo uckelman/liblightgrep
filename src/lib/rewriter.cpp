@@ -429,6 +429,10 @@ bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
     }
   case ParseNode::REPETITION:
   case ParseNode::REPETITION_NG:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
     ret = makeBinopsRightAssociative(n->Child.Left, branch);
     break;
 
