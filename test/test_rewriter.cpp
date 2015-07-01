@@ -988,7 +988,7 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a)a", false, false}, tree));
   SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
-  SCOPE_ASSERT_EQUAL("a", unparse(tree));
+  SCOPE_ASSERT_EQUAL("[a]{0}[a]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaaRPa_Test) {
@@ -1127,7 +1127,7 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPLPLAPaRPbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=(?=a)b)", false, false}, tree));
   SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
-  SCOPE_ASSERT_EQUAL("[^\\z00-\\zFF]", unparse(tree));
+  SCOPE_ASSERT_EQUAL("(?=[a]{0}[^\\z00-\\zFF])", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAaRPOrLPLAPbRP) {

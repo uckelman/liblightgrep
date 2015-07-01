@@ -1497,6 +1497,41 @@ void distributeDisjunctionOverPositiveLookarounds(ParseNode* n) {
   l->Child.Right = t;
 }
 
+bool isLiteral(ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    return true;
+  default:
+    return false;
+  }
+}
+
+void literalToCC(ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::DOT:
+    *n = ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet());
+    break;
+
+  case ParseNode::CHAR_CLASS:
+    // do nothing
+    break;      
+
+  case ParseNode::LITERAL:
+    *n = ParseNode(ParseNode::CHAR_CLASS, UnicodeSet(n->Val));
+    break;
+
+  case ParseNode::BYTE:
+    *n = ParseNode(ParseNode::CHAR_CLASS, ByteSet(n->Val));
+    break;        
+
+  default:
+    throw std::logic_error("wtf");
+  }
+}
+
 bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
   bool ret = false;
   branch.push(n);
@@ -1635,6 +1670,36 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
         */
 
       // TODO
+
+
+      /* 
+            &            &
+           / \         /   \
+          ?=  b  =>  {0} [a&&b]  
+           |          |
+           a          a
+      */
+
+      if (n->Child.Left->Type == ParseNode::LOOKAHEAD_POS &&
+          isLiteral(n->Child.Left->Child.Left) &&
+          isLiteral(n->Child.Right))
+      {
+        ParseNode* l = n->Child.Left;
+        ParseNode* a = l->Child.Left;
+        ParseNode* b = n->Child.Right;
+
+        literalToCC(a);
+        literalToCC(b);
+
+        b->Set.CodePoints &= a->Set.CodePoints;
+// FIXME: handle breakout bytes properly
+        b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+        l->Type = ParseNode::REPETITION;
+        l->Child.Rep.Min = l->Child.Rep.Max = 0;
+
+        ret = true;
+      }
     }
     else if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
       /*
