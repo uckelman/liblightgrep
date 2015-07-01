@@ -51,8 +51,6 @@ void reduceNegativeLookaheadAlternation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree);
 
-bool flattenPositiveLookarounds(ParseNode* root);
-
 bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch);
 bool shoveLookaroundsOutward(ParseNode* root);
 
