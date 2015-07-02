@@ -23,35 +23,6 @@
 
 #include <boost/lexical_cast.hpp>
 
-void print_tree(std::ostream& out, const ParseNode& n) {
-  switch (n.Type) {
-  case ParseNode::REGEXP:
-  case ParseNode::LOOKBEHIND_POS:
-  case ParseNode::LOOKBEHIND_NEG:
-  case ParseNode::LOOKAHEAD_POS:
-  case ParseNode::LOOKAHEAD_NEG:
-  case ParseNode::ALTERNATION:
-  case ParseNode::CONCATENATION:
-  case ParseNode::REPETITION:
-  case ParseNode::REPETITION_NG:
-    if (n.Child.Left) {
-      // this node has a left child
-      print_tree(out, *n.Child.Left);
-    }
-    break;
-  default:
-    break;
-  }
-
-  if ((n.Type == ParseNode::CONCATENATION ||
-       n.Type == ParseNode::ALTERNATION) && n.Child.Right) {
-    // this node has a right child
-    print_tree(out, *n.Child.Right);
-  }
-
-  out << n << '\n';
-}
-
 void print_branch(std::ostream& out, std::stack<ParseNode*>& branch) {
   std::stack<ParseNode*> tmp;
 
