@@ -1671,34 +1671,63 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
 
       // TODO
 
-
-      /* 
-            &            &
-           / \         /   \
-          ?=  b  =>  {0} [a&&b]  
-           |          |
-           a          a
-      */
-
+      
       if (n->Child.Left->Type == ParseNode::LOOKAHEAD_POS &&
-          isLiteral(n->Child.Left->Child.Left) &&
-          isLiteral(n->Child.Right))
+          isLiteral(n->Child.Left->Child.Left))
       {
-        ParseNode* l = n->Child.Left;
-        ParseNode* a = l->Child.Left;
-        ParseNode* b = n->Child.Right;
+        if (isLiteral(n->Child.Right)) {
+          /* 
+                &            &
+               / \         /   \
+              ?=  b  =>  {0} [a&&b]  
+               |          |
+               a          a
+          */
 
-        literalToCC(a);
-        literalToCC(b);
+          ParseNode* l = n->Child.Left;
+          ParseNode* a = l->Child.Left;
+          ParseNode* b = n->Child.Right;
 
-        b->Set.CodePoints &= a->Set.CodePoints;
-// FIXME: handle breakout bytes properly
-        b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+          literalToCC(a);
+          literalToCC(b);
 
-        l->Type = ParseNode::REPETITION;
-        l->Child.Rep.Min = l->Child.Rep.Max = 0;
+          b->Set.CodePoints &= a->Set.CodePoints;
+  // FIXME: handle breakout bytes properly
+          b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
 
-        ret = true;
+          l->Type = ParseNode::REPETITION;
+          l->Child.Rep.Min = l->Child.Rep.Max = 0;
+
+          ret = true;
+        }
+        else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
+                 isLiteral(n->Child.Right->Child.Left))
+        {
+          /*
+                  &               &
+                 / \            /   \
+               ?=   &    =>  [a&&b]  X 
+               |   / \
+               a  b   X
+          */
+
+          ParseNode* l = n->Child.Left;
+          ParseNode* a = l->Child.Left;
+          ParseNode* r = n->Child.Right;
+          ParseNode* b = r->Child.Left;
+
+          literalToCC(a);
+          literalToCC(b);
+
+          b->Set.CodePoints &= a->Set.CodePoints;
+  // FIXME: handle breakout bytes properly
+          b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+          n->Child.Left = b;
+          n->Child.Right = r->Child.Right;
+
+          ret = true;
+        }
       }
     }
     else if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
