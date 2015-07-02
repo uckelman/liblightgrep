@@ -389,6 +389,17 @@ bool combineConsecutiveRepetitions(ParseNode* root) {
   return combineConsecutiveRepetitions(root, branch);
 }
 
+void gatherXjuncts(ParseNode* n, ParseNode::NodeType type, std::vector<ParseNode*>& leaves, std::vector<ParseNode*>& ops) {
+  if (n->Type == type) {
+    ops.push_back(n);
+    gatherXjuncts(n->Child.Left, type, leaves, ops);
+    gatherXjuncts(n->Child.Right, type, leaves, ops);
+  }
+  else {
+    leaves.push_back(n);
+  }
+}
+
 bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
   bool ret = false;
   branch.push(n);
@@ -409,36 +420,45 @@ bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
 
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
-    ret = makeBinopsRightAssociative(n->Child.Left, branch);
-    ret |= makeBinopsRightAssociative(n->Child.Right, branch);
+    /*
+      Adjust consecutive binary nodes so that consecutive same-type
+      binary ops are the right children of their parents.
 
-    if (n->Child.Left->Type == n->Type) {
-      /*
-        Adjust consecutive binary nodes so that consecutive same-type
-        binary ops are the right children of their parents.
+    */
+    {
+      std::vector<ParseNode*> leaves, ops;
+      gatherXjuncts(n, n->Type, leaves, ops);
 
-                  a            a
-                  |            |
-                  b     =>     c
-                 / \          / \
-                c   d        e   b
-               / \              / \
-              e   f            f   d
+      if (ops.size() > 1) {
+        auto o = ops.begin();
+        auto l = leaves.begin();
 
-      */
+        while (true) {
+          if ((*o)->Child.Left != *l) {
+            (*o)->Child.Left = *l;
+            ret = true;
+          }
+          ++l;
 
-      branch.pop();
-      ParseNode* a = branch.top();
-      ParseNode* b = n;
-      ParseNode* c = n->Child.Left;
-      ParseNode* f = n->Child.Left->Child.Right;
+          if (o + 1 == ops.end()) {
+            break;
+          }
 
-      (b == a->Child.Left ? a->Child.Left : a->Child.Right) = c;
-      c->Child.Right = b;
-      b->Child.Left = f;
+          if ((*o)->Child.Right != *(o+1)) {
+            (*o)->Child.Right = *(o+1);
+            ret = true;
+          }
+          ++o;
+        }
 
-      branch.push(c);
-      ret = true;
+        if ((*o)->Child.Right != *l) {
+          (*o)->Child.Right = *l;
+          ret = true;
+        }
+      }
+
+      ret |= makeBinopsRightAssociative(n->Child.Left, branch);
+      ret |= makeBinopsRightAssociative(n->Child.Right, branch);
     }
     break;
 
@@ -634,56 +654,6 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* n, std::stack<ParseNode*>& bran
 bool reduceTrailingNongreedyThenEmpty(ParseNode* root) {
   std::stack<ParseNode*> branch;
   return reduceTrailingNongreedyThenEmpty(root, branch);
-}
-
-ParseNode* previousAtom(std::stack<ParseNode*>& branch) {
-  // ascend until we reach a concatenation via its right child
-  ParseNode* c = branch.top();
-  branch.pop();
-
-  ParseNode* p;
-  while (true) {
-    if (branch.empty()) {
-      return nullptr;
-    }
-
-    p = branch.top();
-    branch.pop();
-
-    if (p->Type == ParseNode::CONCATENATION) {
-      if (c == p->Child.Right) {
-        // found the concatenation
-        break;
-      }
-      else {
-        // child was left child, keep ascending
-        c = p;
-      }
-    }
-    else {
-      return nullptr;
-    }
-  }
-
-  // descend until we reach an atom
-  c = p->Child.Left;
-
-  while (true) {
-    switch (c->Type) {
-    case ParseNode::CONCATENATION:
-      c = c->Child.Right;
-      break;
-
-    case ParseNode::DOT:
-    case ParseNode::CHAR_CLASS:
-    case ParseNode::LITERAL:
-    case ParseNode::BYTE:
-      return c;
-
-    default:
-      return nullptr;
-    }
-  }
 }
 
 ParseNode* copy_subtree(ParseNode* n, ParseTree& tree) {
