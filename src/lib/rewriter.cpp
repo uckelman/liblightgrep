@@ -1128,156 +1128,26 @@ bool reduceNegativeLookarounds(ParseNode* root, ParseTree& tree) {
   return reduceNegativeLookarounds(root, tree, branch);
 }
 
-bool flattenPositiveLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
-  bool ret = false;
-  branch.push(n);
+  //
+  // (?=S(?=T))   = (?=ST)
+  // (?=(?=S)T)   = (?=S)(?=T)
+  // (?<=(?<=S)T) = (?<=ST)
+  // (?<=S(?<=T)) = (?<=S)(?<=T)
+  //
+  // (?=(?<=S)T)  = (?<=S)(?=T)
+  // (?<=S(?=T))  = (?<=S)(?=T)
+  // (?=S(?<=T))  =
+  // (?<=(?=S)T)  =
 
-  switch (n->Type) {
-  case ParseNode::REGEXP:
-    if (!n->Child.Left) {
-      return ret;
-    }
-  case ParseNode::REPETITION:
-  case ParseNode::REPETITION_NG:
-    ret = flattenPositiveLookarounds(n->Child.Left, branch);
-    break;
-
-  case ParseNode::ALTERNATION:
-  case ParseNode::CONCATENATION:
-    ret = flattenPositiveLookarounds(n->Child.Left, branch);
-    ret |= flattenPositiveLookarounds(n->Child.Right, branch);
-    break;
-
-  case ParseNode::LOOKAHEAD_POS:
-    switch (n->Child.Left->Type) {
-    case ParseNode::ALTERNATION:
-      ret = flattenPositiveLookarounds(n->Child.Left, branch);
-      break;
-
-    case ParseNode::CONCATENATION:
-      switch (n->Child.Left->Child.Left->Type) {
-      case ParseNode::LOOKAHEAD_POS:
-      case ParseNode::LOOKBEHIND_POS:
-        
-        break;
-
-      case ParseNode::LOOKAHEAD_NEG:
-      case ParseNode::LOOKBEHIND_NEG:
-        break;
-
-      default:
-        switch (n->Child.Left->Child.Right->Type) {
-        case ParseNode::LOOKAHEAD_POS:
-          {
-            ParseNode* gp = n->Child.Left;
-            ParseNode* p = gp->Child.Right;
-            ParseNode* c = p->Child.Left;
-            spliceOutParent(gp, p, c); 
-            flattenPositiveLookarounds(n->Child.Left, branch);
-            ret = true;
-          }
-          break;
-
-        case ParseNode::LOOKBEHIND_POS:
-          break;
-
-        case ParseNode::LOOKAHEAD_NEG:
-        case ParseNode::LOOKBEHIND_NEG:
-        default:
-          ret = flattenPositiveLookarounds(n->Child.Left, branch);
-          break;
-        }
-        break;
-      }
-      break;
-
-    case ParseNode::LOOKAHEAD_POS:
-    case ParseNode::LOOKBEHIND_POS:
-      {
-        branch.pop();
-        ParseNode* gp = branch.top();
-        ParseNode* c = n->Child.Left;
-        spliceOutParent(gp, n, c);
-        flattenPositiveLookarounds(c, branch);
-        ret = true;
-      }
-      break;
-
-    case ParseNode::REPETITION:
-    case ParseNode::REPETITION_NG:
-    case ParseNode::LOOKAHEAD_NEG:
-    case ParseNode::LOOKBEHIND_NEG:
-    case ParseNode::DOT:
-    case ParseNode::CHAR_CLASS:
-    case ParseNode::LITERAL:
-    case ParseNode::BYTE:
-      break;
-
-    default:
-      // WTF?
-      throw std::logic_error(boost::lexical_cast<std::string>(n->Child.Left->Type));
-    }
-    break;
-
-  case ParseNode::LOOKBEHIND_POS:
-    switch (n->Child.Left->Type) {
-    case ParseNode::ALTERNATION:
-      break;
-
-    case ParseNode::CONCATENATION:
-      if (n->Child.Left->Child.Left->Type == ParseNode::LOOKAHEAD_POS) {
-      }
-      break;
-
-    case ParseNode::LOOKAHEAD_POS:
-    case ParseNode::LOOKBEHIND_POS:
-      {
-        branch.pop();
-        ParseNode* gp = branch.top();
-        ParseNode* c = n->Child.Left;
-        spliceOutParent(gp, n, c);
-        flattenPositiveLookarounds(c, branch);
-        ret = true;
-      }
-      break;
-
-    case ParseNode::REPETITION:
-    case ParseNode::REPETITION_NG:
-    case ParseNode::LOOKAHEAD_NEG:
-    case ParseNode::LOOKBEHIND_NEG:
-    case ParseNode::DOT:
-    case ParseNode::CHAR_CLASS:
-    case ParseNode::LITERAL:
-    case ParseNode::BYTE:
-      break;
-
-    default:
-      // WTF?
-      throw std::logic_error(boost::lexical_cast<std::string>(n->Child.Left->Type));
-    }
-    break;
-
-  case ParseNode::LOOKAHEAD_NEG:
-  case ParseNode::LOOKBEHIND_NEG:
-  case ParseNode::DOT:
-  case ParseNode::CHAR_CLASS:
-  case ParseNode::LITERAL:
-  case ParseNode::BYTE:
-    break;
-
-  default:
-    // WTF?
-    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
-  }
-
-  branch.pop();
-  return ret;
-}
-
-bool flattenPositiveLookarounds(ParseNode* root) {
-  std::stack<ParseNode*> branch;
-  return flattenPositiveLookarounds(root, branch);
-}
+  // (?=S|(?=T))  = (?=S|T)
+  // (?=(?=S)T))  = (?=S|T)
+  // (?<=S(?<=T)) = (?<=S|T)
+  // (?<=(?<=S)T) = (?<=S|T)
+  //
+  // (?=S|(?<=T)) = (?=S)|(?<=T)
+  // (?=(?<=S)|T) = (?<=S)|(?=T)
+  // (?<=S|(?=T)) = (?<=S)|(?=T)
+  // (?<=(?=S)|T) = (?=S)|(?<=T)
 
 /*
 bool combineAlternationsOfPositiveLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
