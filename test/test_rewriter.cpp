@@ -995,7 +995,14 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPaaRPa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=aa)a", false, false}, tree));
   SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
-  SCOPE_ASSERT_EQUAL("a(?=a)", unparse(tree));
+  SCOPE_ASSERT_EQUAL("[a](?=a)", unparse(tree));
+}
+
+SCOPE_TEST(shoveLookaroundsOutward_LPLAPaaaaRPaaaa_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?=aaaa)aaaa", false, false}, tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT_EQUAL("aaaa", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_WhackZa_Test) {
