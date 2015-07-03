@@ -440,6 +440,7 @@ bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
           auto o = ops.begin();
           auto l = leaves.begin();
 
+          // add each of the left leaves, working left to right
           while (true) {
             if ((*o)->Child.Left != *l) {
               (*o)->Child.Left = *l;
@@ -458,6 +459,7 @@ bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
             ++o;
           }
 
+          // add the sole right leaf 
           if ((*o)->Child.Right != *l) {
             (*o)->Child.Right = *l;
             ret = true;
