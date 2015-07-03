@@ -579,22 +579,6 @@ SCOPE_TEST(makeBinopsRightAssociative_LPLPLPabRPcRPdRPe_Test) {
   SCOPE_ASSERT_EQUAL(root, *tree.Root);
 }
 
-/*
-SCOPE_TEST(shoveLookbehindsLeft_aLPLBPaaRP_Test) {
-  ParseTree tree;
-  SCOPE_ASSERT(parse({"a(?<=aa)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookbehindsLeft(tree.Root));
-  SCOPE_ASSERT_EQUAL("(?<=a)a", unparse(tree));
-}
-
-SCOPE_TEST(shoveLookbehindsLeft_aLPLBPaRP_Test) {
-  ParseTree tree;
-  SCOPE_ASSERT(parse({"a(?<=a)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookbehindsLeft(tree.Root));
-  SCOPE_ASSERT_EQUAL("a", unparse(tree));
-}
-*/
-
 SCOPE_TEST(reduceNegativeLookarounds_LPLBaRP_Test) {
   ParseTree tree;
   tree.init(1000);
