@@ -1448,13 +1448,13 @@ bool shoveLookaroundsOutward(ParseNode* n, std::stack<ParseNode*>& branch) {
   case ParseNode::CONCATENATION:
     if ((n->Child.Left->Type == ParseNode::LOOKAHEAD_POS ||
          n->Child.Left->Type == ParseNode::LOOKAHEAD_NEG)) {
+      /*
+         Lookarounds commute. Reorder opposite-facing lookarounds.
 
-      // Lookarounds commute. Reorder opposite-facing lookarounds.
-      //
-      // (?=S)(?<=T) = (?<=T)(?=S)
-      // \Z(?<=T)    = (?<=T)\Z
-      // (?=S)\A     = \A(?=S)
-
+         (?=S)(?<=T) = (?<=T)(?=S)
+         \Z(?<=T)    = (?<=T)\Z
+         (?=S)\A     = \A(?=S)
+      */
       if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS ||
          n->Child.Right->Type == ParseNode::LOOKBEHIND_NEG) {
         /*
