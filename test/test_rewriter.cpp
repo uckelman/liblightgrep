@@ -593,20 +593,6 @@ SCOPE_TEST(shoveLookbehindsLeft_aLPLBPaRP_Test) {
   SCOPE_ASSERT(shoveLookbehindsLeft(tree.Root));
   SCOPE_ASSERT_EQUAL("a", unparse(tree));
 }
-
-SCOPE_TEST(shoveLookaheadsRight_LPLAPaRPa_Test) {
-  ParseTree tree;
-  SCOPE_ASSERT(parse({"(?=a)a", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaheadsRight(tree.Root));
-  SCOPE_ASSERT_EQUAL("a", unparse(tree));
-}
-
-SCOPE_TEST(shoveLookaheadsRight_LPLAPaaRPa_Test) {
-  ParseTree tree;
-  SCOPE_ASSERT(parse({"(?=aa)a", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaheadsRight(tree.Root));
-  SCOPE_ASSERT_EQUAL("a(?=a)", unparse(tree));
-}
 */
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLBaRP_Test) {
