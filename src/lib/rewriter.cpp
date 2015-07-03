@@ -959,9 +959,8 @@ void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree) {
   n->Child.Left = s;
 }
 
-bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNode*>& branch) {
+bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree) {
   bool ret = false;
-  branch.push(n);
 
   switch (n->Type) {
   case ParseNode::REGEXP:
@@ -972,7 +971,7 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
   case ParseNode::REPETITION_NG:
   case ParseNode::LOOKAHEAD_POS:
   case ParseNode::LOOKBEHIND_POS:
-    ret = reduceNegativeLookarounds(n->Child.Left, tree, branch);
+    ret = reduceNegativeLookarounds(n->Child.Left, tree);
     break;
 
   case ParseNode::LOOKAHEAD_NEG:
@@ -980,7 +979,7 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
     case ParseNode::REPETITION:
     case ParseNode::REPETITION_NG:
       reduceNegativeLookaheadRepetition(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::LOOKAHEAD_POS:
@@ -988,17 +987,17 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
     case ParseNode::LOOKBEHIND_POS:
     case ParseNode::LOOKBEHIND_NEG:
       reduceNegativeLookaheadLookaround(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::ALTERNATION:
       reduceNegativeLookaheadAlternation(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::CONCATENATION:
       reduceNegativeLookaheadConcatenation(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::DOT:
@@ -1019,7 +1018,7 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
     case ParseNode::REPETITION:
     case ParseNode::REPETITION_NG:
       reduceNegativeLookbehindRepetition(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::LOOKAHEAD_POS:
@@ -1027,17 +1026,17 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
     case ParseNode::LOOKBEHIND_POS:
     case ParseNode::LOOKBEHIND_NEG:
       reduceNegativeLookbehindLookaround(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::ALTERNATION:
       reduceNegativeLookbehindAlternation(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::CONCATENATION:
       reduceNegativeLookbehindConcatenation(n, tree);
-      reduceNegativeLookarounds(n, tree, branch);
+      reduceNegativeLookarounds(n, tree);
       break;
 
     case ParseNode::DOT:
@@ -1055,8 +1054,8 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
 
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
-    ret = reduceNegativeLookarounds(n->Child.Left, tree, branch);
-    ret |= reduceNegativeLookarounds(n->Child.Right, tree, branch);
+    ret = reduceNegativeLookarounds(n->Child.Left, tree);
+    ret |= reduceNegativeLookarounds(n->Child.Right, tree);
     break;
 
   case ParseNode::DOT:
@@ -1070,13 +1069,7 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree, std::stack<ParseNo
     throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
   }
 
-  branch.pop();
   return ret;
-}
-
-bool reduceNegativeLookarounds(ParseNode* root, ParseTree& tree) {
-  std::stack<ParseNode*> branch;
-  return reduceNegativeLookarounds(root, tree, branch);
 }
 
   //
