@@ -550,7 +550,33 @@ SCOPE_TEST(makeBinopsRightAssociative_LPLPLPabRPcRPdRPe_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(((ab)c)d)e", false, false}, tree));
   SCOPE_ASSERT(makeBinopsRightAssociative(tree.Root));
-  SCOPE_ASSERT_EQUAL("abcde", unparse(tree));
+
+  /*
+        r
+        |
+        &
+       / \
+      a   &
+         / \
+        b   &
+           / \
+          c   &
+             / \
+            d   e
+  */
+
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            d(ParseNode::LITERAL, 'd'),
+            e(ParseNode::LITERAL, 'e'),
+            de(ParseNode::CONCATENATION, &d, &e),
+            cde(ParseNode::CONCATENATION, &c, &de),
+            bcde(ParseNode::CONCATENATION, &b, &cde),
+            abcde(ParseNode::CONCATENATION, &a, &bcde),
+            root(ParseNode::REGEXP, &abcde);
+
+  SCOPE_ASSERT_EQUAL(root, *tree.Root);
 }
 
 /*

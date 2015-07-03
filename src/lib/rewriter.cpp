@@ -420,40 +420,48 @@ bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
 
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
-    /*
-      Adjust consecutive binary nodes so that consecutive same-type
-      binary ops are the right children of their parents.
-
-    */
     {
-      std::vector<ParseNode*> leaves, ops;
-      gatherXjuncts(n, n->Type, leaves, ops);
+      branch.pop();
+      ParseNode* p = branch.top();
+      branch.push(n);
 
-      if (ops.size() > 1) {
-        auto o = ops.begin();
-        auto l = leaves.begin();
+      if (p->Type != n->Type) {
+        /*
+          Adjust consecutive binary nodes so that consecutive same-type
+          binary ops are the right children of their parents.
 
-        while (true) {
-          if ((*o)->Child.Left != *l) {
-            (*o)->Child.Left = *l;
+          Skip if the parent of this node is the same type, as we will
+          already have processed this node when we met its parent.
+        */
+        std::vector<ParseNode*> leaves, ops;
+        gatherXjuncts(n, n->Type, leaves, ops);
+
+        if (ops.size() > 1) {
+          auto o = ops.begin();
+          auto l = leaves.begin();
+
+          while (true) {
+            if ((*o)->Child.Left != *l) {
+              (*o)->Child.Left = *l;
+              ret = true;
+            }
+            ++l;
+
+            if (o + 1 == ops.end()) {
+              break;
+            }
+
+            if ((*o)->Child.Right != *(o+1)) {
+              (*o)->Child.Right = *(o+1);
+              ret = true;
+            }
+            ++o;
+          }
+
+          if ((*o)->Child.Right != *l) {
+            (*o)->Child.Right = *l;
             ret = true;
           }
-          ++l;
-
-          if (o + 1 == ops.end()) {
-            break;
-          }
-
-          if ((*o)->Child.Right != *(o+1)) {
-            (*o)->Child.Right = *(o+1);
-            ret = true;
-          }
-          ++o;
-        }
-
-        if ((*o)->Child.Right != *l) {
-          (*o)->Child.Right = *l;
-          ret = true;
         }
       }
 
