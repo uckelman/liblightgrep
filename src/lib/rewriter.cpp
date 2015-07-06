@@ -1644,145 +1644,143 @@ bool shoveLookaroundsOutward(ParseNode* root) {
 
         // TODO
 
-        if (n->Child.Left->Type == ParseNode::LOOKAHEAD_POS) {
-          if (isLiteral(n->Child.Left->Child.Left)) {
-            if (isLiteral(n->Child.Right)) {
-              /* 
-                    &            &
-                   / \         /   \
-                  ?=  b  =>  {0} [a&&b]  
-                   |          |
-                   a          a
-              */
+        if (isLiteral(n->Child.Left->Child.Left)) {
+          if (isLiteral(n->Child.Right)) {
+            /* 
+                  &            &
+                 / \         /   \
+                ?=  b  =>  {0} [a&&b]  
+                 |          |
+                 a          a
+            */
 
-              ParseNode* l = n->Child.Left;
-              ParseNode* a = l->Child.Left;
-              ParseNode* b = n->Child.Right;
+            ParseNode* l = n->Child.Left;
+            ParseNode* a = l->Child.Left;
+            ParseNode* b = n->Child.Right;
 
-              literalToCC(a);
-              literalToCC(b);
+            literalToCC(a);
+            literalToCC(b);
 
-              b->Set.CodePoints &= a->Set.CodePoints;
-      // FIXME: handle breakout bytes properly
-              b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+            b->Set.CodePoints &= a->Set.CodePoints;
+    // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
 
-              l->Type = ParseNode::REPETITION;
-              l->Child.Rep.Min = l->Child.Rep.Max = 0;
+            l->Type = ParseNode::REPETITION;
+            l->Child.Rep.Min = l->Child.Rep.Max = 0;
 
-              restartShove(root, check);
-              ret = true;
-            }
-            else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
-                     isLiteral(n->Child.Right->Child.Left))
-            {
-              /*
-                      &               &
-                     / \            /   \
-                   ?=   &    =>  [a&&b]  X 
-                   |   / \
-                   a  b   X
-              */
-
-              ParseNode* l = n->Child.Left;
-              ParseNode* a = l->Child.Left;
-              ParseNode* r = n->Child.Right;
-              ParseNode* b = r->Child.Left;
-              ParseNode* x = r->Child.Right;
-
-              literalToCC(a);
-              literalToCC(b);
-
-              b->Set.CodePoints &= a->Set.CodePoints;
-      // FIXME: handle breakout bytes properly
-              b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
-
-              n->Child.Left = b;
-              n->Child.Right = x;
-
-              l->Type = r->Type = a->Type = ParseNode::TEMPORARY;
-              parent[b] = parent[x] = n;
-
-              restartShove(root, check);
-              ret = true;
-            }
+            restartShove(root, check);
+            ret = true;
           }
-          else if (n->Child.Left->Child.Left->Type == ParseNode::CONCATENATION &&
-            isLiteral(n->Child.Left->Child.Left->Child.Left))
+          else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
+                   isLiteral(n->Child.Right->Child.Left))
           {
-            if (isLiteral(n->Child.Right)) {
-              /*
-                      &             &
-                     / \          /   \
-                   ?=   b  =>  [a&&b] ?=
-                    |                  |
-                    &                  S
-                   / \
-                  a   S
-              */
-              ParseNode* l = n->Child.Left;
-              ParseNode* ll = l->Child.Left;
-              ParseNode* a = ll->Child.Left;
-              ParseNode* s = ll->Child.Right;
-              ParseNode* b = n->Child.Right;
+            /*
+                    &               &
+                   / \            /   \
+                 ?=   &    =>  [a&&b]  X 
+                 |   / \
+                 a  b   X
+            */
 
-              literalToCC(a);
-              literalToCC(b);
+            ParseNode* l = n->Child.Left;
+            ParseNode* a = l->Child.Left;
+            ParseNode* r = n->Child.Right;
+            ParseNode* b = r->Child.Left;
+            ParseNode* x = r->Child.Right;
 
-              b->Set.CodePoints &= a->Set.CodePoints;
-      // FIXME: handle breakout bytes properly
-              b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+            literalToCC(a);
+            literalToCC(b);
 
-              n->Child.Left = b;
-              n->Child.Right = l;
+            b->Set.CodePoints &= a->Set.CodePoints;
+    // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
 
-              l->Child.Left = s;
+            n->Child.Left = b;
+            n->Child.Right = x;
 
-              ll->Type = a->Type = ParseNode::TEMPORARY;
-              parent[b] = parent[l] = n;
-              parent[s] = l;
+            l->Type = r->Type = a->Type = ParseNode::TEMPORARY;
+            parent[b] = parent[x] = n;
 
-              restartShove(root, check);
-              ret = true;
-            }
-            else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
-                     isLiteral(n->Child.Right->Child.Left))
-            {
-               /*
-                      &               &
-                     / \            /   \
-                   ?=   &    =>  [a&&b]  &
-                   |   / \              / \
-                   &  b   T           ?=   T
-                  / \                  |
-                 a   S                 S
-              */
+            restartShove(root, check);
+            ret = true;
+          }
+        }
+        else if (n->Child.Left->Child.Left->Type == ParseNode::CONCATENATION &&
+          isLiteral(n->Child.Left->Child.Left->Child.Left))
+        {
+          if (isLiteral(n->Child.Right)) {
+            /*
+                    &             &
+                   / \          /   \
+                 ?=   b  =>  [a&&b] ?=
+                  |                  |
+                  &                  S
+                 / \
+                a   S
+            */
+            ParseNode* l = n->Child.Left;
+            ParseNode* ll = l->Child.Left;
+            ParseNode* a = ll->Child.Left;
+            ParseNode* s = ll->Child.Right;
+            ParseNode* b = n->Child.Right;
 
-              ParseNode* l = n->Child.Left;
-              ParseNode* ll = l->Child.Left;
-              ParseNode* a = ll->Child.Left;
-              ParseNode* s = ll->Child.Right;
-              ParseNode* r = n->Child.Right;
-              ParseNode* b = r->Child.Left;
+            literalToCC(a);
+            literalToCC(b);
 
-              literalToCC(a);
-              literalToCC(b);
+            b->Set.CodePoints &= a->Set.CodePoints;
+    // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
 
-              b->Set.CodePoints &= a->Set.CodePoints;
-      // FIXME: handle breakout bytes properly
-              b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+            n->Child.Left = b;
+            n->Child.Right = l;
 
-              n->Child.Left = b;
-              r->Child.Left = l;
-              l->Child.Left = s;
+            l->Child.Left = s;
 
-              ll->Type = a->Type = ParseNode::TEMPORARY;
-              parent[b] = n;
-              parent[l] = r;
-              parent[s] = l;
+            ll->Type = a->Type = ParseNode::TEMPORARY;
+            parent[b] = parent[l] = n;
+            parent[s] = l;
 
-              restartShove(root, check);
-              ret = true;
-            }
+            restartShove(root, check);
+            ret = true;
+          }
+          else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
+                   isLiteral(n->Child.Right->Child.Left))
+          {
+             /*
+                    &               &
+                   / \            /   \
+                 ?=   &    =>  [a&&b]  &
+                 |   / \              / \
+                 &  b   T           ?=   T
+                / \                  |
+               a   S                 S
+            */
+
+            ParseNode* l = n->Child.Left;
+            ParseNode* ll = l->Child.Left;
+            ParseNode* a = ll->Child.Left;
+            ParseNode* s = ll->Child.Right;
+            ParseNode* r = n->Child.Right;
+            ParseNode* b = r->Child.Left;
+
+            literalToCC(a);
+            literalToCC(b);
+
+            b->Set.CodePoints &= a->Set.CodePoints;
+    // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+            n->Child.Left = b;
+            r->Child.Left = l;
+            l->Child.Left = s;
+
+            ll->Type = a->Type = ParseNode::TEMPORARY;
+            parent[b] = n;
+            parent[l] = r;
+            parent[s] = l;
+
+            restartShove(root, check);
+            ret = true;
           }
         }
       }
@@ -1796,6 +1794,173 @@ bool shoveLookaroundsOutward(ParseNode* root) {
         */
 
         // TODO
+        
+        if (isLiteral(n->Child.Right->Child.Left)) {
+          if (isLiteral(n->Child.Left)) {
+            /* 
+                  &            &
+                 / \         /   \
+                b ?<=  => [a&&b] {0} 
+                    |             |
+                    a             a
+            */
+
+            ParseNode* r = n->Child.Right;
+            ParseNode* a = r->Child.Left;
+            ParseNode* b = n->Child.Left;
+
+            literalToCC(a);
+            literalToCC(b);
+
+            b->Set.CodePoints &= a->Set.CodePoints;
+      // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+            r->Type = ParseNode::REPETITION;
+            r->Child.Rep.Min = r->Child.Rep.Max = 0;
+
+            restartShove(root, check);
+            ret = true;
+          }
+        }
+        else if (n->Child.Right->Child.Left->Type == ParseNode::CONCATENATION){
+          /* 
+                &                 &
+               / \              /   \
+              b  ?<=    =>    ?<=  [a&&b]
+                  |            |
+                  &            &
+                 / \          / \
+                T0  &        T0  &
+                   / \          / \
+                  T1 ...      T1 ...
+                      &           &  
+                     / \         / \
+                    Tk  a     Tk-1  Tk
+          */
+
+          ParseNode* b = n->Child.Left;
+          ParseNode* r = n->Child.Right;
+
+          ParseNode* p = r;
+          ParseNode *a = p->Child.Left;
+          while (a->Type == ParseNode::CONCATENATION) {
+            p = a;
+            a = a->Child.Right;
+          }
+
+          if (isLiteral(a)) {
+            literalToCC(a);
+            literalToCC(b);
+
+            b->Set.CodePoints &= a->Set.CodePoints;
+            // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+            n->Child.Left = r;
+            n->Child.Right = b;
+
+            ParseNode* gp = parent[p];
+            ParseNode* tk = p->Child.Left;
+            spliceOutParent(gp, p, tk);
+            parent[tk] = gp;
+
+            a->Type = ParseNode::TEMPORARY;
+
+            restartShove(root, check);
+            ret = true;
+          }
+        }
+      }
+      else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
+               n->Child.Right->Child.Left->Type == ParseNode::LOOKBEHIND_POS) {
+        if (isLiteral(n->Child.Left)) {
+          if (isLiteral(n->Child.Right->Child.Left->Child.Left)) {
+            /* 
+                  &               &
+                 / \            /   \
+                b   &    =>  [a&&b]  S
+                   / \
+                 ?<=  S
+                  |
+                  a
+            */
+
+            ParseNode* b = n->Child.Left;
+            ParseNode* r = n->Child.Right;
+            ParseNode* rl = r->Child.Left;
+            ParseNode* a = rl->Child.Left;
+            ParseNode* s = r->Child.Right;
+
+            literalToCC(a);
+            literalToCC(b);
+
+            b->Set.CodePoints &= a->Set.CodePoints;
+        // FIXME: handle breakout bytes properly
+            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+            n->Child.Right = s;
+            parent[s] = n;
+
+            r->Type = rl->Type = a->Type = ParseNode::TEMPORARY;
+
+            restartShove(root, check);
+            ret = true;
+          }
+          else if (n->Child.Right->Child.Left->Child.Left->Type == ParseNode::CONCATENATION) {
+            /* 
+                  &                 &
+                 / \              /   \
+                b   &    =>    ?<=     &
+                   / \          |     /  \
+                 ?<=  S         &  [a&&b] S
+                  |            / \
+                  &           T0  &
+                 / \             / \
+                T0  &           T1 ...
+                   / \              &  
+                  T1 ...           / \
+                      &         Tk-1  Tk
+                     / \
+                    Tk  a
+            */
+
+            ParseNode* b = n->Child.Left;
+            ParseNode* r = n->Child.Right;
+            ParseNode* rl = r->Child.Left;
+
+            ParseNode* p = rl;
+            ParseNode *a = p->Child.Left;
+            while (a->Type == ParseNode::CONCATENATION) {
+              p = a;
+              a = a->Child.Right;
+            }
+
+            if (isLiteral(a)) {
+              literalToCC(a);
+              literalToCC(b);
+
+              b->Set.CodePoints &= a->Set.CodePoints;
+              // FIXME: handle breakout bytes properly
+              b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+
+              n->Child.Left = rl;
+              parent[rl] = n;
+              r->Child.Left = b;
+              parent[b] = r;
+
+              ParseNode* gp = parent[p];
+              ParseNode* tk = p->Child.Left;
+              spliceOutParent(gp, p, tk);
+              parent[tk] = gp;
+
+              a->Type = ParseNode::TEMPORARY;
+
+              restartShove(root, check);
+              ret = true;
+            }
+          }
+        }
       }
       break;
 
