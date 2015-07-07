@@ -838,28 +838,28 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LAPa) {
 SCOPE_TEST(shoveLookaroundsOutward_aLPLBPaaRP_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"a(?<=aa)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a)[a]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_aLPLBPaRP_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"a(?<=a)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a)a", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaaRPa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=aa)a", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a](?=a)", unparse(tree));
 }
 
@@ -867,7 +867,7 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPaaaaRPaaaa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=aaaa)aaaa", false, false}, tree));
   SCOPE_ASSERT(makeBinopsRightAssociative(tree.Root));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a][a][a][a]", unparse(tree));
 }
 
@@ -875,103 +875,103 @@ SCOPE_TEST(shoveLookaroundsOutward_aaaaLPLBPaaaaRP_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"aaaa(?<=aaaa)", false, false}, tree));
   SCOPE_ASSERT(makeBinopsRightAssociative(tree.Root));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a][a][a][a]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_WhackZa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"\\Za", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[^\\z00-\\zFF]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_aWhackZ_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"a\\Z", false, false}, tree));
-  SCOPE_ASSERT(!shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(!shoveLookaroundsOutward(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_aWhackA_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"a\\A", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[^\\z00-\\zFF]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_WhackAa_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"\\Aa", false, false}, tree));
-  SCOPE_ASSERT(!shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(!shoveLookaroundsOutward(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_WhackZaOrb_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"\\Za|b", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("b", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLBPLPLBPaRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=(?<=a))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLBPLPLAPaRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=(?=a))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPLPLAPaRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=(?=a))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPLPLBPaRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=(?<=a))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=a)+", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPPQ) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=a)+?", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPS) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=a)*", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("x{0}", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPSQ) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=a)*?", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("x{0}", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLBPLPLBPaRPbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=(?<=a)b)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=ab)", unparse(tree));
 }
 
@@ -979,56 +979,56 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLBPLPLBPaRPbbbbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=(?<=a)bbbb)", false, false}, tree));
   SCOPE_ASSERT(makeBinopsRightAssociative(tree.Root));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=abbbb)", unparse(tree));
 }
 
 SCOPE_TEST(shoeveLookaroundsOutward_LPLAPaLPLAPbRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a(?=b))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?=ab)", unparse(tree));
 }
 
 SCOPE_TEST(shoeveLookaroundsOutward_LPLAPaaaaLPLAPbRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=aaaa(?=b))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?=aaaab)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLBPaLPLBPbRPRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=a(?<=b))", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[^\\z00-\\zFF]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPLPLAPaRPbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=(?=a)b)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[^\\z00-\\zFF]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAaRPOrLPLAPbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a)|(?=b)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?=a|b)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLBaRPOrLPLBPbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?<=a)|(?<=b)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a|b)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAaRPLPLBPbRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a)(?<=b)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=b)(?=a)", unparse(tree));
 }
 
@@ -1036,34 +1036,36 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAaRPLPLBPbRPLPLBcRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a)(?<=b)(?<=c)", false, false}, tree));
   SCOPE_ASSERT(makeBinopsRightAssociative(tree.Root));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=b)(?<=c)(?=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAaRPWhackA) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?=a)\\A", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<!.)(?=a)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_WhackZLPLBaRP) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"\\Z(?<=a)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("(?<=a)(?!.)", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPLPCCabOrCCacRP) {
   ParseTree tree;
+  tree.init(1000);
   SCOPE_ASSERT(parse({"(?=a)([ab]|[ac])", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
-  SCOPE_ASSERT_EQUAL("[b]|[c]", unparse(tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
+  SCOPE_ASSERT_EQUAL("[a]|[a]", unparse(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_LPCCabOrCCacRPLPLBPaRP) {
   ParseTree tree;
+  tree.init(1000);
   SCOPE_ASSERT(parse({"([ab]|[ac])(?<=a)", false, false}, tree));
-  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
-  SCOPE_ASSERT_EQUAL("[b]|[c]", unparse(tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
+  SCOPE_ASSERT_EQUAL("[a]|[a]", unparse(tree));
 }
