@@ -1054,3 +1054,16 @@ SCOPE_TEST(shoveLookaroundsOutward_WhackZLPLBaRP) {
   SCOPE_ASSERT_EQUAL("(?<=a)(?!.)", unparse(tree));
 }
 
+SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPLPCCabOrCCacRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?=a)([ab]|[ac])", false, false}, tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT_EQUAL("[b]|[c]", unparse(tree));
+}
+
+SCOPE_TEST(shoveLookaroundsOutward_LPCCabOrCCacRPLPLBPaRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"([ab]|[ac])(?<=a)", false, false}, tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree.Root));
+  SCOPE_ASSERT_EQUAL("[b]|[c]", unparse(tree));
+}
