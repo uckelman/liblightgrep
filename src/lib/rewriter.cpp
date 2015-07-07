@@ -1094,62 +1094,6 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree) {
   // (?<=S|(?=T)) = (?<=S)|(?=T)
   // (?<=(?=S)|T) = (?=S)|(?<=T)
 
-/*
-bool combineAlternationsOfPositiveLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
-  bool ret = false;
-  branch.push(n);
-
-  switch (n->Type) {
-  case ParseNode::REGEXP:
-    if (!n->Child.Left) {
-      return ret;
-    }
-  case ParseNode::REPETITION:
-  case ParseNode::REPETITION_NG:
-    ret = combineAlternationsOfPositiveLookarounds(n->Child.Left, branch);
-    break;
-
-  case ParseNode::ALTERNATION:
-    if (n->Child.Left.Type == ParseNode::LOOKAHEAD_POS &&
-        n->Child.Right.Type == ParseNode::LOOKAHEAD_POS) {
-
-      break;
-    }
-    else if (n->Child.Left.Type == ParseNode::LOOKBEHIND_POS &&
-             n->Child.Right.Type == ParseNode::LOOKBEHIND_POS) {
-
-      break;
-    }
-
-  case ParseNode::CONCATENATION:
-    ret = combineAlternationsOfPositiveLookarounds(n->Child.Left, branch);
-    ret |= combineAlternationsOfPositiveLookarounds(n->Child.Right, branch);
-    break;
-
-  case ParseNode::LOOKAHEAD_POS:
-  case ParseNode::LOOKBEHIND_POS:
-  case ParseNode::LOOKAHEAD_NEG:
-  case ParseNode::LOOKBEHIND_NEG:
-  case ParseNode::DOT:
-  case ParseNode::CHAR_CLASS:
-  case ParseNode::LITERAL:
-  case ParseNode::BYTE:
-    break;
-
-  default:
-    // WTF?
-    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
-  }
-
-  branch.pop();
-  return ret;
-}
-
-bool combineAlternationsOfPositiveLookarounds(ParseNode* root) {
-  std::stack<ParseNode*> branch;
-  return combineAlternationsOfPositiveLookarounds(root, branch);
-}
-*/
 
 void reduceLookaroundRepetitions(ParseNode* n, std::stack<ParseNode*>& branch) {
   // (?=S){n,m}  = x{0}   if n = 0
