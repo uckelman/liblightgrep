@@ -1383,8 +1383,6 @@ bool shoveLookaroundsOutward(ParseNode* root) {
   std::map<ParseNode*, ParseNode*> parent;
   makeParentMap(root, parent);
 
-// TODO: Idea: recheck subtrees as needed.
-
   std::stack<ParseNode*> check;
   check.push(root);
 
@@ -1497,6 +1495,31 @@ bool shoveLookaroundsOutward(ParseNode* root) {
           restartShove(root, check);
           ret = true;
         }
+        else if (n->Type == ParseNode::LOOKBEHIND_POS &&
+                 n->Child.Left->Type == ParseNode::CONCATENATION &&
+                 n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS)
+        {
+          /*
+                 ?<=         ?<=
+                  |           |
+                  &     =>    &
+                 / \         / \
+               ?<=  T       S   T
+                |
+                S
+          */
+          ParseNode* c = n->Child.Left;
+          ParseNode* l = c->Child.Left;
+          ParseNode* s = l->Child.Left;
+
+          spliceOutParent(c, l, s);
+
+          parent[s] = c;         
+          l->Type = ParseNode::TEMPORARY; 
+
+          restartShove(root, check);
+          ret = true;
+        }
         else if (n->Type == ParseNode::LOOKAHEAD_POS &&
                  n->Child.Left->Type == ParseNode::CONCATENATION) {
           p = n;
@@ -1524,31 +1547,6 @@ bool shoveLookaroundsOutward(ParseNode* root) {
             spliceOutParent(p, c, c->Child.Left);
             parent[c->Child.Left] = p;
             c->Type = ParseNode::TEMPORARY;
-            restartShove(root, check);
-            ret = true;
-          }
-        }
-        else if (n->Type == ParseNode::LOOKBEHIND_POS &&
-                 n->Child.Left->Type == ParseNode::CONCATENATION) {
-          if (n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS) {
-            /*
-                   ?<=         ?<=
-                    |           |
-                    &     =>    &
-                   / \         / \
-                 ?<=  T       S   T
-                  |
-                  S
-            */
-            ParseNode* c = n->Child.Left;
-            ParseNode* l = c->Child.Left;
-            ParseNode* s = l->Child.Left;
-
-            spliceOutParent(c, l, s);
-
-            parent[s] = c;         
-            l->Type = ParseNode::TEMPORARY; 
-
             restartShove(root, check);
             ret = true;
           }
@@ -1634,15 +1632,13 @@ bool shoveLookaroundsOutward(ParseNode* root) {
       }
 
       if (n->Child.Left->Type == ParseNode::LOOKAHEAD_POS) {
-          /*
-               &          &
-              / \        / \
-             ?=  T  =>  T' ?=
-              |             |
-              S             S'
-          */
-
-        // TODO
+        /*
+             &          &
+            / \        / \
+           ?=  T  =>  T' ?=
+            |             |
+            S             S'
+        */
 
         if (isLiteral(n->Child.Left->Child.Left)) {
           if (isLiteral(n->Child.Right)) {
@@ -1793,8 +1789,6 @@ bool shoveLookaroundsOutward(ParseNode* root) {
                S        S'
         */
 
-        // TODO
-        
         if (isLiteral(n->Child.Right->Child.Left)) {
           if (isLiteral(n->Child.Left)) {
             /* 
