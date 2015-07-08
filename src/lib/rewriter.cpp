@@ -1374,9 +1374,11 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (n->Type == ParseNode::LOOKAHEAD_NEG &&
-                 p->Type == ParseNode::CONCATENATION && n == p->Child.Left) {
+        
+        if (n->Type == ParseNode::LOOKAHEAD_NEG &&
+            p->Type == ParseNode::CONCATENATION && n == p->Child.Left) {
           /*
               Where X is any internal node:
 
@@ -1400,9 +1402,11 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           }
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (n->Type == ParseNode::LOOKBEHIND_NEG &&
-                 p->Type == ParseNode::CONCATENATION && n == p->Child.Right) {
+
+        if (n->Type == ParseNode::LOOKBEHIND_NEG &&
+            p->Type == ParseNode::CONCATENATION && n == p->Child.Right) {
           /*
               Where X is any internal node:
 
@@ -1426,9 +1430,11 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           }
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (p->Type == ParseNode::LOOKAHEAD_POS ||
-                 p->Type == ParseNode::LOOKBEHIND_POS) {
+
+        if (p->Type == ParseNode::LOOKAHEAD_POS ||
+            p->Type == ParseNode::LOOKBEHIND_POS) {
           // (?=(?=S))  = (?<=(?=S)   = (?=S)
           // (?=(?<=S)) = (?<=(?<=S)) = (?<=S)
           // (?=\A)     = (?<=\A)     = \A
@@ -1439,10 +1445,12 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           parent[n] = gp;
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (n->Type == ParseNode::LOOKBEHIND_POS &&
-                 n->Child.Left->Type == ParseNode::CONCATENATION &&
-                 n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS)
+        
+        if (n->Type == ParseNode::LOOKBEHIND_POS &&
+            n->Child.Left->Type == ParseNode::CONCATENATION &&
+            n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS)
         {
           /*
                  ?<=         ?<=
@@ -1464,9 +1472,11 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (n->Type == ParseNode::LOOKAHEAD_POS &&
-                 n->Child.Left->Type == ParseNode::CONCATENATION) {
+        
+        if (n->Type == ParseNode::LOOKAHEAD_POS &&
+            n->Child.Left->Type == ParseNode::CONCATENATION) {
           p = n;
           ParseNode *c = n->Child.Left;
           while (c->Type == ParseNode::CONCATENATION) {
@@ -1494,6 +1504,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
             c->Type = ParseNode::TEMPORARY;
             restartShove(root, check);
             ret = true;
+            break;
           }
         }
       }
