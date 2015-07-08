@@ -1632,9 +1632,11 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (isLiteral(n->Child.Left->Child.Left) &&
-                 isLiteral(n->Child.Right))
+
+        if (isLiteral(n->Child.Left->Child.Left) &&
+            isLiteral(n->Child.Right))
         {
           /* 
                 &            &
@@ -1660,10 +1662,12 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (isLiteral(n->Child.Left->Child.Left) && 
-                 n->Child.Right->Type == ParseNode::CONCATENATION &&
-                 isLiteral(n->Child.Right->Child.Left))
+
+        if (isLiteral(n->Child.Left->Child.Left) && 
+            n->Child.Right->Type == ParseNode::CONCATENATION &&
+            isLiteral(n->Child.Right->Child.Left))
         {
           /*
                   &               &
@@ -1694,10 +1698,12 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (n->Child.Left->Child.Left->Type == ParseNode::CONCATENATION &&
-                 isLiteral(n->Child.Left->Child.Left->Child.Left) &&
-                 isLiteral(n->Child.Right))
+
+        if (n->Child.Left->Child.Left->Type == ParseNode::CONCATENATION &&
+            isLiteral(n->Child.Left->Child.Left->Child.Left) &&
+            isLiteral(n->Child.Right))
         {
           /*
                   &             &
@@ -1732,11 +1738,13 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
-        else if (n->Child.Left->Child.Left->Type == ParseNode::CONCATENATION &&
-                 isLiteral(n->Child.Left->Child.Left->Child.Left) &&
-                 n->Child.Right->Type == ParseNode::CONCATENATION &&
-                 isLiteral(n->Child.Right->Child.Left))
+
+        if (n->Child.Left->Child.Left->Type == ParseNode::CONCATENATION &&
+            isLiteral(n->Child.Left->Child.Left->Child.Left) &&
+            n->Child.Right->Type == ParseNode::CONCATENATION &&
+            isLiteral(n->Child.Right->Child.Left))
         {
            /*
                   &               &
@@ -1773,9 +1781,11 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           restartShove(root, check);
           ret = true;
+          break;
         }
       }
-      else if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
+      
+      if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
         /*
              &            &
             / \          / \
@@ -1823,35 +1833,37 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           break;
         }
 
-        if (isLiteral(n->Child.Right->Child.Left)) {
-          if (isLiteral(n->Child.Left)) {
-            /* 
-                  &            &
-                 / \         /   \
-                b ?<=  => [a&&b] {0} 
-                    |             |
-                    a             a
-            */
+        if (isLiteral(n->Child.Right->Child.Left) &&
+            isLiteral(n->Child.Left))
+        {
+          /* 
+                &            &
+               / \         /   \
+              b ?<=  => [a&&b] {0} 
+                  |             |
+                  a             a
+          */
 
-            ParseNode* r = n->Child.Right;
-            ParseNode* a = r->Child.Left;
-            ParseNode* b = n->Child.Left;
+          ParseNode* r = n->Child.Right;
+          ParseNode* a = r->Child.Left;
+          ParseNode* b = n->Child.Left;
 
-            literalToCC(a);
-            literalToCC(b);
+          literalToCC(a);
+          literalToCC(b);
 
-            b->Set.CodePoints &= a->Set.CodePoints;
-      // FIXME: handle breakout bytes properly
-            b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
+          b->Set.CodePoints &= a->Set.CodePoints;
+    // FIXME: handle breakout bytes properly
+          b->Set.Breakout.Bytes &= a->Set.Breakout.Bytes;
 
-            r->Type = ParseNode::REPETITION;
-            r->Child.Rep.Min = r->Child.Rep.Max = 0;
+          r->Type = ParseNode::REPETITION;
+          r->Child.Rep.Min = r->Child.Rep.Max = 0;
 
-            restartShove(root, check);
-            ret = true;
-          }
+          restartShove(root, check);
+          ret = true;
+          break;
         }
-        else if (n->Child.Right->Child.Left->Type == ParseNode::CONCATENATION){
+
+        if (n->Child.Right->Child.Left->Type == ParseNode::CONCATENATION){
           /* 
                 &                 &
                / \              /   \
@@ -1897,11 +1909,13 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
             restartShove(root, check);
             ret = true;
+            break;
           }
         }
       }
-      else if (n->Child.Right->Type == ParseNode::CONCATENATION &&
-               n->Child.Right->Child.Left->Type == ParseNode::LOOKBEHIND_POS) {
+      
+      if (n->Child.Right->Type == ParseNode::CONCATENATION &&
+          n->Child.Right->Child.Left->Type == ParseNode::LOOKBEHIND_POS) {
         if (isLiteral(n->Child.Left)) {
           if (isLiteral(n->Child.Right->Child.Left->Child.Left)) {
             /* 
@@ -1934,8 +1948,10 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
             restartShove(root, check);
             ret = true;
+            break;
           }
-          else if (n->Child.Right->Child.Left->Child.Left->Type == ParseNode::CONCATENATION) {
+          
+          if (n->Child.Right->Child.Left->Child.Left->Type == ParseNode::CONCATENATION) {
             /* 
                   &                 &
                  / \              /   \
@@ -1986,6 +2002,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
               restartShove(root, check);
               ret = true;
+              break;
             }
           }
         }
