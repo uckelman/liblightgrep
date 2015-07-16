@@ -19,7 +19,7 @@
 #include "parsetree.h"
 #include <ostream>
 
-void ParseTree::init(uint32_t len) {
+void ParseTree::init(size_t len) {
   Root = nullptr;
   Store.clear();
   Store.reserve(2*len);
