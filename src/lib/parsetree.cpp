@@ -17,12 +17,52 @@
 */
 
 #include "parsetree.h"
+
 #include <ostream>
 
 void ParseTree::init(size_t len) {
   Root = nullptr;
   Store.clear();
   Store.reserve(2*len);
+}
+
+bool ParseTree::expand(size_t len) {
+  if (len > Store.capacity()) {
+    // Expanding the Store will invalidate all of our pointers, but their
+    // offsets relative to each other are still valid, so we can rebase
+    // them against the new first element.
+    const ParseNode* const oldbase = &Store[0];
+    Store.reserve(len);
+    const off_t delta = &Store[0] - oldbase;
+
+    Root += delta;
+
+    for (ParseNode& n: Store) {
+      switch (n.Type) {
+      case ParseNode::ALTERNATION:
+      case ParseNode::CONCATENATION:
+        n.Child.Right += delta;
+
+      case ParseNode::REGEXP:
+      case ParseNode::LOOKBEHIND_POS:
+      case ParseNode::LOOKBEHIND_NEG:
+      case ParseNode::LOOKAHEAD_POS:
+      case ParseNode::LOOKAHEAD_NEG:
+      case ParseNode::REPETITION:
+      case ParseNode::REPETITION_NG:
+        n.Child.Left += delta;
+        break;
+
+      default:
+        break;
+      }
+    }
+
+    return true;
+  }
+  else {
+    return false;
+  }
 }
 
 void printTree(std::ostream& out, const ParseNode& n) {

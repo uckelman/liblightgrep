@@ -57,6 +57,12 @@ public:
   //
   void init(size_t len);
 
+  bool expand(size_t extra);
+
+  size_t size() const {
+    return Store.size();
+  }
+
   bool operator==(const ParseTree& other) const {
     return !Root ? !other.Root : (other.Root ? *Root == *other.Root : false);
   }
