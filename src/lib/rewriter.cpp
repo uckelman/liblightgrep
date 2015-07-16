@@ -1078,29 +1078,6 @@ bool reduceNegativeLookarounds(ParseTree& tree) {
   return reduceNegativeLookarounds(tree.Root, tree);
 }
 
-
-  //
-  // (?=S(?=T))   = (?=ST)
-  // (?=(?=S)T)   = (?=S)(?=T)
-  // (?<=(?<=S)T) = (?<=ST)
-  // (?<=S(?<=T)) = (?<=S)(?<=T)
-  //
-  // (?=(?<=S)T)  = (?<=S)(?=T)
-  // (?<=S(?=T))  = (?<=S)(?=T)
-  // (?=S(?<=T))  =
-  // (?<=(?=S)T)  =
-
-  // (?=S|(?=T))  = (?=S|T)
-  // (?=(?=S)T))  = (?=S|T)
-  // (?<=S(?<=T)) = (?<=S|T)
-  // (?<=(?<=S)T) = (?<=S|T)
-  //
-  // (?=S|(?<=T)) = (?=S)|(?<=T)
-  // (?=(?<=S)|T) = (?<=S)|(?=T)
-  // (?<=S|(?=T)) = (?<=S)|(?=T)
-  // (?<=(?=S)|T) = (?=S)|(?<=T)
-
-
 void reduceLookaroundRepetitions(ParseNode* n, std::stack<ParseNode*>& branch) {
   // (?=S){n,m}  = x{0}   if n = 0
   // (?=S){n,m)  = (?=S)  o/w
