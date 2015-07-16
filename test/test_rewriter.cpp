@@ -1074,7 +1074,6 @@ SCOPE_TEST(shoveLookaroundsOutward_WhackZLPLBaRP) {
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPLPCCabOrCCacRP) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?=a)([ab]|[ac])", false, false}, tree));
   SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a]|[a]", unparse(tree));
@@ -1082,7 +1081,6 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPaRPLPCCabOrCCacRP) {
 
 SCOPE_TEST(shoveLookaroundsOutward_LPCCabOrCCacRPLPLBPaRP) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"([ab]|[ac])(?<=a)", false, false}, tree));
   SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("[a]|[a]", unparse(tree));
@@ -1090,7 +1088,6 @@ SCOPE_TEST(shoveLookaroundsOutward_LPCCabOrCCacRPLPLBPaRP) {
 
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPCCacaRPLPCCabOrCCcdRP) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?=[ac]a)([ab]|[cd])", false, false}, tree));
   SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("([a]|[c])(?=a)", unparse(tree));
