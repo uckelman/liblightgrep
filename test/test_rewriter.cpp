@@ -703,7 +703,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LBNa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!(?<!a))", false, false}, tree));
-  reduceNegativeLookbehindLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
 }
 
@@ -711,7 +711,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LBPa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!(?<=a))", false, false}, tree));
-  reduceNegativeLookbehindLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<!a)", unparse(tree));
 }
 
@@ -719,7 +719,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LANa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!(?!a))", false, false}, tree));
-  reduceNegativeLookbehindLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
 }
 
@@ -727,7 +727,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LAPa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!(?=a))", false, false}, tree));
-  reduceNegativeLookbehindLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?!a)", unparse(tree));
 }
 
@@ -807,7 +807,7 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LBNa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?!(?<!a))", false, false}, tree));
-  reduceNegativeLookaheadLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
 }
 
@@ -815,7 +815,7 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LBPa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?!(?<=a))", false, false}, tree));
-  reduceNegativeLookaheadLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<!a)", unparse(tree));
 }
 
@@ -823,7 +823,7 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LANa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?!(?!a))", false, false}, tree));
-  reduceNegativeLookaheadLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
 }
 
@@ -831,8 +831,44 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LAPa) {
   ParseTree tree;
   tree.init(1000);
   SCOPE_ASSERT(parse({"(?!(?=a))", false, false}, tree));
-  reduceNegativeLookaheadLookaround(tree.Root->Child.Left, tree);
+  reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?!a)", unparse(tree));
+}
+
+SCOPE_TEST(reduceNegativeLookarounds_a9_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!a{9})", false, false}, tree));
+  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
+  SCOPE_ASSERT(tree.expand(ex));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(ex >= tree.size());
+}
+
+SCOPE_TEST(reduceNegativeLookarounds_a99_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!a{99})", false, false}, tree));
+  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
+  SCOPE_ASSERT(tree.expand(ex));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(ex >= tree.size());
+}
+
+SCOPE_TEST(reduceNegativeLookarounds_a999_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!a{999})", false, false}, tree));
+  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
+  SCOPE_ASSERT(tree.expand(ex));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(ex >= tree.size());
+}
+
+SCOPE_TEST(reduceNegativeLookarounds_a9999_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?!a{9999})", false, false}, tree));
+  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
+  SCOPE_ASSERT(tree.expand(ex));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(ex >= tree.size());
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_aLPLBPaaRP_Test) {

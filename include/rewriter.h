@@ -43,13 +43,14 @@ void reduceNegativeLookbehindLiteral(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookbehindConcatenation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookbehindAlternation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookbehindRepetition(ParseNode* n, ParseTree& tree);
-void reduceNegativeLookbehindLookaround(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookbehindLookaround(ParseNode* n);
 
 void reduceNegativeLookaheadLiteral(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadConcatenation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadAlternation(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree);
-void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree);
+void reduceNegativeLookaheadLookaround(ParseNode* n);
 
 bool shoveLookaroundsOutward(ParseTree& tree);
 
+size_t estimateNegativeLookaroundBlowup(ParseNode* n);

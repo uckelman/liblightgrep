@@ -792,7 +792,7 @@ void reduceNegativeLookbehindRepetition(ParseNode* n, ParseTree& tree) {
   }
 }
 
-void reduceNegativeLookbehindLookaround(ParseNode* n, ParseTree& tree) {
+void reduceNegativeLookbehindLookaround(ParseNode* n) {
   // (?<!(?<!S)) => (?<=S)
   // (?<!(?<=S)) => (?<!S)
   // (?<!(?!S))  => (?=S)
@@ -927,7 +927,7 @@ void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree) {
   }
 }
 
-void reduceNegativeLookaheadLookaround(ParseNode* n, ParseTree& tree) {
+void reduceNegativeLookaheadLookaround(ParseNode* n) {
   // (?!(?<!S)) => (?<=S)
   // (?!(?<=S)) => (?<!S)
   // (?!(?!S))  => (?=S)
@@ -987,7 +987,7 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree) {
     case ParseNode::LOOKAHEAD_NEG:
     case ParseNode::LOOKBEHIND_POS:
     case ParseNode::LOOKBEHIND_NEG:
-      reduceNegativeLookaheadLookaround(n, tree);
+      reduceNegativeLookaheadLookaround(n);
       reduceNegativeLookarounds(n, tree);
       break;
 
@@ -1026,7 +1026,7 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree) {
     case ParseNode::LOOKAHEAD_NEG:
     case ParseNode::LOOKBEHIND_POS:
     case ParseNode::LOOKBEHIND_NEG:
-      reduceNegativeLookbehindLookaround(n, tree);
+      reduceNegativeLookbehindLookaround(n);
       reduceNegativeLookarounds(n, tree);
       break;
 
@@ -2184,4 +2184,67 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
   }
 
   return ret;
+}
+
+size_t blowupTreeSize(ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    return 1 + (!n->Child.Left ? 0 : blowupTreeSize(n->Child.Left));
+
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_NEG:
+    return 1 + blowupTreeSize(n->Child.Left);
+
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    return 1 + blowupTreeSize(n->Child.Left) + blowupTreeSize(n->Child.Right);
+
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    return n->Child.Rep.Min * blowupTreeSize(n->Child.Left);
+
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    return 1;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  } 
+}
+
+size_t estimateNegativeLookaroundBlowup(ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    return !n->Child.Left ? 0 : estimateNegativeLookaroundBlowup(n->Child.Left);
+
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_NEG:
+    return 9*blowupTreeSize(n->Child.Left);  
+
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    return estimateNegativeLookaroundBlowup(n->Child.Left) +
+           estimateNegativeLookaroundBlowup(n->Child.Right);
+
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    return estimateNegativeLookaroundBlowup(n->Child.Left);
+
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    return 0;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  } 
 }
