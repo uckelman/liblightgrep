@@ -581,55 +581,49 @@ SCOPE_TEST(makeBinopsRightAssociative_LPLPLPabRPcRPdRPe_Test) {
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLBaRP_Test) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!a)", false, false}, tree));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
   SCOPE_ASSERT_EQUAL("(?<!.)|(?<=[^a])", unparse(tree));
 }
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLBabRP_Test) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!ab)", false, false}, tree));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
   SCOPE_ASSERT_EQUAL("(?<!.)|(?<=[^b])|(?<=((?<!.)|(?<=[^a]))b)", unparse(tree));
 }
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLBaOrbRP_Test) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?<!a|b)", false, false}, tree));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
   SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[^a]))((?<!.)|(?<=[^b]))", unparse(tree));
 }
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLAaRP_Test) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?!a)", false, false}, tree));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
   SCOPE_ASSERT_EQUAL("(?=[^a])|(?!.)", unparse(tree));
 }
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLAabRP_Test) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?!ab)", false, false}, tree));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
   SCOPE_ASSERT_EQUAL("(?=[^a])|(?!.)|(?=a((?=[^b])|(?!.)))", unparse(tree));
 }
 
 SCOPE_TEST(reduceNegativeLookarounds_LPLAaOrbRP_Test) {
   ParseTree tree;
-  tree.init(1000);
   SCOPE_ASSERT(parse({"(?!a|b)", false, false}, tree));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
   SCOPE_ASSERT_EQUAL("((?=[^a])|(?!.))((?=[^b])|(?!.))", unparse(tree));
 }
 
 SCOPE_TEST(reduceNegativeLookbehindLiteral_Dot) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!.)", false, false}, tree));
   reduceNegativeLookbehindLiteral(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!.)", unparse(tree));
@@ -637,7 +631,7 @@ SCOPE_TEST(reduceNegativeLookbehindLiteral_Dot) {
 
 SCOPE_TEST(reduceNegativeLookbehindLiteral_a) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!a)", false, false}, tree));
   reduceNegativeLookbehindLiteral(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!.)|(?<=[^a])", unparse(tree));
@@ -645,7 +639,7 @@ SCOPE_TEST(reduceNegativeLookbehindLiteral_a) {
 
 SCOPE_TEST(reduceNegativeLookbehindLiteral_byte_FF) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!\\zFF)", false, false}, tree));
   reduceNegativeLookbehindLiteral(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!.)|(?<=[^\\zFF])", unparse(tree));
@@ -653,7 +647,7 @@ SCOPE_TEST(reduceNegativeLookbehindLiteral_byte_FF) {
 
 SCOPE_TEST(reduceNegativeLookbehindAlternation_aOrb) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!a|b)", false, false}, tree));
   reduceNegativeLookbehindAlternation(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!a)(?<!b)", unparse(tree));
@@ -661,7 +655,7 @@ SCOPE_TEST(reduceNegativeLookbehindAlternation_aOrb) {
 
 SCOPE_TEST(reduceNegativeLookbehindConcatenation_ab) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!ab)", false, false}, tree));
   reduceNegativeLookbehindConcatenation(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!b)|(?<=(?<!a)b)", unparse(tree));
@@ -669,7 +663,7 @@ SCOPE_TEST(reduceNegativeLookbehindConcatenation_ab) {
 
 SCOPE_TEST(reduceNegativeLookbehindRepetition_aP) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!a+)", false, false}, tree));
   reduceNegativeLookbehindRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!a)", unparse(tree));
@@ -677,7 +671,7 @@ SCOPE_TEST(reduceNegativeLookbehindRepetition_aP) {
 
 SCOPE_TEST(reduceNegativeLookbehindRepetition_aSP) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!a*)", false, false}, tree));
   reduceNegativeLookbehindRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("a{0}", unparse(tree));
@@ -685,7 +679,7 @@ SCOPE_TEST(reduceNegativeLookbehindRepetition_aSP) {
 
 SCOPE_TEST(reduceNegativeLookbehindRepetition_a2_17) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!a{2,17})", false, false}, tree));
   reduceNegativeLookbehindRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!aa)", unparse(tree));
@@ -693,7 +687,7 @@ SCOPE_TEST(reduceNegativeLookbehindRepetition_a2_17) {
 
 SCOPE_TEST(reduceNegativeLookbehindRepetition_a3_17) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!a{3,17})", false, false}, tree));
   reduceNegativeLookbehindRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?<!aa{2})", unparse(tree));
@@ -701,7 +695,7 @@ SCOPE_TEST(reduceNegativeLookbehindRepetition_a3_17) {
 
 SCOPE_TEST(reduceNegativeLookbehindLookaround_LBNa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!(?<!a))", false, false}, tree));
   reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
@@ -709,7 +703,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LBNa) {
 
 SCOPE_TEST(reduceNegativeLookbehindLookaround_LBPa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!(?<=a))", false, false}, tree));
   reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<!a)", unparse(tree));
@@ -717,7 +711,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LBPa) {
 
 SCOPE_TEST(reduceNegativeLookbehindLookaround_LANa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!(?!a))", false, false}, tree));
   reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
@@ -725,7 +719,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LANa) {
 
 SCOPE_TEST(reduceNegativeLookbehindLookaround_LAPa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?<!(?=a))", false, false}, tree));
   reduceNegativeLookbehindLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?!a)", unparse(tree));
@@ -733,7 +727,7 @@ SCOPE_TEST(reduceNegativeLookbehindLookaround_LAPa) {
 
 SCOPE_TEST(reduceNegativeLookaheadLiteral_Dot) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!.)", false, false}, tree));
   reduceNegativeLookaheadLiteral(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!.)", unparse(tree));
@@ -741,7 +735,7 @@ SCOPE_TEST(reduceNegativeLookaheadLiteral_Dot) {
 
 SCOPE_TEST(reduceNegativeLookaheadLiteral_a) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!a)", false, false}, tree));
   reduceNegativeLookaheadLiteral(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?=[^a])|(?!.)", unparse(tree));
@@ -749,7 +743,7 @@ SCOPE_TEST(reduceNegativeLookaheadLiteral_a) {
 
 SCOPE_TEST(reduceNegativeLookaheadLiteral_byte_FF) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!\\zFF)", false, false}, tree));
   reduceNegativeLookaheadLiteral(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?=[^\\zFF])|(?!.)", unparse(tree));
@@ -757,7 +751,7 @@ SCOPE_TEST(reduceNegativeLookaheadLiteral_byte_FF) {
 
 SCOPE_TEST(reduceNegativeLookaheadAlternation_aOrb) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!a|b)", false, false}, tree));
   reduceNegativeLookaheadAlternation(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!a)(?!b)", unparse(tree));
@@ -765,7 +759,7 @@ SCOPE_TEST(reduceNegativeLookaheadAlternation_aOrb) {
 
 SCOPE_TEST(reduceNegativeLookaheadConcatenation_ab) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!ab)", false, false}, tree));
   reduceNegativeLookaheadConcatenation(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!a)|(?=a(?!b))", unparse(tree));
@@ -773,7 +767,7 @@ SCOPE_TEST(reduceNegativeLookaheadConcatenation_ab) {
 
 SCOPE_TEST(reduceNegativeLookaheadRepetition_aP) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!a+)", false, false}, tree));
   reduceNegativeLookaheadRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!a)", unparse(tree));
@@ -781,7 +775,7 @@ SCOPE_TEST(reduceNegativeLookaheadRepetition_aP) {
 
 SCOPE_TEST(reduceNegativeLookaheadRepetition_aSP) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!a*)", false, false}, tree));
   reduceNegativeLookaheadRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("a{0}", unparse(tree));
@@ -789,7 +783,7 @@ SCOPE_TEST(reduceNegativeLookaheadRepetition_aSP) {
 
 SCOPE_TEST(reduceNegativeLookaheadRepetition_a2_17) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!a{2,17})", false, false}, tree));
   reduceNegativeLookaheadRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!aa)", unparse(tree));
@@ -797,7 +791,7 @@ SCOPE_TEST(reduceNegativeLookaheadRepetition_a2_17) {
 
 SCOPE_TEST(reduceNegativeLookaheadRepetition_a3_17) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!a{3,17})", false, false}, tree));
   reduceNegativeLookaheadRepetition(tree.Root->Child.Left, tree);
   SCOPE_ASSERT_EQUAL("(?!aa{2})", unparse(tree));
@@ -805,7 +799,7 @@ SCOPE_TEST(reduceNegativeLookaheadRepetition_a3_17) {
 
 SCOPE_TEST(reduceNegativeLookaheadLookaround_LBNa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!(?<!a))", false, false}, tree));
   reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<=a)", unparse(tree));
@@ -813,7 +807,7 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LBNa) {
 
 SCOPE_TEST(reduceNegativeLookaheadLookaround_LBPa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!(?<=a))", false, false}, tree));
   reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?<!a)", unparse(tree));
@@ -821,7 +815,7 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LBPa) {
 
 SCOPE_TEST(reduceNegativeLookaheadLookaround_LANa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!(?!a))", false, false}, tree));
   reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?=a)", unparse(tree));
@@ -829,46 +823,34 @@ SCOPE_TEST(reduceNegativeLookaheadLookaround_LANa) {
 
 SCOPE_TEST(reduceNegativeLookaheadLookaround_LAPa) {
   ParseTree tree;
-  tree.init(1000);
+  tree.init(100);
   SCOPE_ASSERT(parse({"(?!(?=a))", false, false}, tree));
   reduceNegativeLookaheadLookaround(tree.Root->Child.Left);
   SCOPE_ASSERT_EQUAL("(?!a)", unparse(tree));
 }
 
-SCOPE_TEST(reduceNegativeLookarounds_a9_Test) {
+SCOPE_TEST(reduceNegativeLookarounds_a9_Bounds_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?!a{9})", false, false}, tree));
-  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
-  SCOPE_ASSERT(tree.expand(ex));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
-  SCOPE_ASSERT(ex >= tree.size());
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
 }
 
-SCOPE_TEST(reduceNegativeLookarounds_a99_Test) {
+SCOPE_TEST(reduceNegativeLookarounds_a99_Bounds_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?!a{99})", false, false}, tree));
-  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
-  SCOPE_ASSERT(tree.expand(ex));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
-  SCOPE_ASSERT(ex >= tree.size());
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
 }
 
-SCOPE_TEST(reduceNegativeLookarounds_a999_Test) {
+SCOPE_TEST(reduceNegativeLookarounds_a999_Bounds_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?!a{999})", false, false}, tree));
-  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
-  SCOPE_ASSERT(tree.expand(ex));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
-  SCOPE_ASSERT(ex >= tree.size());
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
 }
 
-SCOPE_TEST(reduceNegativeLookarounds_a9999_Test) {
+SCOPE_TEST(reduceNegativeLookarounds_a9999_Bounds_Test) {
   ParseTree tree;
   SCOPE_ASSERT(parse({"(?!a{9999})", false, false}, tree));
-  const size_t ex = estimateNegativeLookaroundBlowup(tree.Root);
-  SCOPE_ASSERT(tree.expand(ex));
-  SCOPE_ASSERT(reduceNegativeLookarounds(tree.Root, tree));
-  SCOPE_ASSERT(ex >= tree.size());
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
 }
 
 SCOPE_TEST(shoveLookaroundsOutward_aLPLBPaaRP_Test) {

@@ -1073,6 +1073,12 @@ bool reduceNegativeLookarounds(ParseNode* n, ParseTree& tree) {
   return ret;
 }
 
+bool reduceNegativeLookarounds(ParseTree& tree) {
+  tree.expand(estimateNegativeLookaroundBlowup(tree.Root));
+  return reduceNegativeLookarounds(tree.Root, tree);
+}
+
+
   //
   // (?=S(?=T))   = (?=ST)
   // (?=(?=S)T)   = (?=S)(?=T)
@@ -2214,7 +2220,7 @@ size_t blowupTreeSize(ParseNode* n) {
   default:
     // WTF?
     throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
-  } 
+  }
 }
 
 size_t estimateNegativeLookaroundBlowup(ParseNode* n) {
@@ -2224,7 +2230,7 @@ size_t estimateNegativeLookaroundBlowup(ParseNode* n) {
 
   case ParseNode::LOOKBEHIND_NEG:
   case ParseNode::LOOKAHEAD_NEG:
-    return 9*blowupTreeSize(n->Child.Left);  
+    return 9*blowupTreeSize(n->Child.Left);
 
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:

@@ -37,7 +37,7 @@ void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c);
 
 ParseNode* previousAtom(std::stack<ParseNode*>& branch);
 
-bool reduceNegativeLookarounds(ParseNode* root, ParseTree& tree);
+bool reduceNegativeLookarounds(ParseTree& tree);
 
 void reduceNegativeLookbehindLiteral(ParseNode* n, ParseTree& tree);
 void reduceNegativeLookbehindConcatenation(ParseNode* n, ParseTree& tree);
