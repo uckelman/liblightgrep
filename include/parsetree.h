@@ -55,9 +55,13 @@ public:
   // ensures that the vector will never resize on us and invalidate our
   // ParseNode pointers.
   //
-  void init(size_t len);
+  void init(size_t len) {
+    Root = nullptr;
+    Store.clear();
+    Store.reserve(2*len);
+  }
 
-  bool expand(size_t extra);
+  bool expand(size_t size);
 
   size_t size() const {
     return Store.size();

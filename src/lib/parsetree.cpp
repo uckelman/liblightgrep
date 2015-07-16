@@ -20,12 +20,6 @@
 
 #include <ostream>
 
-void ParseTree::init(size_t len) {
-  Root = nullptr;
-  Store.clear();
-  Store.reserve(2*len);
-}
-
 bool ParseTree::expand(size_t len) {
   if (len > Store.capacity()) {
     // Expanding the Store will invalidate all of our pointers, but their
