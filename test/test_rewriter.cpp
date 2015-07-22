@@ -22,6 +22,7 @@
 #include "parsetree.h"
 #include "rewriter.h"
 #include "unparser.h"
+#include "tuple_out.h"
 
 SCOPE_TEST(hasZeroLengthMatch_a_Test) {
   ParseTree tree;
@@ -1092,3 +1093,27 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPCCacaRPLPCCabOrCCcdRP) {
   SCOPE_ASSERT(shoveLookaroundsOutward(tree));
   SCOPE_ASSERT_EQUAL("([a]|[c])(?=a)", unparse(tree));
 }
+
+SCOPE_TEST(splitLookarounds_LPLBPaRPbLPLAPcRP) {
+  /*
+         &
+        / \
+      ?<=  &    
+       |  / \
+       a  b  ?=
+              |
+              c
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            lb(ParseNode::LOOKBEHIND_POS, &a),
+            la(ParseNode::LOOKAHEAD_POS, &c),
+            b_la(ParseNode::CONCATENATION, &b, &la),
+            lb_bla(ParseNode::CONCATENATION, &lb, &b_la),
+            root(ParseNode::REGEXP, &lb_bla);
+
+  const auto split = std::make_tuple(&lb, &b, &la);
+  SCOPE_ASSERT_EQUAL(split, splitLookarounds(&root));
+}
+

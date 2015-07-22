@@ -22,6 +22,7 @@
 #include "parsetree.h"
 
 #include <stack>
+#include <tuple>
 
 bool hasZeroLengthMatch(const ParseNode* root);
 
@@ -34,8 +35,6 @@ bool combineConsecutiveRepetitions(ParseNode* root);
 bool makeBinopsRightAssociative(ParseNode* root);
 
 void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c);
-
-ParseNode* previousAtom(std::stack<ParseNode*>& branch);
 
 bool reduceNegativeLookarounds(ParseTree& tree);
 
@@ -53,4 +52,6 @@ void reduceNegativeLookaheadLookaround(ParseNode* n);
 
 bool shoveLookaroundsOutward(ParseTree& tree);
 
-size_t estimateNegativeLookaroundBlowup(ParseNode* n);
+size_t estimateNegativeLookaroundBlowup(const ParseNode* n);
+
+std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(const ParseNode* root);

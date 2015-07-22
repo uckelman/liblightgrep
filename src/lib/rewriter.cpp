@@ -2169,7 +2169,9 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
   return ret;
 }
 
-size_t blowupTreeSize(ParseNode* n) {
+// TODO: combine concatenations of same-type lookarounds
+
+size_t blowupTreeSize(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
     return 1 + (!n->Child.Left ? 0 : blowupTreeSize(n->Child.Left));
@@ -2200,7 +2202,7 @@ size_t blowupTreeSize(ParseNode* n) {
   }
 }
 
-size_t estimateNegativeLookaroundBlowup(ParseNode* n) {
+size_t estimateNegativeLookaroundBlowup(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
     return !n->Child.Left ? 0 : estimateNegativeLookaroundBlowup(n->Child.Left);
@@ -2230,4 +2232,24 @@ size_t estimateNegativeLookaroundBlowup(ParseNode* n) {
     // WTF?
     throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
   } 
+}
+
+std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(const ParseNode* root) {
+
+  // split tree into lookbehinds, pattern, lookaheads
+
+  ParseNode* behind = nullptr;
+  ParseNode* middle = nullptr;
+  ParseNode* ahead = nullptr;
+
+  if (root->Child.Left) {
+    if (root->Child.Left->Type == ParseNode::CONCATENATION) { 
+ 
+    }
+    else {
+      middle = root->Child.Left;
+    }
+  }
+
+  return std::tie(behind, middle, ahead);
 }
