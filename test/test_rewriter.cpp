@@ -1094,6 +1094,52 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPCCacaRPLPCCabOrCCcdRP) {
   SCOPE_ASSERT_EQUAL("([a]|[c])(?=a)", unparse(tree));
 }
 
+SCOPE_TEST(splitLookarounds_a) {
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            root(ParseNode::REGEXP, &a);
+
+  const auto split = std::make_tuple(
+    (ParseNode*) nullptr, &a, (ParseNode*) nullptr
+  );
+  SCOPE_ASSERT_EQUAL(split, splitLookarounds(&root));
+}
+
+SCOPE_TEST(splitLookarounds_LPLBPaRPb) {
+  /*
+         &
+        / \
+      ?<=  b
+       |
+       a
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            lb(ParseNode::LOOKBEHIND_POS, &a),
+            b_la(ParseNode::CONCATENATION, &lb, &b),
+            root(ParseNode::REGEXP, &b_la);
+
+  const auto split = std::make_tuple(&lb, &b, (ParseNode*) nullptr);
+  SCOPE_ASSERT_EQUAL(split, splitLookarounds(&root));
+}
+
+SCOPE_TEST(splitLookarounds_aLPLAPbRP) {
+  /*
+         &
+        / \
+       a  ?=
+           |
+           b
+  */
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            la(ParseNode::LOOKAHEAD_POS, &b),
+            a_la(ParseNode::CONCATENATION, &a, &la),
+            root(ParseNode::REGEXP, &a_la);
+
+  const auto split = std::make_tuple((ParseNode*) nullptr, &a, &la);
+  SCOPE_ASSERT_EQUAL(split, splitLookarounds(&root));
+}
+
 SCOPE_TEST(splitLookarounds_LPLBPaRPbLPLAPcRP) {
   /*
          &
