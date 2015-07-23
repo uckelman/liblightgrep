@@ -610,35 +610,35 @@ bool NFABuilder::build(const ParseTree& tree) {
 
 void NFABuilder::callback(const ParseNode& n) {
   switch (n.Type) {
-    case ParseNode::REGEXP:
-      finish(n);
-      break;
-    case ParseNode::ALTERNATION:
-      alternate(n);
-      break;
-    case ParseNode::CONCATENATION:
-      concatenate(n);
-      break;
-    case ParseNode::REPETITION:
-      repetition(n);
-      break;
-    case ParseNode::REPETITION_NG:
-      repetition_ng(n);
-      break;
-    case ParseNode::DOT:
-      dot(n);
-      break;
-    case ParseNode::CHAR_CLASS:
-      charClass(n);
-      break;
-    case ParseNode::LITERAL:
-      literal(n);
-      break;
-    case ParseNode::BYTE:
-      rawByte(n);
-      break;
-    default:
-      break;
+  case ParseNode::REGEXP:
+    finish(n);
+    break;
+  case ParseNode::ALTERNATION:
+    alternate(n);
+    break;
+  case ParseNode::CONCATENATION:
+    concatenate(n);
+    break;
+  case ParseNode::REPETITION:
+    repetition(n);
+    break;
+  case ParseNode::REPETITION_NG:
+    repetition_ng(n);
+    break;
+  case ParseNode::DOT:
+    dot(n);
+    break;
+  case ParseNode::CHAR_CLASS:
+    charClass(n);
+    break;
+  case ParseNode::LITERAL:
+    literal(n);
+    break;
+  case ParseNode::BYTE:
+    rawByte(n);
+    break;
+  default:
+    break;
   }
 
 /*
