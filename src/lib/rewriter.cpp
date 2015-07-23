@@ -2234,7 +2234,7 @@ size_t estimateNegativeLookaroundBlowup(const ParseNode* n) {
   } 
 }
 
-std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(const ParseNode* root) {
+std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
 
   // split tree into lookbehinds, pattern, lookaheads
 
@@ -2281,9 +2281,11 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(const ParseNode* r
       }
 
       // check for lookaheads
+      ParseNode* gp = root;
       ParseNode* p = root->Child.Left;
       ParseNode* a = p->Child.Right;
       while (a->Type == ParseNode::CONCATENATION) {
+        gp = p;
         p = a;
         a = a->Child.Right;
       }
@@ -2348,9 +2350,14 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(const ParseNode* r
              / \
             LB  &
                / \
-              M   LA
+              M0 ...
+                  &
+                 / \
+                Mk  LA
           */
           middle = root->Child.Left->Child.Right->Child.Left;
+          // detach ahead from middle
+          spliceOutParent(gp, p, p->Child.Left);
         }
       }
       else if (ahead) {
