@@ -462,7 +462,7 @@ void NFABuilder::finish(const ParseNode& n) {
 
 void NFABuilder::traverse(const ParseNode* root) {
   // holder for synthesized nodes
-  std::vector<std::shared_ptr<ParseNode>> synth;
+  std::vector<std::unique_ptr<ParseNode>> synth;
 
   // wind for preorder traversal, unwind for postorder
   std::stack<const ParseNode*> wind, unwind;
@@ -516,7 +516,7 @@ void NFABuilder::traverse(const ParseNode* root) {
         if (n->Child.Rep.Min > 0) {
           // build the mandatory part
           for (uint32_t i = 1; i < n->Child.Rep.Min; ++i) {
-            synth.push_back(std::shared_ptr<ParseNode>(
+            synth.push_back(std::unique_ptr<ParseNode>(
               new ParseNode(ParseNode::CONCATENATION, n->Child.Left, none))
             );
             ParseNode* con = synth.back().get();
@@ -533,14 +533,14 @@ void NFABuilder::traverse(const ParseNode* root) {
         else if (n->Child.Rep.Max == UNBOUNDED) {
           // build the unbounded optional part
           if (n->Child.Rep.Min == 0) {
-            synth.push_back(std::shared_ptr<ParseNode>(
+            synth.push_back(std::unique_ptr<ParseNode>(
               new ParseNode(n->Type, n->Child.Left, 0, UNBOUNDED))
             );
             ParseNode* star = synth.back().get();
             parent->Child.Right = star;
           }
           else {
-            synth.push_back(std::shared_ptr<ParseNode>(
+            synth.push_back(std::unique_ptr<ParseNode>(
               new ParseNode(n->Type, n->Child.Left, 1, UNBOUNDED))
             );
             ParseNode* plus = synth.back().get();
@@ -550,7 +550,7 @@ void NFABuilder::traverse(const ParseNode* root) {
         else {
           if (n->Child.Rep.Min > 0) {
             // finish the mandatory part
-            synth.push_back(std::shared_ptr<ParseNode>(
+            synth.push_back(std::unique_ptr<ParseNode>(
               new ParseNode(ParseNode::CONCATENATION, n->Child.Left, none))
             );
             ParseNode* con = synth.back().get();
@@ -560,12 +560,12 @@ void NFABuilder::traverse(const ParseNode* root) {
 
           // build the bounded optional part
           for (uint32_t i = 1; i < n->Child.Rep.Max - n->Child.Rep.Min; ++i) {
-            synth.push_back(std::shared_ptr<ParseNode>(
+            synth.push_back(std::unique_ptr<ParseNode>(
               new ParseNode(ParseNode::CONCATENATION, n->Child.Left, none))
             );
             ParseNode* con = synth.back().get();
 
-            synth.push_back(std::shared_ptr<ParseNode>(
+            synth.push_back(std::unique_ptr<ParseNode>(
               new ParseNode(n->Type, con, 0, 1))
             );
             ParseNode* question = synth.back().get();
@@ -574,7 +574,7 @@ void NFABuilder::traverse(const ParseNode* root) {
             parent = con;
           }
 
-          synth.push_back(std::shared_ptr<ParseNode>(
+          synth.push_back(std::unique_ptr<ParseNode>(
             new ParseNode(n->Type, n->Child.Left, 0, 1))
           );
           ParseNode* question = synth.back().get();
