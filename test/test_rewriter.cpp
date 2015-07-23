@@ -1162,4 +1162,3 @@ SCOPE_TEST(splitLookarounds_LPLBPaRPbLPLAPcRP) {
   const auto split = std::make_tuple(&lb, &b, &la);
   SCOPE_ASSERT_EQUAL(split, splitLookarounds(&root));
 }
-

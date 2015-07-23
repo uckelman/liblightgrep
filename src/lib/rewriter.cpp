@@ -53,7 +53,7 @@ void spliceOutParent(ParseNode* gp, const ParseNode* p, ParseNode* c) {
   }
 }
 
-bool hasZeroLengthMatch(const ParseNode *n) {
+bool hasZeroLengthMatch(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
     return !n->Child.Left || hasZeroLengthMatch(n->Child.Left);
@@ -1104,7 +1104,7 @@ void reduceNestedLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
   spliceOutParent(branch.top(), n, n->Child.Left);
 }
 
-bool matchesAtEnd(const ParseNode *n) {
+bool matchesAtEnd(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
     return !n->Child.Left || matchesAtEnd(n->Child.Left);
@@ -1139,7 +1139,7 @@ bool matchesAtEnd(const ParseNode *n) {
   }
 }
 
-bool matchesBeforeStart(const ParseNode *n) {
+bool matchesBeforeStart(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
     return !n->Child.Left || matchesBeforeStart(n->Child.Left);
@@ -1461,7 +1461,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         if (n->Type == ParseNode::LOOKAHEAD_POS &&
             n->Child.Left->Type == ParseNode::CONCATENATION) {
           p = n;
-          ParseNode *c = n->Child.Left;
+          ParseNode* c = n->Child.Left;
           while (c->Type == ParseNode::CONCATENATION) {
             p = c;
             c = c->Child.Right;
@@ -1866,7 +1866,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           ParseNode* r = n->Child.Right;
 
           ParseNode* p = r;
-          ParseNode *a = p->Child.Left;
+          ParseNode* a = p->Child.Left;
           while (a->Type == ParseNode::CONCATENATION) {
             p = a;
             a = a->Child.Right;
@@ -1957,7 +1957,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
             ParseNode* rl = r->Child.Left;
 
             ParseNode* p = rl;
-            ParseNode *a = p->Child.Left;
+            ParseNode* a = p->Child.Left;
             while (a->Type == ParseNode::CONCATENATION) {
               p = a;
               a = a->Child.Right;
