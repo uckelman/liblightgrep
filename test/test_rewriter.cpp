@@ -148,10 +148,10 @@ SCOPE_TEST(spliceOutParentLeftTest) {
   ParseTree tree;
   tree.init(4);
 
-  ParseNode *l = tree.add(ParseNode(ParseNode::LITERAL, 'l'));
-  ParseNode *r = tree.add(ParseNode(ParseNode::LITERAL, 'r'));
-  ParseNode *con = tree.add(ParseNode(ParseNode::CONCATENATION, l, r));
-  tree.Root = tree.add(ParseNode(ParseNode::REGEXP, con));
+  ParseNode *l = tree.add(ParseNode::LITERAL, 'l');
+  ParseNode *r = tree.add(ParseNode::LITERAL, 'r');
+  ParseNode *con = tree.add(ParseNode::CONCATENATION, l, r);
+  tree.Root = tree.add(ParseNode::REGEXP, con);
 
   spliceOutParent(tree.Root, con, l);
 
@@ -163,10 +163,10 @@ SCOPE_TEST(spliceOutParentRightTest) {
   ParseTree tree;
   tree.init(4);
 
-  ParseNode *l = tree.add(ParseNode(ParseNode::LITERAL, 'l'));
-  ParseNode *r = tree.add(ParseNode(ParseNode::LITERAL, 'r'));
-  ParseNode *con = tree.add(ParseNode(ParseNode::CONCATENATION, l, r));
-  tree.Root = tree.add(ParseNode(ParseNode::REGEXP, con));
+  ParseNode *l = tree.add(ParseNode::LITERAL, 'l');
+  ParseNode *r = tree.add(ParseNode::LITERAL, 'r');
+  ParseNode *con = tree.add(ParseNode::CONCATENATION, l, r);
+  tree.Root = tree.add(ParseNode::REGEXP, con);
 
   spliceOutParent(tree.Root, con, r);
 

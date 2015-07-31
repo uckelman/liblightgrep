@@ -26,11 +26,8 @@ SCOPE_TEST(parseCC_A_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'A'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'A'})
   );
 
   const std::string p = "[A]";
@@ -46,11 +43,8 @@ SCOPE_TEST(parseCC_AtoZ_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{{'A', 'Z' + 1}})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{{'A', 'Z' + 1}})
   );
 
   const std::string p = "[A-Z]";
@@ -81,11 +75,8 @@ SCOPE_TEST(parseCC_A_CaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'A', 'a'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'A', 'a'})
   );
 
   const std::string p = "[A]";
@@ -101,17 +92,15 @@ SCOPE_TEST(parseCC_AtoZ_CaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS,
-          UnicodeSet{
-            {'A', 'Z' + 1},
-            {'a', 'z' + 1},
-            { 0x212A, 0x212B },
-            { 0x17F, 0x180 }
-          }
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS,
+      UnicodeSet{
+        {'A', 'Z' + 1},
+        {'a', 'z' + 1},
+        { 0x212A, 0x212B },
+        { 0x17F, 0x180 }
+      }
     )
   );
 
@@ -128,11 +117,8 @@ SCOPE_TEST(parseCC_Whack_b_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{0x08})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{0x08})
   );
 
   const std::string p = "[\\b]";
@@ -148,11 +134,8 @@ SCOPE_TEST(parseCC_Whack_b_CaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{0x08})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{0x08})
   );
 
   const std::string p = "[\\b]";
@@ -168,11 +151,8 @@ SCOPE_TEST(parse_FF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::BYTE, 0xFF)
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::BYTE, 0xFF)
   );
 
   const std::string p = "\\zFF";
@@ -188,11 +168,8 @@ SCOPE_TEST(parse_FF_BreakoutCaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::BYTE, 0xFF)
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::BYTE, 0xFF)
   );
 
   const std::string p = "\\zFF";
@@ -208,11 +185,8 @@ SCOPE_TEST(parseCC_FF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ByteSet(0xFF))
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ByteSet(0xFF))
   );
 
   const std::string p = "[\\zFF]";
@@ -228,11 +202,8 @@ SCOPE_TEST(parseCC_FF_BreakoutCaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ByteSet(0xFF))
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ByteSet(0xFF))
   );
 
   const std::string p = "[\\zFF]";
@@ -248,11 +219,8 @@ SCOPE_TEST(parseCC_00toFF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ByteSet{{0x00, 0x100}})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ByteSet{{0x00, 0x100}})
   );
 
   const std::string p = "[\\z00-\\zFF]";
@@ -283,11 +251,8 @@ SCOPE_TEST(parseCC_A_FF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'A'}, ByteSet(0xFF))
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'A'}, ByteSet(0xFF))
   );
 
   const std::string p = "[A\\zFF]";
@@ -303,11 +268,8 @@ SCOPE_TEST(parseCC_A_FF_BreakoutCaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'A', 'a'}, ByteSet(0xFF))
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'A', 'a'}, ByteSet(0xFF))
   );
 
   const std::string p = "[A\\zFF]";
@@ -323,10 +285,9 @@ SCOPE_TEST(parseCC_AtoZ_00toFF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}})
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}}
     )
   );
 
@@ -343,10 +304,9 @@ SCOPE_TEST(parseCC_00toFF_AtoZ_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}})
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}}
     )
   );
 
@@ -393,11 +353,8 @@ SCOPE_TEST(parseNegCC_A_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{'A'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~UnicodeSet{'A'})
   );
 
   const std::string p = "[^A]";
@@ -413,11 +370,8 @@ SCOPE_TEST(parseNegCC_AtoZ_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}})
   );
 
   const std::string p = "[^A-Z]";
@@ -448,11 +402,8 @@ SCOPE_TEST(parseNegCC_A_CaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{'A', 'a'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~UnicodeSet{'A', 'a'})
   );
 
   const std::string p = "[^A]";
@@ -468,17 +419,15 @@ SCOPE_TEST(parseNegCC_AtoZ_CaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS,
-          ~UnicodeSet{
-            {'A', 'Z' + 1},
-            {'a', 'z' + 1},
-            { 0x212A, 0x212B },
-            { 0x17F, 0x180 }
-          }
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS,
+      ~UnicodeSet{
+        {'A', 'Z' + 1},
+        {'a', 'z' + 1},
+        { 0x212A, 0x212B },
+        { 0x17F, 0x180 }
+      }
     )
   );
 
@@ -495,11 +444,8 @@ SCOPE_TEST(parseNegCC_FF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~ByteSet(0xFF))
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~ByteSet(0xFF))
   );
 
   const std::string p = "[^\\zFF]";
@@ -515,11 +461,8 @@ SCOPE_TEST(parseNegCC_FF_BreakoutCaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~ByteSet(0xFF))
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~ByteSet(0xFF))
   );
 
   const std::string p = "[^\\zFF]";
@@ -550,11 +493,8 @@ SCOPE_TEST(parseNegCC_00to7F_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~ByteSet{{0x00, 0x80}})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~ByteSet{{0x00, 0x80}})
   );
 
   const std::string p = "[^\\z00-\\z7F]";
@@ -585,11 +525,8 @@ SCOPE_TEST(parseNegCC_A_FF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{'A'}, ByteSet(0xFF), false)
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, ~UnicodeSet{'A'}, ByteSet(0xFF), false)
   );
 
   const std::string p = "[^A\\zFF]";
@@ -605,10 +542,9 @@ SCOPE_TEST(parseNegCC_A_FF_BreakoutCaseInsensitiveTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{'A', 'a'}, ByteSet(0xFF), false)
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, ~UnicodeSet{'A', 'a'}, ByteSet(0xFF), false
     )
   );
 
@@ -625,10 +561,9 @@ SCOPE_TEST(parseNegCC_AtoZ_00toFF_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}}, false)
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}}, false
     )
   );
 
@@ -645,10 +580,9 @@ SCOPE_TEST(parseNegCC_AtoZ_00to7F_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x80}}, false)
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x80}}, false
     )
   );
 
@@ -665,10 +599,9 @@ SCOPE_TEST(parseNegCC_00toFF_AtoZ_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}}, false)
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x100}}, false
     )
   );
 
@@ -685,10 +618,9 @@ SCOPE_TEST(parseNegCC_00to7F_AtoZ_BreakoutTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x80}}, false)
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, ~UnicodeSet{{'A', 'Z' + 1}}, ByteSet{{0x00, 0x80}}, false
     )
   );
 
@@ -915,11 +847,8 @@ SCOPE_TEST(parseAAmp_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', '&'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', '&'})
   );
 
   const std::string p = "[a&]";
@@ -935,11 +864,8 @@ SCOPE_TEST(parseATilde_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', '~'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', '~'})
   );
 
   const std::string p = "[a~]";
@@ -955,11 +881,8 @@ SCOPE_TEST(parseAHyphen_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', '-'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', '-'})
   );
 
   const std::string p = "[a-]";
@@ -975,11 +898,8 @@ SCOPE_TEST(parseAmpA_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', '&'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', '&'})
   );
 
   const std::string p = "[&a]";
@@ -995,11 +915,8 @@ SCOPE_TEST(parseTildeA_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', '~'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', '~'})
   );
 
   const std::string p = "[~a]";
@@ -1015,11 +932,8 @@ SCOPE_TEST(parseHyphenA_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', '-'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', '-'})
   );
 
   const std::string p = "[-a]";
@@ -1035,11 +949,8 @@ SCOPE_TEST(parseAAmpB_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', 'b', '&'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', 'b', '&'})
   );
 
   const std::string p = "[a&b]";
@@ -1055,11 +966,8 @@ SCOPE_TEST(parseATildeB_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', 'b', '~'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', 'b', '~'})
   );
 
   const std::string p = "[a~b]";
@@ -1343,11 +1251,8 @@ SCOPE_TEST(parseAtoCHyphenE_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a', 'b', 'c', 'e', '-'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a', 'b', 'c', 'e', '-'})
   );
 
   const std::string p = "[a-c-e]";
@@ -1363,11 +1268,8 @@ SCOPE_TEST(parseAHyphenHyphenHyphen_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'a'})
-      )
-    )
+    ParseNode::REGEXP,
+    expected.add(ParseNode::CHAR_CLASS, UnicodeSet{'a'})
   );
 
   const std::string p = "[a---]";
@@ -1383,10 +1285,9 @@ SCOPE_TEST(parseDigitHyphenA_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'})
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'}
     )
   );
 
@@ -1403,10 +1304,9 @@ SCOPE_TEST(parseNegDigitHyphenA_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'})
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS, ~UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'}
     )
   );
 
@@ -1423,10 +1323,10 @@ SCOPE_TEST(parseAHyphenDigit_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'})
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS,
+      UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'}
     )
   );
 
@@ -1443,10 +1343,10 @@ SCOPE_TEST(parseNegAHyphenDigit_Test) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CHAR_CLASS, ~UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'})
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CHAR_CLASS,
+      ~UnicodeSet{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'A'}
     )
   );
 
@@ -1469,7 +1369,7 @@ SCOPE_TEST(parseDigitHyphenByte_Test) {
   cc->Set.Breakout.Bytes.set(0);
   cc->Set.Breakout.Additive = true;
 
-  expected.Root = expected.add(ParseNode(ParseNode::REGEXP, cc));
+  expected.Root = expected.add(ParseNode::REGEXP, cc);
 
   const std::string p = "[\\d-\\z00]";
   ParseTree actual;
@@ -1490,7 +1390,7 @@ SCOPE_TEST(parseNegDigitHyphenByte_Test) {
   cc->Set.Breakout.Bytes.set(0);
   cc->Set.Breakout.Additive = false;
 
-  expected.Root = expected.add(ParseNode(ParseNode::REGEXP, cc));
+  expected.Root = expected.add(ParseNode::REGEXP, cc);
 
   const std::string p = "[^\\d-\\z00]";
   ParseTree actual;
@@ -1510,7 +1410,7 @@ SCOPE_TEST(parseByteHyphenDigit_Test) {
   );
   cc->Set.Breakout.Bytes.set(0);
 
-  expected.Root = expected.add(ParseNode(ParseNode::REGEXP, cc));
+  expected.Root = expected.add(ParseNode::REGEXP, cc);
 
   const std::string p = "[\\z00-\\d]";
   ParseTree actual;
@@ -1531,7 +1431,7 @@ SCOPE_TEST(parseNegByteHyphenDigit_Test) {
   cc->Set.Breakout.Bytes.set(0);
   cc->Set.Breakout.Additive = false;
 
-  expected.Root = expected.add(ParseNode(ParseNode::REGEXP, cc));
+  expected.Root = expected.add(ParseNode::REGEXP, cc);
 
   const std::string p = "[^\\z00-\\d]";
   ParseTree actual;
@@ -1546,17 +1446,11 @@ SCOPE_TEST(parseHyphenHyphenTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CONCATENATION,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, '-')
-          ),
-          expected.add(
-            ParseNode(ParseNode::LITERAL, '-')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CONCATENATION,
+      expected.add(ParseNode::LITERAL, '-'),
+      expected.add(ParseNode::LITERAL, '-')
     )
   );
 
@@ -1573,17 +1467,11 @@ SCOPE_TEST(parseAmpAmpTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CONCATENATION,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, '&')
-          ),
-          expected.add(
-            ParseNode(ParseNode::LITERAL, '&')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CONCATENATION,
+      expected.add(ParseNode::LITERAL, '&'),
+      expected.add(ParseNode::LITERAL, '&')
     )
   );
 
@@ -1600,17 +1488,11 @@ SCOPE_TEST(parseTildeTildeTest) {
   expected.init(2);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::CONCATENATION,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, '~')
-          ),
-          expected.add(
-            ParseNode(ParseNode::LITERAL, '~')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CONCATENATION,
+      expected.add(ParseNode::LITERAL, '~'),
+      expected.add(ParseNode::LITERAL, '~')
     )
   );
 
@@ -1717,22 +1599,18 @@ SCOPE_TEST(parseAKillBOrCTest) {
   expected.init(7);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::ALTERNATION,
       expected.add(
-        ParseNode(ParseNode::ALTERNATION,
-          expected.add(
-            ParseNode(ParseNode::CONCATENATION,
-              expected.add(
-                ParseNode(ParseNode::LOOKBEHIND_POS,
-                  expected.add(ParseNode::LITERAL, 'A')
-                )
-              ),
-              expected.add(ParseNode::LITERAL, 'B')
-            )
-          ),
-          expected.add(ParseNode::LITERAL, 'C')
-        )
-      )
+        ParseNode::CONCATENATION,
+        expected.add(
+          ParseNode::LOOKBEHIND_POS,
+          expected.add(ParseNode::LITERAL, 'A')
+        ),
+        expected.add(ParseNode::LITERAL, 'B')
+      ),
+      expected.add(ParseNode::LITERAL, 'C')
     )
   );
 
@@ -1749,14 +1627,10 @@ SCOPE_TEST(parsePositiveLookbehindATest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::LOOKBEHIND_POS,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, 'A')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKBEHIND_POS,
+      expected.add(ParseNode::LITERAL, 'A')
     )
   );
 
@@ -1773,14 +1647,10 @@ SCOPE_TEST(parseNegativeLookbehindATest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::LOOKBEHIND_NEG,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, 'A')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKBEHIND_NEG,
+      expected.add(ParseNode::LITERAL, 'A')
     )
   );
 
@@ -1797,14 +1667,10 @@ SCOPE_TEST(parsePositiveLookaheadATest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::LOOKAHEAD_POS,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, 'A')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKAHEAD_POS,
+      expected.add(ParseNode::LITERAL, 'A')
     )
   );
 
@@ -1821,14 +1687,10 @@ SCOPE_TEST(parseNegativeLookaheadATest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::LOOKAHEAD_NEG,
-          expected.add(
-            ParseNode(ParseNode::LITERAL, 'A')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKAHEAD_NEG,
+      expected.add(ParseNode::LITERAL, 'A')
     )
   );
 
@@ -1845,14 +1707,10 @@ SCOPE_TEST(parseWhackATest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::LOOKBEHIND_NEG,
-          expected.add(
-            ParseNode(ParseNode::DOT, '.')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKBEHIND_NEG,
+      expected.add(ParseNode::DOT, '.')
     )
   );
 
@@ -1869,14 +1727,10 @@ SCOPE_TEST(parseWhackZTest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
-      expected.add(
-        ParseNode(ParseNode::LOOKAHEAD_NEG,
-          expected.add(
-            ParseNode(ParseNode::DOT, '.')
-          )
-        )
-      )
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKAHEAD_NEG,
+      expected.add(ParseNode::DOT, '.')
     )
   );
 
@@ -1893,14 +1747,12 @@ SCOPE_TEST(parseCaretTest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKBEHIND_NEG,
       expected.add(
-        ParseNode(ParseNode::LOOKBEHIND_NEG,
-          expected.add(
-            ParseNode::CHAR_CLASS,
-            UnicodeSet{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029}
-          )
-        )
+        ParseNode::CHAR_CLASS,
+        UnicodeSet{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029}
       )
     )
   );
@@ -1918,14 +1770,12 @@ SCOPE_TEST(parseDollarSignTest) {
   expected.init(3);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::LOOKAHEAD_NEG,
       expected.add(
-        ParseNode(ParseNode::LOOKAHEAD_NEG,
-          expected.add(
-            ParseNode::CHAR_CLASS,
-            UnicodeSet{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029}
-          )
-        )
+        ParseNode::CHAR_CLASS,
+        UnicodeSet{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029}
       )
     )
   );
@@ -1950,34 +1800,22 @@ SCOPE_TEST(parseWordBoundaryTest) {
   wset.set('_');
   wset.insert('a', 'z' + 1);
 
-  ParseNode* w = expected.add(ParseNode(ParseNode::CHAR_CLASS, wset));
-  ParseNode* W = expected.add(ParseNode(ParseNode::CHAR_CLASS, ~wset));
+  ParseNode* w = expected.add(ParseNode::CHAR_CLASS, wset);
+  ParseNode* W = expected.add(ParseNode::CHAR_CLASS, ~wset);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::ALTERNATION,
       expected.add(
-        ParseNode(ParseNode::ALTERNATION,
-          expected.add(
-            ParseNode(ParseNode::CONCATENATION,
-              expected.add(
-                ParseNode(ParseNode::LOOKBEHIND_NEG, w)
-              ),
-              expected.add(
-                ParseNode(ParseNode::LOOKAHEAD_NEG, W)
-              )
-            )
-          ),
-          expected.add(
-            ParseNode(ParseNode::CONCATENATION,
-              expected.add(
-                ParseNode(ParseNode::LOOKBEHIND_NEG, W)
-              ),
-              expected.add(
-                ParseNode(ParseNode::LOOKAHEAD_NEG, w)
-              )
-            )
-          )
-        )
+        ParseNode::CONCATENATION,
+        expected.add(ParseNode::LOOKBEHIND_NEG, w),
+        expected.add(ParseNode::LOOKAHEAD_NEG, W)
+      ),
+      expected.add(
+        ParseNode::CONCATENATION,
+        expected.add(ParseNode::LOOKBEHIND_NEG, W),
+        expected.add(ParseNode::LOOKAHEAD_NEG, w)
       )
     )
   );
@@ -2002,34 +1840,22 @@ SCOPE_TEST(parseNonWordBoundaryTest) {
   wset.set('_');
   wset.insert('a', 'z' + 1);
 
-  ParseNode* w = expected.add(ParseNode(ParseNode::CHAR_CLASS, wset));
-  ParseNode* W = expected.add(ParseNode(ParseNode::CHAR_CLASS, ~wset));
+  ParseNode* w = expected.add(ParseNode::CHAR_CLASS, wset);
+  ParseNode* W = expected.add(ParseNode::CHAR_CLASS, ~wset);
 
   expected.Root = expected.add(
-    ParseNode(ParseNode::REGEXP,
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::ALTERNATION,
       expected.add(
-        ParseNode(ParseNode::ALTERNATION,
-          expected.add(
-            ParseNode(ParseNode::CONCATENATION,
-              expected.add(
-                ParseNode(ParseNode::LOOKBEHIND_NEG, w)
-              ),
-              expected.add(
-                ParseNode(ParseNode::LOOKAHEAD_NEG, w)
-              )
-            )
-          ),
-          expected.add(
-            ParseNode(ParseNode::CONCATENATION,
-              expected.add(
-                ParseNode(ParseNode::LOOKBEHIND_NEG, W)
-              ),
-              expected.add(
-                ParseNode(ParseNode::LOOKAHEAD_NEG, W)
-              )
-            )
-          )
-        )
+        ParseNode::CONCATENATION,
+        expected.add(ParseNode::LOOKBEHIND_NEG, w),
+        expected.add(ParseNode::LOOKAHEAD_NEG, w)
+      ),
+      expected.add(
+        ParseNode::CONCATENATION,
+        expected.add(ParseNode::LOOKBEHIND_NEG, W),
+        expected.add(ParseNode::LOOKAHEAD_NEG, W)
       )
     )
   );
