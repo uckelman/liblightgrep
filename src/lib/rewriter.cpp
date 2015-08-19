@@ -667,7 +667,7 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* root) {
   return reduceTrailingNongreedyThenEmpty(root, branch);
 }
 
-size_t subtree_size(ParseNode* n) {
+size_t subtree_size(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
@@ -687,7 +687,7 @@ size_t subtree_size(ParseNode* n) {
   }
 }
 
-ParseNode* copy_subtree(ParseNode* n, ParseTree& tree) {
+ParseNode* copy_subtree(const ParseNode* n, ParseTree& tree) {
   ParseNode* c = tree.add(*n);
   switch (c->Type) {
   case ParseNode::ALTERNATION:
