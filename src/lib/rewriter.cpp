@@ -667,6 +667,26 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* root) {
   return reduceTrailingNongreedyThenEmpty(root, branch);
 }
 
+size_t subtree_size(ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    return 1 + subtree_size(n->Child.Left) + subtree_size(n->Child.Right);
+
+  case ParseNode::REGEXP:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    return 1 + subtree_size(n->Child.Left);
+
+  default:
+    return 1;
+  }
+}
+
 ParseNode* copy_subtree(ParseNode* n, ParseTree& tree) {
   ParseNode* c = tree.add(*n);
   switch (c->Type) {
@@ -2376,4 +2396,23 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
   }
 
   return std::tie(behind, middle, ahead);
+}
+
+ParseTree make_tree(ParseNode* src) {
+  ParseTree dst;
+  if (src) {
+    dst.init(1 + subtree_size(src));
+    dst.Root = dst.add(ParseNode::REGEXP, copy_subtree(src, dst));
+  }
+  return dst;
+}
+
+std::tuple<ParseTree, ParseTree, ParseTree> splitLookarounds(const ParseTree& tree) {
+  ParseNode* behind;
+  ParseNode* middle;
+  ParseNode* ahead;
+  std::tie(behind, middle, ahead) = splitLookarounds(tree.Root);
+  return std::make_tuple(
+    make_tree(behind), make_tree(middle), make_tree(ahead)
+  );
 }
