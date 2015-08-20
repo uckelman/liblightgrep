@@ -1178,3 +1178,25 @@ SCOPE_TEST(containsLookaroundAssertion_abOrc) {
   SCOPE_ASSERT(!containsLookaroundAssertion(&root));
 }
 
+SCOPE_TEST(containsLookaroundAssertion_abOrcStar) {
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            ab(ParseNode::CONCATENATION, &a, &b),
+            cs(ParseNode::REPETITION, &c),
+            ab_cs(ParseNode::ALTERNATION, &ab, &cs),
+            root(ParseNode::REGEXP, &ab_cs);
+  SCOPE_ASSERT(!containsLookaroundAssertion(&root));
+}
+
+SCOPE_TEST(containsLookaroundAssertion_aLPLAPbRPOrcStar) {
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            c(ParseNode::LITERAL, 'c'),
+            lb(ParseNode::LOOKAHEAD_POS, &b),
+            alb(ParseNode::CONCATENATION, &a, &lb),
+            cs(ParseNode::REPETITION, &c),
+            alb_cs(ParseNode::ALTERNATION, &alb, &cs),
+            root(ParseNode::REGEXP, &alb_cs);
+  SCOPE_ASSERT(containsLookaroundAssertion(&root));
+}
