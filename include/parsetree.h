@@ -63,8 +63,16 @@ public:
 
   bool expand(size_t size);
 
+  // NB: It is possible for size() > 0 && empty(). This is because empty()
+  // is about whether the object contains a valid tree, while size() is
+  // about the number of nodes stored.
+
   size_t size() const {
     return Store.size();
+  }
+
+  bool empty() const {
+    return !Root || !Root->Child.Left;
   }
 
   bool operator==(const ParseTree& other) const {
