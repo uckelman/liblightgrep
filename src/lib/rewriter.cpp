@@ -2416,3 +2416,35 @@ std::tuple<ParseTree, ParseTree, ParseTree> splitLookarounds(const ParseTree& tr
     make_tree(behind), make_tree(middle), make_tree(ahead)
   );
 }
+
+bool containsLookaroundAssertion(const ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::REGEXP:
+    return !n->Child.Left ? false : containsLookaroundAssertion(n->Child.Left);
+
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+    return true;
+
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    return containsLookaroundAssertion(n->Child.Left) || 
+           containsLookaroundAssertion(n->Child.Right);
+
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    return containsLookaroundAssertion(n->Child.Left);
+
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    return false;
+
+  default:
+    // WTF?
+    throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+  } 
+}
