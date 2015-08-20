@@ -133,7 +133,7 @@ namespace {
     const uint32_t label = hMap->Patterns.size();
     hFsm->Impl->addPattern(hPattern->Tree, encoding, label);
     hMap->addPattern(hPattern->Pat.Expression.c_str(), encoding);
-    return (int) label;
+    return static_cast<int>(label);
   }
 }
 
