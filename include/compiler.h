@@ -24,8 +24,5 @@
 
 class Compiler {
 public:
-
   static ProgramPtr createProgram(const NFA& graph);
-
-
 };

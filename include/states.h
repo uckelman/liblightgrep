@@ -35,7 +35,7 @@ enum TransitionType {
 class ByteState: public Transition {
 public:
   ByteState(byte b): Byte(b) {}
-  virtual ~ByteState() {}
+  virtual ~ByteState() = default;
 
   virtual const byte* allowed(const byte* beg, const byte*) const {
     return *beg == Byte ? beg + 1 : beg;
@@ -68,7 +68,7 @@ private:
 class EitherState: public Transition {
 public:
   EitherState(byte one, byte two): Byte1(one), Byte2(two) {}
-  virtual ~EitherState() {}
+  virtual ~EitherState() = default; 
 
   virtual const byte* allowed(const byte* beg, const byte*) const {
     return *beg == Byte1 || *beg == Byte2 ? beg + 1 : beg;
@@ -103,7 +103,7 @@ private:
 class RangeState: public Transition {
 public:
   RangeState(byte first, byte last): First(first), Last(last) {}
-  virtual ~RangeState() {}
+  virtual ~RangeState() = default;
 
   virtual const byte* allowed(const byte* beg, const byte*) const {
     return First <= *beg && *beg <= Last ? beg+1: beg;
@@ -142,7 +142,7 @@ public:
     }
   }
 
-  virtual ~ByteSetState() {}
+  virtual ~ByteSetState() = default; 
 
   virtual const byte* allowed(const byte* beg, const byte*) const {
     return Allowed[*beg] ? beg+1 : beg;

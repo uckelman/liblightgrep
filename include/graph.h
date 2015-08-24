@@ -339,7 +339,13 @@ public:
     return ed;
   }
 
-  EdgeDescriptor insertEdge(VertexDescriptor head, VertexDescriptor tail, EdgeSizeType hi = std::numeric_limits<EdgeSizeType>::max(), EdgeSizeType ti = std::numeric_limits<EdgeSizeType>::max(), const EdgeType& e = EdgeType()) {
+  EdgeDescriptor insertEdge(
+    VertexDescriptor head,
+    VertexDescriptor tail,
+    EdgeSizeType hi = std::numeric_limits<EdgeSizeType>::max(),
+    EdgeSizeType ti = std::numeric_limits<EdgeSizeType>::max(),
+    const EdgeType& e = EdgeType())
+  {
     Edges.emplace_back(head, tail, e);
     const EdgeDescriptor ed = Edges.size() - 1;
     Store.insert(Vertices[head].Out, hi, ed);
@@ -408,7 +414,8 @@ private:
   }
 };
 
-template <class G, class V, class E, template <typename> class S> std::ostream& operator<<(std::ostream& out, const Graph<G,V,E,S>& g) {
+template <class G, class V, class E, template <typename> class S>
+std::ostream& operator<<(std::ostream& out, const Graph<G,V,E,S>& g) {
   const typename Graph<G,V,E,S>::VertexSizeType vnum = g.verticesSize();
 
   // print graph size

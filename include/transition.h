@@ -25,8 +25,13 @@ struct Instruction;
 
 class Transition {
 public:
-  Transition() {}
-  virtual ~Transition() {}
+  Transition() = default;
+  
+  Transition(const Transition&) = delete;
+  
+  virtual ~Transition() = default;
+
+  Transition& operator=(const Transition&) = delete;
 
   virtual const byte* allowed(const byte* beg, const byte* end) const = 0;
 
@@ -42,8 +47,4 @@ public:
   virtual size_t numInstructions() const = 0;
   virtual bool toInstruction(Instruction* addr) const = 0;
   virtual std::string label() const = 0;
-
-private:
-  Transition(const Transition&) {}
-  Transition& operator=(const Transition&) {return *this;}
 };
