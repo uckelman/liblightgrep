@@ -20,6 +20,36 @@
 
 #include <ostream>
 
+ParseTree::ParseTree(const ParseNode* src) {
+  if (src) {
+    init(1 + subtreeSize(src));
+    Root = add(ParseNode::REGEXP, copySubtree(src));
+  }
+}
+
+ParseNode* ParseTree::copySubtree(const ParseNode* n) {
+  ParseNode* c = add(*n);
+  switch (c->Type) {
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    c->Child.Right = copySubtree(n->Child.Right);
+
+  case ParseNode::REGEXP:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    c->Child.Left = copySubtree(n->Child.Left);
+
+  default:
+    break;
+  }
+
+  return c;
+}
+
 bool ParseTree::expand(size_t len) {
   if (len > Store.capacity()) {
     // Expanding the Store will invalidate all of our pointers, but their

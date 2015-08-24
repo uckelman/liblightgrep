@@ -319,3 +319,7 @@ std::ostream& operator<<(std::ostream& out, const ParseNode& n);
 
 void printTreeDetails(std::ostream& out, const ParseNode& n);
 void repetition(std::ostream& out, uint32_t min, uint32_t max);
+
+size_t subtreeSize(const ParseNode* n);
+
+bool subtreeCompare(const ParseNode* a, const ParseNode* b);

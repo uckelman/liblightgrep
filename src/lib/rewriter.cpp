@@ -667,49 +667,6 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* root) {
   return reduceTrailingNongreedyThenEmpty(root, branch);
 }
 
-size_t subtree_size(const ParseNode* n) {
-  switch (n->Type) {
-  case ParseNode::ALTERNATION:
-  case ParseNode::CONCATENATION:
-    return 1 + subtree_size(n->Child.Left) + subtree_size(n->Child.Right);
-
-  case ParseNode::REGEXP:
-  case ParseNode::LOOKBEHIND_POS:
-  case ParseNode::LOOKBEHIND_NEG:
-  case ParseNode::LOOKAHEAD_POS:
-  case ParseNode::LOOKAHEAD_NEG:
-  case ParseNode::REPETITION:
-  case ParseNode::REPETITION_NG:
-    return 1 + subtree_size(n->Child.Left);
-
-  default:
-    return 1;
-  }
-}
-
-ParseNode* copy_subtree(const ParseNode* n, ParseTree& tree) {
-  ParseNode* c = tree.add(*n);
-  switch (c->Type) {
-  case ParseNode::ALTERNATION:
-  case ParseNode::CONCATENATION:
-    c->Child.Right = copy_subtree(n->Child.Right, tree);
-
-  case ParseNode::REGEXP:
-  case ParseNode::LOOKBEHIND_POS:
-  case ParseNode::LOOKBEHIND_NEG:
-  case ParseNode::LOOKAHEAD_POS:
-  case ParseNode::LOOKAHEAD_NEG:
-  case ParseNode::REPETITION:
-  case ParseNode::REPETITION_NG:
-    c->Child.Left = copy_subtree(n->Child.Left, tree);
-
-  default:
-    break;
-  }
-
-  return c;
-}
-
 void reduceNegativeLookbehindLiteral(ParseNode* n, ParseTree& tree) {
   // (?<![l]) => \A|(?<=[^l])
 
@@ -759,7 +716,7 @@ void reduceNegativeLookbehindConcatenation(ParseNode* n, ParseTree& tree) {
   n->Child.Right = tree.add(ParseNode::LOOKBEHIND_POS,
     tree.add(ParseNode::CONCATENATION,
       tree.add(ParseNode::LOOKBEHIND_NEG, s),
-      copy_subtree(t, tree)
+      tree.copySubtree(t)
     )
   );
 }
@@ -802,12 +759,12 @@ void reduceNegativeLookbehindRepetition(ParseNode* n, ParseTree& tree) {
     break;
   case 2:
     r->Type = ParseNode::CONCATENATION;
-    r->Child.Right = copy_subtree(s, tree);
+    r->Child.Right = tree.copySubtree(s);
     break;
   default:
     r->Type = ParseNode::CONCATENATION;
     r->Child.Right =
-      tree.add(ParseNode::REPETITION, copy_subtree(s, tree), rep - 1, rep - 1);
+      tree.add(ParseNode::REPETITION, tree.copySubtree(s), rep - 1, rep - 1);
     break;
   }
 }
@@ -893,7 +850,7 @@ void reduceNegativeLookaheadConcatenation(ParseNode* n, ParseTree& tree) {
 
   n->Child.Right = tree.add(ParseNode::LOOKAHEAD_POS,
     tree.add(ParseNode::CONCATENATION,
-      copy_subtree(s, tree),
+      tree.copySubtree(s),
       tree.add(ParseNode::LOOKAHEAD_NEG, t)
     )
   );
@@ -937,12 +894,12 @@ void reduceNegativeLookaheadRepetition(ParseNode* n, ParseTree& tree) {
     break;
   case 2:
     r->Type = ParseNode::CONCATENATION;
-    r->Child.Right = copy_subtree(s, tree);
+    r->Child.Right = tree.copySubtree(s);
     break;
   default:
     r->Type = ParseNode::CONCATENATION;
     r->Child.Right =
-      tree.add(ParseNode::REPETITION, copy_subtree(s, tree), rep - 1, rep - 1);
+      tree.add(ParseNode::REPETITION, tree.copySubtree(s), rep - 1, rep - 1);
     break;
   }
 }
@@ -1626,7 +1583,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           parent[l_t] = n;
           parent[l] = parent[t] = l_t;
 
-          ParseNode* ldup = copy_subtree(l, tree);
+          ParseNode* ldup = tree.copySubtree(l);
           makeParentMap(ldup, parent);
 
           r->Type = ParseNode::CONCATENATION;
@@ -1823,7 +1780,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           l->Child.Right = r;
           parent[r] = l;
 
-          ParseNode* rdup = copy_subtree(r, tree);
+          ParseNode* rdup = tree.copySubtree(r);
           makeParentMap(rdup, parent);
 
           ParseNode* u_rdup = tree.add(ParseNode::CONCATENATION, u, rdup);
@@ -2398,22 +2355,13 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
   return std::tie(behind, middle, ahead);
 }
 
-ParseTree make_tree(ParseNode* src) {
-  ParseTree dst;
-  if (src) {
-    dst.init(1 + subtree_size(src));
-    dst.Root = dst.add(ParseNode::REGEXP, copy_subtree(src, dst));
-  }
-  return dst;
-}
-
 std::tuple<ParseTree, ParseTree, ParseTree> splitLookarounds(const ParseTree& tree) {
   ParseNode* behind;
   ParseNode* middle;
   ParseNode* ahead;
   std::tie(behind, middle, ahead) = splitLookarounds(tree.Root);
   return std::make_tuple(
-    make_tree(behind), make_tree(middle), make_tree(ahead)
+    ParseTree(behind), ParseTree(middle), ParseTree(ahead)
   );
 }
 

@@ -121,3 +121,62 @@ void printTreeDetails(std::ostream& out, const ParseNode& n) {
   out << '\n';
 */
 }
+
+size_t subtreeSize(const ParseNode* n) {
+  switch (n->Type) {
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    return 1 + subtreeSize(n->Child.Left) + subtreeSize(n->Child.Right);
+
+  case ParseNode::REGEXP:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    return 1 + subtreeSize(n->Child.Left);
+
+  default:
+    return 1;
+  }
+}
+
+bool subtreeCompare(const ParseNode* a, const ParseNode* b) {
+  if (a == b) {
+    return true;
+  }
+
+  if (!a || !b || a->Type != b->Type) {
+    return false;
+  }
+
+  switch (a->Type) {
+  case ParseNode::REGEXP:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+    return subtreeCompare(a->Child.Left, b->Child.Left);
+  
+  case ParseNode::ALTERNATION:
+  case ParseNode::CONCATENATION:
+    return subtreeCompare(a->Child.Left, b->Child.Left) &&
+           subtreeCompare(a->Child.Right, b->Child.Right);
+
+  case ParseNode::REPETITION:
+  case ParseNode::REPETITION_NG:
+    return a->Child.Rep.Min == b->Child.Rep.Min &&
+           a->Child.Rep.Max == b->Child.Rep.Max &&
+           subtreeCompare(a->Child.Left, b->Child.Left);
+
+  case ParseNode::DOT:
+  case ParseNode::CHAR_CLASS:
+  case ParseNode::LITERAL:
+  case ParseNode::BYTE:
+    return *a == *b;    
+
+  default:
+    return true; 
+  }
+}

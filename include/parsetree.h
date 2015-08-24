@@ -28,6 +28,20 @@ class ParseTree {
 public:
   ParseNode* Root;
 
+  ParseTree() = default;
+
+  ParseTree(const ParseTree&) = delete;
+
+  ParseTree(ParseTree&&) = default;
+
+  ParseTree(const ParseNode*);
+
+  ParseTree& operator=(const ParseTree&) = delete;
+
+  ParseTree& operator=(ParseTree&&) = default;
+
+  ParseNode* copySubtree(const ParseNode* src);
+
   template <class... Args>
   ParseNode* add(Args&&... args) {
     Store.emplace_back(std::forward<Args>(args)...);
@@ -76,7 +90,7 @@ public:
   }
 
   bool operator==(const ParseTree& other) const {
-    return !Root ? !other.Root : (other.Root ? *Root == *other.Root : false);
+    return subtreeCompare(Root, other.Root);
   }
 
 private:
