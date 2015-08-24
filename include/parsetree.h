@@ -22,13 +22,14 @@
 #include "parsenode.h"
 
 #include <iosfwd>
+#include <stdexcept>
 #include <vector>
 
 class ParseTree {
 public:
   ParseNode* Root;
 
-  ParseTree() = default;
+  ParseTree(): Root(nullptr) {}
 
   ParseTree(const ParseTree&) = delete;
 

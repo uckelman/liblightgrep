@@ -25,6 +25,9 @@ ParseTree::ParseTree(const ParseNode* src) {
     init(1 + subtreeSize(src));
     Root = add(ParseNode::REGEXP, copySubtree(src));
   }
+  else {
+    Root = nullptr;
+  }
 }
 
 ParseNode* ParseTree::copySubtree(const ParseNode* n) {
