@@ -59,7 +59,7 @@ public:
 private:
 #pragma pack(push, 1)
   struct VertexData: public VertexType {
-    VertexData(): VertexType() {}
+    VertexData() = default;
 
     VertexData(const VertexType& v): VertexType(v) {}
 
