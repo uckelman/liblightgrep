@@ -965,7 +965,7 @@ SCOPE_TEST(byteSet_right_bracket_to_a_ToCharacterClassTest) {
   SCOPE_ASSERT_EQUAL("^\\z5D-\\z61", byteSetToCharacterClass(bs));
 }
 
-SCOPE_TEST(cpToCharacterString) {
+SCOPE_TEST(cpToCharacterStringTest) {
   std::ostringstream ss;
 
   for (uint32_t i = 0; i < 256; ++i) {
