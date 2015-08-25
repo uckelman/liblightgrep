@@ -431,16 +431,18 @@ void NFABuilder::concatenate(const ParseNode& n) {
   first.N = n;
 }
 
+void NFABuilder::start_anchor(const ParseNode& n) {
+
+}
+
+void NFABuilder::end_anchor(const ParseNode& n) {
+
+}
+
 void NFABuilder::lookbehind_pos(const ParseNode& n) {
 }
 
-void NFABuilder::lookbehind_neg(const ParseNode& n) {
-}
-
 void NFABuilder::lookahead_pos(const ParseNode& n) {
-}
-
-void NFABuilder::lookahead_neg(const ParseNode& n) {
 }
 
 void NFABuilder::finish(const ParseNode& n) {
@@ -629,13 +631,13 @@ void NFABuilder::callback(const ParseNode& n) {
     lookbehind_pos(n);
     break;
   case ParseNode::LOOKBEHIND_NEG:
-    lookbehind_neg(n);
+    start_anchor(n);
     break;
   case ParseNode::LOOKAHEAD_POS:
     lookahead_pos(n);
     break;
   case ParseNode::LOOKAHEAD_NEG:
-    lookahead_neg(n);
+    end_anchor(n);
     break;
   case ParseNode::ALTERNATION:
     alternate(n);

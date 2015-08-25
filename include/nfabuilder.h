@@ -54,10 +54,10 @@ public:
   void rawByte(const ParseNode& n);
   void dot(const ParseNode& n);
   void charClass(const ParseNode& n);
+  void start_anchor(const ParseNode& n);
+  void end_anchor(const ParseNode& n);
   void lookbehind_pos(const ParseNode& n);
-  void lookbehind_neg(const ParseNode& n);
   void lookahead_pos(const ParseNode& n);
-  void lookahead_neg(const ParseNode& n);
 
   void finish(const ParseNode&);
 
