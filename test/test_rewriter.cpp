@@ -1163,6 +1163,18 @@ SCOPE_TEST(splitLookarounds_LPLBPaRPbLPLAPcRP) {
   SCOPE_ASSERT_EQUAL(split, splitLookarounds(&root));
 }
 
+SCOPE_TEST(splitLookarounds_ParseTree_aLPLAPbRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"a(?=b)", false, false}, tree));
+
+  ParseNode a(ParseNode::LITERAL, 'a'),
+            b(ParseNode::LITERAL, 'b'),
+            lb(ParseNode::LOOKAHEAD_POS, &b);
+
+  const auto split = std::make_tuple(ParseTree(), ParseTree(&a), ParseTree(&lb));
+  SCOPE_ASSERT_EQUAL(split, splitLookarounds(tree));
+}
+
 SCOPE_TEST(containsLookaroundAssertion_Empty) {
   ParseNode root(ParseNode::REGEXP, nullptr);
   SCOPE_ASSERT(!containsLookaroundAssertion(&root));

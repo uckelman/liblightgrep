@@ -55,5 +55,6 @@ bool shoveLookaroundsOutward(ParseTree& tree);
 size_t estimateNegativeLookaroundBlowup(const ParseNode* n);
 
 std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root);
+std::tuple<ParseTree,ParseTree,ParseTree> splitLookarounds(const ParseTree& tree);
 
 bool containsLookaroundAssertion(const ParseNode* root);
