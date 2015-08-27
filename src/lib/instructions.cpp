@@ -83,9 +83,6 @@ std::string Instruction::toString() const {
   case MATCH_OP:
     buf << "Match";
     break;
-  case ADJUST_START_OP:
-    buf << "AdjustStart -" << Op.Offset;
-    break;
   case HALT_OP:
     buf << "Halt";
     break;
@@ -191,12 +188,6 @@ Instruction Instruction::makeFork(Instruction* ptr, uint32_t offset) {
 Instruction Instruction::makeCheckHalt(uint32_t checkIndex) {
   Instruction i = makeRaw24(checkIndex);
   i.OpCode = CHECK_HALT_OP;
-  return i;
-}
-
-Instruction Instruction::makeAdjustStart(uint32_t offset) {
-  Instruction i = makeRaw24(offset);
-  i.OpCode = ADJUST_START_OP;
   return i;
 }
 
