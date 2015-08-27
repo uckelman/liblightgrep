@@ -170,7 +170,7 @@ void NFABuilder::literal(const ParseNode& n) {
 }
 
 void NFABuilder::rawByte(const ParseNode& n) {
-  NFA::VertexDescriptor v = Fsm->addVertex();
+  const NFA::VertexDescriptor v = Fsm->addVertex();
   (*Fsm)[v].Trans = Fsm->TransFac->getByte(n.Val);
   TempFrag.initFull(v, n);
   Stack.push(TempFrag);
