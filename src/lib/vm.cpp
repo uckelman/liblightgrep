@@ -337,20 +337,18 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
     return true;
 
   case CHECK_HALT_OP:
-    {
-      if (CheckLabels.find(instr.Op.Offset)) {
-        // another thread has the lock, we die
-        t->PC = 0;
-        return false;
-      }
-      else if (!_liveCheck(t->Start, t->Label)) {
-        // nothing blocks us, we take the lock
-        CheckLabels.insert(instr.Op.Offset);
-      }
-
-      t->advance(InstructionSize<CHECK_HALT_OP>::VAL);
-      return true;
+    if (CheckLabels.find(instr.Op.Offset)) {
+      // another thread has the lock, we die
+      t->PC = 0;
+      return false;
     }
+    else if (!_liveCheck(t->Start, t->Label)) {
+      // nothing blocks us, we take the lock
+      CheckLabels.insert(instr.Op.Offset);
+    }
+
+    t->advance(InstructionSize<CHECK_HALT_OP>::VAL);
+    return true;
 
   case LABEL_OP:
     {
