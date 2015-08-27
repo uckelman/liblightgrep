@@ -432,11 +432,17 @@ void NFABuilder::concatenate(const ParseNode& n) {
 }
 
 void NFABuilder::start_anchor(const ParseNode& n) {
-
+  const NFA::VertexDescriptor v = Fsm->addVertex();
+  (*Fsm)[v].AtStart = true;
+  TempFrag.initFull(v, n);
+  Stack.push(TempFrag);
 }
 
 void NFABuilder::end_anchor(const ParseNode& n) {
-
+  const NFA::VertexDescriptor v = Fsm->addVertex();
+  (*Fsm)[v].AtEnd = true;
+  TempFrag.initFull(v, n);
+  Stack.push(TempFrag);
 }
 
 void NFABuilder::lookbehind_pos(const ParseNode& n) {
