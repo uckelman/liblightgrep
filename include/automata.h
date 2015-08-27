@@ -35,7 +35,8 @@ struct Glushkov {
   static const uint32_t NOLABEL;
 
   Glushkov():
-    Trans(0), IsMatch(false), AtStart(false), AtEnd(false), Label(NOLABEL) {}
+    Trans(nullptr), IsMatch(false),
+    AtStart(false), AtEnd(false), Label(NOLABEL) {}
 
   std::string label() const;
 
