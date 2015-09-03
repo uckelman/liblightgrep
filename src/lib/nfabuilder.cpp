@@ -406,35 +406,46 @@ void NFABuilder::concatenate(const ParseNode& n) {
   Stack.pop();
   Fragment& first(Stack.top());
 
-  // patch left out to right in
-  patch_mid(first.OutList, TempFrag.InList, TempFrag.Skippable);
+  if (first.N.Type == ParseNode::LOOKBEHIND_NEG) {
+    // this is not a real concatenation
+    // mark the right as anchored at start
+    for (NFA::VertexDescriptor v: TempFrag.InList) {
+      (*Fsm)[v].AtStart = true;
+    }
 
-  // build new in list
-  if (first.Skippable != NOSKIP) {
-    first.InList.insert(first.InList.begin() + first.Skippable,
-                        TempFrag.InList.begin(), TempFrag.InList.end());
-  }
-
-  // build new out list
-  if (TempFrag.Skippable != NOSKIP) {
-    first.OutList.insert(first.OutList.end(),
-                         TempFrag.OutList.begin(), TempFrag.OutList.end());
+    // put the right back onto the stack
+    Stack.pop();
+    Stack.push(TempFrag);
   }
   else {
-    first.OutList.swap(TempFrag.OutList);
+    // patch left out to right in
+    patch_mid(first.OutList, TempFrag.InList, TempFrag.Skippable);
+
+    // build new in list
+    if (first.Skippable != NOSKIP) {
+      first.InList.insert(first.InList.begin() + first.Skippable,
+                          TempFrag.InList.begin(), TempFrag.InList.end());
+    }
+
+    // build new out list
+    if (TempFrag.Skippable != NOSKIP) {
+      first.OutList.insert(first.OutList.end(),
+                           TempFrag.OutList.begin(), TempFrag.OutList.end());
+    }
+    else {
+      first.OutList.swap(TempFrag.OutList);
+    }
+
+    // set new skippable
+    first.Skippable = first.Skippable == NOSKIP || TempFrag.Skippable == NOSKIP
+      ? NOSKIP : first.Skippable + TempFrag.Skippable;
+
+    first.N = n;
   }
-
-  // set new skippable
-  first.Skippable = first.Skippable == NOSKIP || TempFrag.Skippable == NOSKIP
-    ? NOSKIP : first.Skippable + TempFrag.Skippable;
-
-  first.N = n;
 }
 
 void NFABuilder::start_anchor(const ParseNode& n) {
-  const NFA::VertexDescriptor v = Fsm->addVertex();
-  (*Fsm)[v].AtStart = true;
-  TempFrag.initFull(v, n);
+  TempFrag.initFull(0, n);
   Stack.push(TempFrag);
 }
 
