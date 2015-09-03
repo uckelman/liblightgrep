@@ -111,6 +111,10 @@ bool targetCodeFollowsSource(const CodeGenHelper& cg, const NFA::VertexDescripto
 void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper& cg, Instruction const* const base, Instruction* curOp) {
   const NFA::Vertex& state(graph[v]);
   if (state.Trans) {
+    if (state.AtStart) {
+      *curOp++ = Instruction::makeStart();
+    }
+
     state.Trans->toInstruction(curOp);
     curOp += state.Trans->numInstructions();
     // std::cerr << "wrote " << i << std::endl;
@@ -118,9 +122,11 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
     if (state.Label != NOLABEL) {
       *curOp++ = Instruction::makeLabel(state.Label);
     }
+
     if (cg.Snippets[v].CheckIndex != NONE) {
       *curOp++ = Instruction::makeCheckHalt(cg.Snippets[v].CheckIndex);
     }
+
     if (state.IsMatch) {
       *curOp++ = Instruction::makeMatch();
 
