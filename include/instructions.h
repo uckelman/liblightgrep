@@ -35,7 +35,8 @@ enum OpCodes {
   CHECK_HALT_OP,
   LABEL_OP,
   MATCH_OP,
-  HALT_OP
+  HALT_OP,
+  START_OP
 };
 
 template<int OPCODE> struct InstructionSize { enum { VAL = 1 }; };
@@ -108,6 +109,7 @@ struct Instruction {
   static Instruction makeCheckHalt(uint32_t checkIndex);
   static Instruction makeHalt();
   static Instruction makeFinish();
+  static Instruction makeStart();
   static Instruction makeRaw32(uint32_t val);
   static Instruction makeRaw24(uint32_t val);
 };

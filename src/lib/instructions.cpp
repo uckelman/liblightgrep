@@ -205,6 +205,13 @@ Instruction Instruction::makeFinish() {
   return i;
 }
 
+Instruction Instruction::makeStart() {
+  Instruction i;
+  i.OpCode = START_OP;
+  i.Op.Offset = 0;
+  return i;
+}
+
 Instruction Instruction::makeRaw32(uint32_t val) {
   Instruction i;
   reinterpret_cast<uint32_t&>(i) = val;
