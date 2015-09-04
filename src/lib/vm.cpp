@@ -126,11 +126,11 @@ Vm::Vm(ProgramPtr prog):
   BeginDebug(Thread::NONE), EndDebug(Thread::NONE), NextId(0),
   #endif
   Prog(prog), ProgEnd(&prog->back()-1),
-  First(), Active(), Next(), OtherFirst(),
+  First(), Active(), Next(), AtStartFirst(), SubsequentFirst(),
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),
   MatchEnds(prog->MaxLabel+1), MatchEndsMax(0),
-  CurHitFn(nullptr), UserData(nullptr), FirstSearch(true)
+  CurHitFn(nullptr), UserData(nullptr), AtStart(true)
 {
 // FIXME: should do these checks inside SparseSet::resize()?
   if (Live.size() > Live.max_size()) {
@@ -142,12 +142,13 @@ Vm::Vm(ProgramPtr prog):
   }
 
   // compute the at-start initial threads
-  prepareFirstThreads(First);
+  AtStart = true;
+  prepareFirstThreads(AtStartFirst);
   reset();
 
   // compute the general initial threads
-  FirstSearch = false;
-  prepareFirstThreads(OtherFirst);
+  AtStart = false;
+  prepareFirstThreads(SubsequentFirst);
   reset();
 }
 
@@ -187,7 +188,8 @@ void Vm::reset() {
 
   CurHitFn = nullptr;
 
-  FirstSearch = true;
+  AtStart = true;
+  First = AtStartFirst;
 
   #ifdef LBT_TRACE_ENABLED
   NextId = 1;
@@ -391,7 +393,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
     return false;
 
   case START_OP:
-    if (FirstSearch) {
+    if (AtStart) {
       t->advance(InstructionSize<START_OP>::VAL);
       return true;
     }
@@ -471,6 +473,12 @@ inline void Vm::_executeNewThreads(const Instruction* const base, ThreadList::it
     #ifdef LBT_TRACE_ENABLED
     new_thread_json.insert(Active.back().Id);
     #endif
+  }
+
+  if (AtStart) {
+    // Switch from at-start First to general First
+    AtStart = false;
+    First = SubsequentFirst;
   }
 
   for (t = Active.begin() + oldsize; t != Active.end(); ++t) {
@@ -633,12 +641,6 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     #endif
 
     _cleanup();
-  }
-
-  if (FirstSearch) {
-    // Switch from at-start First to general First
-    FirstSearch = false;
-    First.swap(OtherFirst);
   }
 
   // std::cerr << "Max number of active threads was " << maxActive << ", average was " << total/(end - beg) << std::endl;
