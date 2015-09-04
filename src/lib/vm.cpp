@@ -518,6 +518,12 @@ inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const b
 
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
+
+  if (AtStart) {
+    // Switch from at-start First to general First
+    AtStart = false;
+    First = SubsequentFirst;
+  }
 }
 
 inline void Vm::_cleanup() {
