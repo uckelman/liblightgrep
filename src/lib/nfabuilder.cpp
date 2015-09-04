@@ -414,8 +414,7 @@ void NFABuilder::concatenate(const ParseNode& n) {
     }
 
     // put the right back onto the stack
-    Stack.pop();
-    Stack.push(TempFrag);
+    first.assign(TempFrag);
   }
   else {
     // patch left out to right in
@@ -439,9 +438,9 @@ void NFABuilder::concatenate(const ParseNode& n) {
     // set new skippable
     first.Skippable = first.Skippable == NOSKIP || TempFrag.Skippable == NOSKIP
       ? NOSKIP : first.Skippable + TempFrag.Skippable;
-
-    first.N = n;
   }
+
+  first.N = n;
 }
 
 void NFABuilder::start_anchor(const ParseNode& n) {

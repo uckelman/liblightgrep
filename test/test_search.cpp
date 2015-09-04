@@ -630,6 +630,17 @@ SCOPE_FIXTURE_CTOR(searchReturnValueTest2, STest, STest(R"(a+b)")) {
   SCOPE_ASSERT_EQUAL(27u, fixture.RetVal);
 }
 
+SCOPE_FIXTURE_CTOR(searchWhackATest, STest, STest(R"(\A)")) {
+  SCOPE_ASSERT(fixture.parsesButNotValid());
+}
+
+SCOPE_FIXTURE_CTOR(searchWhackAaTest, STest, STest(R"(\Aa)")) {
+  const char text[] = "aaabaacabbabcacbaccbbbcbccca";
+  fixture.search(text, text + 28, 0);
+  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
+  SCOPE_ASSERT_EQUAL(SearchHit(0, 1, 0), fixture.Hits[0]);
+}
+
 /*
 SCOPE_FIXTURE_CTOR(hitCaching, STest, STest("[a-zA-Z]+ing")) {
   // 2011-05-06. This pattern causes Vm to continue buffering hits in the Matches vector until closeOut().

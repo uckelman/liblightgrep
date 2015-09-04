@@ -118,16 +118,19 @@ std::shared_ptr<VmInterface> VmInterface::create(ProgramPtr prog) {
   return std::shared_ptr<VmInterface>(new Vm(prog));
 }
 
+// TODO: Handle \A with a special start set for the first byte
+// TODO: Handle \Z in closeOut
+
 Vm::Vm(ProgramPtr prog):
   #ifdef LBT_TRACE_ENABLED
   BeginDebug(Thread::NONE), EndDebug(Thread::NONE), NextId(0),
   #endif
   Prog(prog), ProgEnd(&prog->back()-1),
-  First(), Active(1, &(*prog)[0]), Next(),
+  First(), Active(), Next(), OtherFirst(),
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),
   MatchEnds(prog->MaxLabel+1), MatchEndsMax(0),
-  CurHitFn(nullptr), UserData(nullptr)
+  CurHitFn(nullptr), UserData(nullptr), FirstSearch(true)
 {
 // FIXME: should do these checks inside SparseSet::resize()?
   if (Live.size() > Live.max_size()) {
@@ -138,6 +141,18 @@ Vm::Vm(ProgramPtr prog):
     throw std::runtime_error("Too many checked states.");
   }
 
+  // compute the at-start initial threads
+  prepareFirstThreads(First);
+  reset();
+
+  // compute the general initial threads
+  FirstSearch = false;
+  prepareFirstThreads(OtherFirst);
+  reset();
+}
+
+void Vm::prepareFirstThreads(ThreadList& tlist) {
+  Active.emplace_back(&(*Prog)[0]);
   ThreadList::iterator t(Active.begin());
 
   #ifdef LBT_TRACE_ENABLED
@@ -155,9 +170,7 @@ Vm::Vm(ProgramPtr prog):
   close_init_epsilon_json(std::clog);
   #endif
 
-  First.swap(Next);
-
-  reset();
+  tlist.swap(Next);
 }
 
 void Vm::reset() {
@@ -173,6 +186,8 @@ void Vm::reset() {
   MatchEndsMax = 0;
 
   CurHitFn = nullptr;
+
+  FirstSearch = true;
 
   #ifdef LBT_TRACE_ENABLED
   NextId = 1;
@@ -374,6 +389,15 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
     // die, motherfucker, die
     t->PC = 0;
     return false;
+
+  case START_OP:
+    if (FirstSearch) {
+      return true;
+    }
+    else {
+      t->PC = 0;
+      return false;
+    } 
   }
 
   return false;
@@ -608,6 +632,12 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     #endif
 
     _cleanup();
+  }
+
+  if (FirstSearch) {
+    // Switch from at-start First to general First
+    FirstSearch = false;
+    First.swap(OtherFirst);
   }
 
   // std::cerr << "Max number of active threads was " << maxActive << ", average was " << total/(end - beg) << std::endl;

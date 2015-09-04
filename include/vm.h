@@ -91,6 +91,8 @@ private:
 
   uint64_t _startOfLeftmostLiveThread(const uint64_t offset) const;
 
+  void prepareFirstThreads(ThreadList& tlist);
+
   #ifdef LBT_TRACE_ENABLED
   void open_init_epsilon_json(std::ostream& out);
   void close_init_epsilon_json(std::ostream& out) const;
@@ -117,7 +119,8 @@ private:
 
   ThreadList First,
              Active,
-             Next;
+             Next,
+             OtherFirst;
 
   SparseSet CheckLabels;
 
@@ -129,4 +132,6 @@ private:
 
   HitCallback CurHitFn;
   void* UserData;
+
+  bool FirstSearch;
 };
