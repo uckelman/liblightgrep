@@ -119,8 +119,9 @@ private:
 
   ThreadList First,
              Active,
-             Next,
-             OtherFirst;
+             Next;
+
+  ThreadList AtStartFirst, SubsequentFirst;
 
   SparseSet CheckLabels;
 
@@ -133,5 +134,5 @@ private:
   HitCallback CurHitFn;
   void* UserData;
 
-  bool FirstSearch;
+  bool AtStart;
 };

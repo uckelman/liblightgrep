@@ -475,12 +475,6 @@ inline void Vm::_executeNewThreads(const Instruction* const base, ThreadList::it
     #endif
   }
 
-  if (AtStart) {
-    // Switch from at-start First to general First
-    AtStart = false;
-    First = SubsequentFirst;
-  }
-
   for (t = Active.begin() + oldsize; t != Active.end(); ++t) {
     _executeThread(base, t, cur, offset);
     // ++count;
@@ -502,6 +496,12 @@ inline void Vm::_executeFrame(const std::bitset<256*256>& filter, ThreadList::it
   }
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
+
+  if (AtStart) {
+    // Switch from at-start First to general First
+    AtStart = false;
+    First = SubsequentFirst;
+  }
 }
 
 inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
