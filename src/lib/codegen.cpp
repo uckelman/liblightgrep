@@ -56,31 +56,23 @@ uint32_t CodeGenVisitor::calcJumpTableSize(NFA::VertexDescriptor v, const NFA& g
 void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
   // std::cerr << "on state " << v << " with discover rank " << Helper.DiscoverRanks[v] << std::endl;
 
-  uint32_t label = 0,
-           match = 0,
-           atstart = 0,
-           eval  = (v == 0 ? 0 : graph[v].Trans->numInstructions());
-
+  uint32_t size = 0;
   const uint32_t outDegree = graph.outDegree(v);
 
-  if (graph[v].Label != NONE) {
-    label = 1;
-  }
+  // 1 for a label
+  size += (graph[v].Label != NONE);
 
   if (graph[v].IsMatch) {
     // 1 for match, 1 for finish; or 1 for match, 2 for jump if
     // match is nonterminal
-    match = 2 + (outDegree > 0);
+    size += 2 + (outDegree > 0);
   }
 
-  if (graph[v].AtStart) {
-    atstart = 1;
-  }
-
-  uint32_t outOps = 0;
+  // 1 for a start anchor
+  size += graph[v].AtStart;
 
   if (outDegree) {
-    outOps = calcJumpTableSize(v, graph, outDegree);
+    uint32_t outOps = calcJumpTableSize(v, graph, outDegree);
 
     if (outDegree < 4 || outOps == 0) {
       // count each of the non-initial children
@@ -92,15 +84,14 @@ void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
         outOps += 2;
       }
     }
+
+    size += outOps;
   }
 
-  const uint32_t totalSize = outOps + label + match + atstart +
-                           (Helper.Snippets[v].CheckIndex == NONE ? 0: 1);
+  size += Helper.Snippets[v].CheckIndex != NONE;
 
-  Helper.addSnippet(v, eval, totalSize);
-
-  // std::cerr << "outOps = " << outOps << "; labels = " << labels << "; match = " << isMatch << std::endl;
-  // std::cerr << "state " << v << " has snippet " << "(" << Helper.Snippets[v].first << ", " << Helper.Snippets[v].second << ")" << std::endl;
+  const uint32_t eval = v == 0 ? 0 : graph[v].Trans->numInstructions();
+  Helper.addSnippet(v, eval, size);
 }
 
 void specialVisit(const NFA& graph, NFA::VertexDescriptor startVertex, CodeGenVisitor& vis) {
