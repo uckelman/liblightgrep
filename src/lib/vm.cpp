@@ -392,6 +392,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
 
   case START_OP:
     if (FirstSearch) {
+      t->advance(InstructionSize<START_OP>::VAL);
       return true;
     }
     else {
