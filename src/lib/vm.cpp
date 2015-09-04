@@ -496,12 +496,6 @@ inline void Vm::_executeFrame(const std::bitset<256*256>& filter, ThreadList::it
   }
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
-
-  if (AtStart) {
-    // Switch from at-start First to general First
-    AtStart = false;
-    First = SubsequentFirst;
-  }
 }
 
 inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const base, const byte* const cur, const uint64_t offset) {
@@ -518,12 +512,6 @@ inline void Vm::_executeFrame(ThreadList::iterator t, const Instruction* const b
 
   // ThreadCountHist.resize(count + 1, 0);
   // ++ThreadCountHist[count];
-
-  if (AtStart) {
-    // Switch from at-start First to general First
-    AtStart = false;
-    First = SubsequentFirst;
-  }
 }
 
 inline void Vm::_cleanup() {
@@ -534,6 +522,12 @@ inline void Vm::_cleanup() {
 
   LiveNoLabel = false;
   Live.clear();
+
+  if (AtStart) {
+    // Switch from at-start First to general First
+    AtStart = false;
+    First = SubsequentFirst;
+  }
 }
 
 void Vm::cleanup() { _cleanup(); }
