@@ -355,11 +355,12 @@ SCOPE_TEST(startAnchorProgram) {
   ProgramPtr p = Compiler::createProgram(g);
   Program& prog(*p);
 
-  SCOPE_ASSERT_EQUAL(6u, prog.size());
+  SCOPE_ASSERT_EQUAL(7u, prog.size());
   SCOPE_ASSERT_EQUAL(Instruction::makeStart(), prog[0]);
   SCOPE_ASSERT_EQUAL(Instruction::makeByte('x'), prog[1]);
   SCOPE_ASSERT_EQUAL(Instruction::makeLabel(0), prog[2]);
   SCOPE_ASSERT_EQUAL(Instruction::makeMatch(), prog[3]);
-  SCOPE_ASSERT_EQUAL(Instruction::makeHalt(), prog[4]);
-  SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[5]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[4]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeHalt(), prog[5]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[6]);
 }

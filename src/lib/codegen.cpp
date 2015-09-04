@@ -57,8 +57,9 @@ void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
   // std::cerr << "on state " << v << " with discover rank " << Helper.DiscoverRanks[v] << std::endl;
 
   uint32_t label = 0,
-         match = 0,
-         eval  = (v == 0 ? 0 : graph[v].Trans->numInstructions());
+           match = 0,
+           atstart = 0,
+           eval  = (v == 0 ? 0 : graph[v].Trans->numInstructions());
 
   const uint32_t outDegree = graph.outDegree(v);
 
@@ -70,6 +71,10 @@ void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
     // 1 for match, 1 for finish; or 1 for match, 2 for jump if
     // match is nonterminal
     match = 2 + (outDegree > 0);
+  }
+
+  if (graph[v].AtStart) {
+    atstart = 1;
   }
 
   uint32_t outOps = 0;
@@ -89,7 +94,7 @@ void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
     }
   }
 
-  const uint32_t totalSize = outOps + label + match +
+  const uint32_t totalSize = outOps + label + match + atstart +
                            (Helper.Snippets[v].CheckIndex == NONE ? 0: 1);
 
   Helper.addSnippet(v, eval, totalSize);
