@@ -1722,6 +1722,30 @@ SCOPE_TEST(parseWhackATest) {
   SCOPE_ASSERT_EQUAL(expected, actual);
 }
 
+SCOPE_TEST(parseWhackAaTest) {
+  ParseTree expected;
+  expected.init(4);
+
+  expected.Root = expected.add(
+    ParseNode::REGEXP,
+    expected.add(
+      ParseNode::CONCATENATION,
+      expected.add(
+        ParseNode::LOOKBEHIND_NEG,
+        expected.add(ParseNode::DOT, '.')
+      ),
+      expected.add(ParseNode::LITERAL, 'a')
+    )
+  );
+
+  const std::string p = "\\Aa";
+  ParseTree actual;
+  actual.init(p.length());
+  SCOPE_ASSERT(parse({p, false, false}, actual));
+
+  SCOPE_ASSERT_EQUAL(expected, actual);
+}
+
 SCOPE_TEST(parseWhackZTest) {
   ParseTree expected;
   expected.init(3);
