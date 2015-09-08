@@ -416,6 +416,13 @@ void NFABuilder::concatenate(const ParseNode& n) {
     // put the right back onto the stack
     first.assign(TempFrag);
   }
+  else if (TempFrag.N.Type == ParseNode::LOOKAHEAD_NEG) {
+    // this is not a real concatenation
+    // mark the left as anchored at end
+    for (NFA::VertexDescriptor v: first.InList) {
+      (*Fsm)[v].AtEnd = true;
+    }
+  }
   else {
     // patch left out to right in
     patch_mid(first.OutList, TempFrag.InList, TempFrag.Skippable);
@@ -449,9 +456,7 @@ void NFABuilder::start_anchor(const ParseNode& n) {
 }
 
 void NFABuilder::end_anchor(const ParseNode& n) {
-  const NFA::VertexDescriptor v = Fsm->addVertex();
-  (*Fsm)[v].AtEnd = true;
-  TempFrag.initFull(v, n);
+  TempFrag.initFull(0, n);
   Stack.push(TempFrag);
 }
 

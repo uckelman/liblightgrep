@@ -134,5 +134,6 @@ private:
   HitCallback CurHitFn;
   void* UserData;
 
-  bool AtStart;
+  bool AtStart, PossiblyAtEnd, AtEnd;
+  uint64_t LastOffset;
 };

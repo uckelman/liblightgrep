@@ -112,7 +112,7 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
   const NFA::Vertex& state(graph[v]);
   if (state.Trans) {
     if (state.AtStart) {
-      *curOp++ = Instruction::makeStart();
+      *curOp++ = Instruction::makeBegin();
     }
 
     state.Trans->toInstruction(curOp);
@@ -125,6 +125,10 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
 
     if (cg.Snippets[v].CheckIndex != NONE) {
       *curOp++ = Instruction::makeCheckHalt(cg.Snippets[v].CheckIndex);
+    }
+
+    if (state.AtEnd) {
+      *curOp++ = Instruction::makeEnd();
     }
 
     if (state.IsMatch) {

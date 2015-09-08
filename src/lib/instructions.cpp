@@ -205,11 +205,19 @@ Instruction Instruction::makeFinish() {
   return i;
 }
 
-Instruction Instruction::makeStart() {
+Instruction makeAnchor(bool end) {
   Instruction i;
-  i.OpCode = START_OP;
-  i.Op.Offset = 0;
+  i.OpCode = ANCHOR_OP;
+  i.Op.Offset = end;
   return i;
+}
+
+Instruction Instruction::makeBegin() {
+  return makeAnchor(false);
+}
+
+Instruction Instruction::makeEnd() {
+  return makeAnchor(true);
 }
 
 Instruction Instruction::makeRaw32(uint32_t val) {

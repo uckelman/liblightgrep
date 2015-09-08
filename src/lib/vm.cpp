@@ -130,7 +130,8 @@ Vm::Vm(ProgramPtr prog):
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),
   MatchEnds(prog->MaxLabel+1), MatchEndsMax(0),
-  CurHitFn(nullptr), UserData(nullptr), AtStart(true)
+  CurHitFn(nullptr), UserData(nullptr), AtStart(true), PossiblyAtEnd(false),
+  AtEnd(false), LastOffset(0)
 {
 // FIXME: should do these checks inside SparseSet::resize()?
   if (Live.size() > Live.max_size()) {
@@ -392,15 +393,30 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
     t->PC = 0;
     return false;
 
-  case START_OP:
-    if (AtStart) {
-      t->advance(InstructionSize<START_OP>::VAL);
-      return true;
+  case ANCHOR_OP:
+    if (!instr.Op.Offset) {
+      if (AtStart) {
+        t->advance(InstructionSize<ANCHOR_OP>::VAL);
+        return true;
+      }
+      else {
+        t->PC = 0;
+        return false;
+      }
     }
     else {
-      t->PC = 0;
-      return false;
-    } 
+      if (!PossiblyAtEnd) {
+        t->PC = 0;
+        return false;
+      }
+      else if (AtEnd) {
+        t->advance(InstructionSize<ANCHOR_OP>::VAL);
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
   }
 
   return false;
@@ -609,6 +625,9 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
   UserData = userData;
   const Instruction* const base = &(*Prog)[0];
 
+  PossiblyAtEnd = false;
+  LastOffset = startOffset - (end - beg) - 1;
+
   const std::bitset<256*256>& filter = Prog->Filter;
   const byte* const filterEnd = end - Prog->FilterOff - 1;
 
@@ -629,7 +648,23 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     _cleanup();
   }
 
-  for ( ; cur < end; ++cur, ++offset) {
+  for ( ; cur < end - 1; ++cur, ++offset) {
+    #ifdef LBT_TRACE_ENABLED
+    open_frame_json(std::clog, offset, cur);
+    #endif
+
+    _executeFrame(Active.begin(), base, cur, offset);
+
+    #ifdef LBT_TRACE_ENABLED
+    close_frame_json(std::clog, offset);
+    #endif
+
+    _cleanup();
+  }
+
+  {
+    PossiblyAtEnd = true;
+
     #ifdef LBT_TRACE_ENABLED
     open_frame_json(std::clog, offset, cur);
     #endif
@@ -690,9 +725,15 @@ void Vm::closeOut(HitCallback hitFn, void* userData) {
   }
 
   SearchHit hit;
+  PossiblyAtEnd = AtEnd = true;
 
-  for (ThreadList::const_iterator t(Active.begin()); t != Active.end(); ++t) {
-    if (t->PC->OpCode == FINISH_OP) {
+  for (ThreadList::iterator t(Active.begin()); t != Active.end(); ++t) {
+    // advance any threads which are at an end anchor
+    if (t->PC->OpCode == ANCHOR_OP && t->PC->Op.Offset) {
+      _executeEpSequence<10>(&(*Prog)[0], t, LastOffset);
+    }
+
+    if (t->PC && t->PC->OpCode == FINISH_OP) {
       // has match
       if (t->Start >= MatchEnds[t->Label]) {
         MatchEnds[t->Label] = t->End + 1;
@@ -704,6 +745,7 @@ void Vm::closeOut(HitCallback hitFn, void* userData) {
       }
     }
   }
+
   // std::stringstream buf;
   // buf << "{\"threads\":[";
   // for (unsigned int i = 0; i < ThreadCountHist.size(); ++i) {

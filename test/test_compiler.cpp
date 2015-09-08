@@ -356,9 +356,30 @@ SCOPE_TEST(startAnchorProgram) {
   Program& prog(*p);
 
   SCOPE_ASSERT_EQUAL(7u, prog.size());
-  SCOPE_ASSERT_EQUAL(Instruction::makeStart(), prog[0]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeBegin(), prog[0]);
   SCOPE_ASSERT_EQUAL(Instruction::makeByte('x'), prog[1]);
   SCOPE_ASSERT_EQUAL(Instruction::makeLabel(0), prog[2]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeMatch(), prog[3]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[4]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeHalt(), prog[5]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[6]);
+}
+
+SCOPE_TEST(endAnchorProgram) {
+  NFA g;
+  edge(0, 1, g, g.TransFac->getByte('x'));
+
+  g[1].Label = 0;
+  g[1].IsMatch = true;
+  g[1].AtEnd = true;
+
+  ProgramPtr p = Compiler::createProgram(g);
+  Program& prog(*p);
+
+  SCOPE_ASSERT_EQUAL(7u, prog.size());
+  SCOPE_ASSERT_EQUAL(Instruction::makeByte('x'), prog[0]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeLabel(0), prog[1]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeEnd(), prog[2]);
   SCOPE_ASSERT_EQUAL(Instruction::makeMatch(), prog[3]);
   SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[4]);
   SCOPE_ASSERT_EQUAL(Instruction::makeHalt(), prog[5]);
