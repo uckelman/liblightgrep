@@ -633,6 +633,7 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
 
   uint64_t offset = startOffset;
 
+  // handle bytes from beginning to limit of filter
   const byte* cur = beg;
   for ( ; cur < filterEnd; ++cur, ++offset) {
     #ifdef LBT_TRACE_ENABLED
@@ -648,6 +649,7 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     _cleanup();
   }
 
+  // handle bytes within filter length of the end, except last byte
   for ( ; cur < end - 1; ++cur, ++offset) {
     #ifdef LBT_TRACE_ENABLED
     open_frame_json(std::clog, offset, cur);
@@ -662,6 +664,7 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     _cleanup();
   }
 
+  // handle last byte
   {
     PossiblyAtEnd = true;
 
