@@ -1297,7 +1297,7 @@ SCOPE_TEST(parse_aWhackZ) {
   SCOPE_ASSERT(!fsm[0].AtStart);
   SCOPE_ASSERT(!fsm[1].AtStart);
   SCOPE_ASSERT(!fsm[2].AtStart);
-  
+
   SCOPE_ASSERT(!fsm[0].AtEnd);
   SCOPE_ASSERT(!fsm[1].AtEnd);
   SCOPE_ASSERT(fsm[2].AtEnd);
@@ -1325,7 +1325,7 @@ SCOPE_TEST(parse_WhackAaWhackZ) {
   SCOPE_ASSERT(fsm[1].AtStart);
   SCOPE_ASSERT(!fsm[2].AtStart);
   SCOPE_ASSERT(!fsm[3].AtStart);
-  
+
   SCOPE_ASSERT(!fsm[0].AtEnd);
   SCOPE_ASSERT(!fsm[1].AtEnd);
   SCOPE_ASSERT(!fsm[2].AtEnd);
@@ -1357,7 +1357,7 @@ SCOPE_TEST(parse_WhackAaOrbWhackZ) {
   SCOPE_ASSERT(!fsm[2].AtStart);
   SCOPE_ASSERT(!fsm[3].AtStart);
   SCOPE_ASSERT(!fsm[4].AtStart);
-  
+
   SCOPE_ASSERT(!fsm[0].AtEnd);
   SCOPE_ASSERT(!fsm[1].AtEnd);
   SCOPE_ASSERT(!fsm[2].AtEnd);

@@ -26,9 +26,9 @@ struct Instruction;
 class Transition {
 public:
   Transition() = default;
-  
+
   Transition(const Transition&) = delete;
-  
+
   virtual ~Transition() = default;
 
   Transition& operator=(const Transition&) = delete;

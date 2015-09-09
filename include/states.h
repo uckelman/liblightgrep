@@ -68,7 +68,7 @@ private:
 class EitherState: public Transition {
 public:
   EitherState(byte one, byte two): Byte1(one), Byte2(two) {}
-  virtual ~EitherState() = default; 
+  virtual ~EitherState() = default;
 
   virtual const byte* allowed(const byte* beg, const byte*) const {
     return *beg == Byte1 || *beg == Byte2 ? beg + 1 : beg;
@@ -142,7 +142,7 @@ public:
     }
   }
 
-  virtual ~ByteSetState() = default; 
+  virtual ~ByteSetState() = default;
 
   virtual const byte* allowed(const byte* beg, const byte*) const {
     return Allowed[*beg] ? beg+1 : beg;

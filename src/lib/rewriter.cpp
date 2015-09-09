@@ -460,7 +460,7 @@ bool makeBinopsRightAssociative(ParseNode* n, std::stack<ParseNode*>& branch) {
             ++o;
           }
 
-          // add the sole right leaf 
+          // add the sole right leaf
           if ((*o)->Child.Right != *l) {
             (*o)->Child.Right = *l;
             ret = true;
@@ -1236,7 +1236,7 @@ void literalToCC(ParseNode* n) {
 
   case ParseNode::CHAR_CLASS:
     // do nothing
-    break;      
+    break;
 
   case ParseNode::LITERAL:
     *n = ParseNode(ParseNode::CHAR_CLASS, UnicodeSet(n->Val));
@@ -1244,7 +1244,7 @@ void literalToCC(ParseNode* n) {
 
   case ParseNode::BYTE:
     *n = ParseNode(ParseNode::CHAR_CLASS, ByteSet(n->Val));
-    break;        
+    break;
 
   default:
     throw std::logic_error("wtf");
@@ -1314,8 +1314,8 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
             p->Type == ParseNode::REPETITION_NG) {
           /*
              (?=S){n,m} = (?<=S){n,m} = \A = \Z = x{0}   if n = 0
-      
-             (?=S){n,m)  = (?=S) 
+
+             (?=S){n,m)  = (?=S)
              (?<=S){n,m} = (?<=S)   o/w
              \A{n,m}     = \A
              \Z{n,m}     = \Z
@@ -1336,7 +1336,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           ret = true;
           break;
         }
-        
+
         if (n->Type == ParseNode::LOOKAHEAD_NEG &&
             p->Type == ParseNode::CONCATENATION && n == p->Child.Left) {
           /*
@@ -1407,7 +1407,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           ret = true;
           break;
         }
-        
+
         if (n->Type == ParseNode::LOOKBEHIND_POS &&
             n->Child.Left->Type == ParseNode::CONCATENATION &&
             n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS)
@@ -1427,14 +1427,14 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
           spliceOutParent(c, l, s);
 
-          parent[s] = c;         
-          l->Type = ParseNode::TEMPORARY; 
+          parent[s] = c;
+          l->Type = ParseNode::TEMPORARY;
 
           restartShove(root, check);
           ret = true;
           break;
         }
-        
+
         if (n->Type == ParseNode::LOOKAHEAD_POS &&
             n->Child.Left->Type == ParseNode::CONCATENATION) {
           p = n;
@@ -1598,10 +1598,10 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         if (isLiteral(n->Child.Left->Child.Left) &&
             isLiteral(n->Child.Right))
         {
-          /* 
+          /*
                 &            &
                / \         /   \
-              ?=  b  =>  {0} [a&&b]  
+              ?=  b  =>  {0} [a&&b]
                |          |
                a          a
           */
@@ -1625,14 +1625,14 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           break;
         }
 
-        if (isLiteral(n->Child.Left->Child.Left) && 
+        if (isLiteral(n->Child.Left->Child.Left) &&
             n->Child.Right->Type == ParseNode::CONCATENATION &&
             isLiteral(n->Child.Right->Child.Left))
         {
           /*
                   &               &
                  / \            /   \
-               ?=   &    =>  [a&&b]  X 
+               ?=   &    =>  [a&&b]  X
                |   / \
                a  b   X
           */
@@ -1744,7 +1744,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           break;
         }
       }
-      
+
       if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
         /*
              &            &
@@ -1786,7 +1786,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           ParseNode* u_rdup = tree.add(ParseNode::CONCATENATION, u, rdup);
           parent[u] = parent[rdup] = u_rdup;
           n->Child.Right = u_rdup;
-          parent[u_rdup] = n; 
+          parent[u_rdup] = n;
 
           restartShove(root, check);
           ret = true;
@@ -1796,10 +1796,10 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         if (isLiteral(n->Child.Right->Child.Left) &&
             isLiteral(n->Child.Left))
         {
-          /* 
+          /*
                 &            &
                / \         /   \
-              b ?<=  => [a&&b] {0} 
+              b ?<=  => [a&&b] {0}
                   |             |
                   a             a
           */
@@ -1824,7 +1824,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         }
 
         if (n->Child.Right->Child.Left->Type == ParseNode::CONCATENATION){
-          /* 
+          /*
                 &                 &
                / \              /   \
               b  ?<=    =>    ?<=  [a&&b]
@@ -1834,7 +1834,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
                 T0  &        T0  &
                    / \          / \
                   T1 ...      T1 ...
-                      &           &  
+                      &           &
                      / \         / \
                     Tk  a     Tk-1  Tk
           */
@@ -1873,12 +1873,12 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           }
         }
       }
-      
+
       if (n->Child.Right->Type == ParseNode::CONCATENATION &&
           n->Child.Right->Child.Left->Type == ParseNode::LOOKBEHIND_POS) {
         if (isLiteral(n->Child.Left)) {
           if (isLiteral(n->Child.Right->Child.Left->Child.Left)) {
-            /* 
+            /*
                   &               &
                  / \            /   \
                 b   &    =>  [a&&b]  S
@@ -1910,9 +1910,9 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
             ret = true;
             break;
           }
-          
+
           if (n->Child.Right->Child.Left->Child.Left->Type == ParseNode::CONCATENATION) {
-            /* 
+            /*
                   &                 &
                  / \              /   \
                 b   &    =>    ?<=     &
@@ -1922,7 +1922,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
                   &           T0  &
                  / \             / \
                 T0  &           T1 ...
-                   / \              &  
+                   / \              &
                   T1 ...           / \
                       &         Tk-1  Tk
                      / \
@@ -2050,12 +2050,12 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         switch (p->Type) {
         case ParseNode::REGEXP:
           break;
-        
+
         case ParseNode::LOOKBEHIND_POS:
         case ParseNode::LOOKAHEAD_POS:
           {
             /*
-                 ?<=   ?=   
+                 ?<=   ?=
                    |    |  =>  []
                   []   []
 
@@ -2082,7 +2082,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
             if (p->Child.Rep.Min == 0) {
               p->Child.Rep.Max = 0;
             }
-            else { 
+            else {
               ParseNode* gp = parent[p];
               spliceOutParent(gp, p, n);
               p->Type = ParseNode::TEMPORARY;
@@ -2123,7 +2123,7 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
             ParseNode* t = n == p->Child.Left ? p->Child.Right : p->Child.Left;
             spliceOutParent(gp, p, t);
             p->Type = n->Type = ParseNode::TEMPORARY;
-            parent[t] = gp; 
+            parent[t] = gp;
             restartShove(root, check);
             ret = true;
           }
@@ -2208,7 +2208,7 @@ size_t estimateNegativeLookaroundBlowup(const ParseNode* n) {
   default:
     // WTF?
     throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
-  } 
+  }
 }
 
 std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
@@ -2271,7 +2271,7 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
       case ParseNode::LOOKAHEAD_POS:
       case ParseNode::LOOKAHEAD_NEG:
         /*
-              &              & 
+              &              &
              / \            / \
                 &              &
                / \     OR     / \
@@ -2285,7 +2285,7 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
 
       case ParseNode::ALTERNATION:
         /*
-              &              & 
+              &              &
              / \            / \
                 &              &
                / \     OR     / \
@@ -2315,7 +2315,7 @@ std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
       if (behind) {
         if (!ahead) {
           /*
-               & 
+               &
               / \
              LB  M
           */
@@ -2378,7 +2378,7 @@ bool containsLookaroundAssertion(const ParseNode* n) {
 
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
-    return containsLookaroundAssertion(n->Child.Left) || 
+    return containsLookaroundAssertion(n->Child.Left) ||
            containsLookaroundAssertion(n->Child.Right);
 
   case ParseNode::REPETITION:
@@ -2394,5 +2394,5 @@ bool containsLookaroundAssertion(const ParseNode* n) {
   default:
     // WTF?
     throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
-  } 
+  }
 }

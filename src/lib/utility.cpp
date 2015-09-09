@@ -57,10 +57,10 @@ std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph) {
     if (b.size() <= depth) {
       b.resize(depth+1);
     }
-  
-    // we use this pointer for getting sub-bitsets 
+
+    // we use this pointer for getting sub-bitsets
     uint8_t* const bb = reinterpret_cast<uint8_t* const>(&b[depth]);
- 
+
     for (const NFA::VertexDescriptor t0 : graph.outVertices(h)) {
       ByteSet first;
       graph[t0].Trans->orBytes(first);

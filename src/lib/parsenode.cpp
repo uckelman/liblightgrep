@@ -158,7 +158,7 @@ bool subtreeCompare(const ParseNode* a, const ParseNode* b) {
   case ParseNode::LOOKAHEAD_POS:
   case ParseNode::LOOKAHEAD_NEG:
     return subtreeCompare(a->Child.Left, b->Child.Left);
-  
+
   case ParseNode::ALTERNATION:
   case ParseNode::CONCATENATION:
     return subtreeCompare(a->Child.Left, b->Child.Left) &&
@@ -174,9 +174,9 @@ bool subtreeCompare(const ParseNode* a, const ParseNode* b) {
   case ParseNode::CHAR_CLASS:
   case ParseNode::LITERAL:
   case ParseNode::BYTE:
-    return *a == *b;    
+    return *a == *b;
 
   default:
-    return true; 
+    return true;
   }
 }

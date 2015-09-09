@@ -1144,7 +1144,7 @@ SCOPE_TEST(splitLookarounds_LPLBPaRPbLPLAPcRP) {
   /*
          &
         / \
-      ?<=  &    
+      ?<=  &
        |  / \
        a  b  ?=
               |

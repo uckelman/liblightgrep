@@ -112,10 +112,10 @@ std::string cpToCharacterString(uint32_t i) {
     // otherwise, print the hex code
     default:
       {
-        // pick an even width 
+        // pick an even width
         int w;
         if (i < 0x100) {
-          w = 2; 
+          w = 2;
         }
         else if (i < 0x10000) {
           w = 4;
