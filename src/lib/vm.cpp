@@ -679,6 +679,8 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     #endif
 
     _cleanup();
+
+    ++offset;
   }
 
   // std::cerr << "Max number of active threads was " << maxActive << ", average was " << total/(end - beg) << std::endl;
