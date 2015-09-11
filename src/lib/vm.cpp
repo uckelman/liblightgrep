@@ -626,7 +626,7 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
   const Instruction* const base = &(*Prog)[0];
 
   PossiblyAtEnd = false;
-  LastOffset = startOffset - (end - beg) - 1;
+  LastOffset = startOffset + (end - beg) - 1;
 
   const std::bitset<256*256>& filter = Prog->Filter;
   const byte* const filterEnd = end - Prog->FilterOff - 1;
