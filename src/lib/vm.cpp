@@ -323,7 +323,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
           }
         }
 
-        t->PC = 0;
+        t->PC = nullptr;
       }
 
       return false;
@@ -357,7 +357,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
   case CHECK_HALT_OP:
     if (CheckLabels.find(instr.Op.Offset)) {
       // another thread has the lock, we die
-      t->PC = 0;
+      t->PC = nullptr;
       return false;
     }
     else if (!_liveCheck(t->Start, t->Label)) {
@@ -377,7 +377,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
         return true;
       }
       else {
-        t->PC = 0;
+        t->PC = nullptr;
         return false;
       }
     }
@@ -390,7 +390,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
 
   case HALT_OP:
     // die, motherfucker, die
-    t->PC = 0;
+    t->PC = nullptr;
     return false;
 
   case ANCHOR_OP:
@@ -400,13 +400,13 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
         return true;
       }
       else {
-        t->PC = 0;
+        t->PC = nullptr;
         return false;
       }
     }
     else {
       if (!PossiblyAtEnd) {
-        t->PC = 0;
+        t->PC = nullptr;
         return false;
       }
       else if (AtEnd) {
