@@ -610,7 +610,8 @@ uint64_t Vm::_startOfLeftmostLiveThread(const uint64_t offset) const {
   const ThreadList::const_iterator e(Active.end());
   for (ThreadList::const_iterator t(Active.begin()); t != e; ++t) {
     const unsigned char op = t->PC->OpCode;
-    if (op == HALT_OP || op == FINISH_OP) {
+    if (op == HALT_OP || op == FINISH_OP ||
+        (op == ANCHOR_OP && t->PC->Op.Offset)) {
       continue;
     }
     // this is a live thread
