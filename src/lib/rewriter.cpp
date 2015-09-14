@@ -116,6 +116,13 @@ bool has_only_zero_length_match(const ParseNode* n) {
   case ParseNode::REGEXP:
     return !n->Child.Left || has_only_zero_length_match(n->Child.Left);
 
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+    // Don't apply this to assertions.
+    return false;
+
   case ParseNode::ALTERNATION:
     // Left has priority, so we don't need to check right.
     return has_only_zero_length_match(n->Child.Left);
@@ -181,6 +188,10 @@ bool reduceEmptySubtrees(ParseNode* n, std::stack<ParseNode*>& branch) {
   else {
     switch (n->Type) {
     case ParseNode::REGEXP:
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKAHEAD_NEG:
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKBEHIND_NEG:
     case ParseNode::REPETITION:
     case ParseNode::REPETITION_NG:
       ret = reduceEmptySubtrees(n->Child.Left, branch);
@@ -330,6 +341,10 @@ bool combineConsecutiveRepetitions(ParseNode* n, std::stack<ParseNode*>& branch)
     if (!n->Child.Left) {
       return ret;
     }
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
   case ParseNode::REPETITION:
   case ParseNode::REPETITION_NG:
     ret = combineConsecutiveRepetitions(n->Child.Left, branch);
