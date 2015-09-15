@@ -21,8 +21,10 @@
 #include "parsetree.h"
 #include "pattern.h"
 
+#include <tuple>
+
 bool parse(const Pattern& pattern, ParseTree& tree);
 
-void parseAndReduce(const Pattern& pattern, ParseTree& tree);
+std::tuple<ParseTree,ParseTree,ParseTree> parseAndReduce(const Pattern& pattern);
 
-void reduce(const std::string& text, ParseTree& tree);
+std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseTree& tree);

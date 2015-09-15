@@ -34,7 +34,7 @@
 
 struct PatternHandle {
   Pattern   Pat;
-  ParseTree Tree;
+  ParseTree Behind, Tree, Ahead;
 };
 
 struct PatternMapHandle {

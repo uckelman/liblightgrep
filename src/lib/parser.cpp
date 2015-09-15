@@ -37,15 +37,17 @@ namespace {
   }
 }
 
-void parseAndReduce(const Pattern& pattern, ParseTree& tree) {
+std::tuple<ParseTree,ParseTree,ParseTree> parseAndReduce(const Pattern& pattern) {
+  ParseTree tree;
+
   // parse the pattern
   if (!parse(pattern, tree)) {
     THROW_RUNTIME_ERROR_WITH_CLEAN_OUTPUT("Could not parse");
   }
-  reduce(pattern.Expression, tree);
+  return reduce(pattern.Expression, tree);
 }
 
-void reduce(const std::string& text, ParseTree& tree) {
+std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseTree& tree) {
   // rewrite the parse tree, if necessary
   bool rewrite = makeBinopsRightAssociative(tree.Root);
   rewrite |= combineConsecutiveRepetitions(tree.Root);
@@ -59,4 +61,11 @@ void reduce(const std::string& text, ParseTree& tree) {
     reduceEmptySubtrees(tree.Root);
     reduceUselessRepetitions(tree.Root);
   }
+
+/*
+  return containsLookaroundAssertion(tree.Root) ?
+    splitLookarounds(tree) :
+    std::make_tuple(ParseTree(), std::move(tree), ParseTree());
+*/
+  return std::make_tuple(ParseTree(), std::move(tree), ParseTree());
 }

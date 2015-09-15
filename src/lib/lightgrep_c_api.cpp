@@ -90,7 +90,10 @@ int lg_parse_pattern(LG_HPATTERN hPattern,
   };
 
   return trapWithVals(
-    [hPattern](){ parseAndReduce(hPattern->Pat, hPattern->Tree); },
+    [hPattern](){
+      std::tie(hPattern->Behind, hPattern->Tree, hPattern->Ahead) =
+        parseAndReduce(hPattern->Pat);
+    },
     1, 0, err
   );
 }
