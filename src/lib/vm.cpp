@@ -726,10 +726,6 @@ void Vm::closeOut(HitCallback hitFn, void* userData) {
   CurHitFn = hitFn;
   UserData = userData;
 
-  if (!CurHitFn) {
-    return;
-  }
-
   SearchHit hit;
   PossiblyAtEnd = AtEnd = true;
 
