@@ -157,14 +157,18 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
       // layout non-initial children in reverse order
       for (uint32_t i = v_odeg-1; i > 0; --i) {
         curTarget = graph.outVertex(v, i);
-        *curOp = Instruction::makeFork(curOp, cg.Snippets[curTarget].Start);
+        *curOp = Instruction::makeFork(
+          curOp, cg.Snippets[curTarget].Start + state.AtStart
+        );
         curOp += 2;
       }
 
       // layout first child, falling through if possible
       curTarget = graph.outVertex(v, 0);
       if (!targetCodeFollowsSource(cg, v, curTarget)) { // else: fall through happens
-        *curOp = Instruction::makeJump(curOp, cg.Snippets[curTarget].Start);
+        *curOp = Instruction::makeJump(
+          curOp, cg.Snippets[curTarget].Start + state.AtStart
+        );
         curOp += 2;
       }
     }

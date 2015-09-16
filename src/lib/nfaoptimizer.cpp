@@ -42,15 +42,17 @@ bool NFAOptimizer::canMerge(const NFA& dst, NFA::VertexDescriptor dstTail, const
   // 1) they have the same incoming edge
   // 2) they have the same label (i.e., they are match states for
   //    the same pattern, or are not match states)
-  // 3) if they are match states, then they have no successors
-  // 4) the destination has only one incoming edge
-  // 5) the source has only one incoming edge
-  // 6) if the destination has been matched with a source, then that
+  // 3) both or neither are anchored at start
+  // 4) if they are match states, then they have no successors
+  // 5) the destination has only one incoming edge
+  // 6) the source has only one incoming edge
+  // 7) if the destination has been matched with a source, then that
   //    source has only one incoming edge
-  // 7) the source has only one incoming edge
+  // 8) the source has only one incoming edge
 
   if (
     dst[dstTail].Label == src[srcTail].Label &&
+    dst[dstTail].AtStart == src[srcTail].AtStart &&
     (
       dst[dstTail].Label == NOLABEL ||
       (0 == src.outDegree(srcTail) && 0 == dst.outDegree(dstTail))
@@ -466,6 +468,10 @@ void makeDestinationState(const NFA& src, NFA& dst, const NFA::VertexDescriptor 
   if (src[dstList.front()].IsMatch) {
     dst[dstTail].IsMatch = true;
     dst[dstTail].Label = src[dstList.front()].Label;
+  }
+
+  if (src[dstList.front()].AtStart) {
+    dst[dstTail].AtStart = true;
   }
 
   dst.addEdge(dstHead, dstTail);
