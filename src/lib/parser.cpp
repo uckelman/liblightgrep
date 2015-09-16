@@ -62,10 +62,7 @@ std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseT
     reduceUselessRepetitions(tree.Root);
   }
 
-/*
   return containsLookaroundAssertion(tree.Root) ?
     splitLookarounds(tree) :
     std::make_tuple(ParseTree(), std::move(tree), ParseTree());
-*/
-  return std::make_tuple(ParseTree(), std::move(tree), ParseTree());
 }

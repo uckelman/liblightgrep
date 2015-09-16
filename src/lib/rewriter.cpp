@@ -2231,144 +2231,145 @@ size_t estimateNegativeLookaroundBlowup(const ParseNode* n) {
 }
 
 std::tuple<ParseNode*,ParseNode*,ParseNode*> splitLookarounds(ParseNode* root) {
+  if (!root->Child.Left) {
+    return std::make_tuple(nullptr, root, nullptr);
+  }
 
   // split tree into lookbehinds, pattern, lookaheads
+  // anchors concatenated to the pattern stay with the pattern
 
   ParseNode* behind = nullptr;
   ParseNode* middle = nullptr;
   ParseNode* ahead = nullptr;
 
-  if (root->Child.Left) {
-    if (root->Child.Left->Type == ParseNode::CONCATENATION) {
-      // check for lookbehinds
-      switch (root->Child.Left->Child.Left->Type) {
-      case ParseNode::LOOKBEHIND_POS:
-      case ParseNode::LOOKBEHIND_NEG:
-        /*
+// FIXME: do we need to handle alternation?
+  if (root->Child.Left->Type == ParseNode::CONCATENATION) {
+    // check for positive-width lookbehinds
+    switch (root->Child.Left->Child.Left->Type) {
+    case ParseNode::LOOKBEHIND_POS:
+      /*
+            &
+           / \
+         ?<=
+      */
+      behind = root->Child.Left->Child.Left;
+      break;
+
+    case ParseNode::ALTERNATION:
+      /*
               &           &
              / \   OR    / \
-           ?<=         ?<!
-        */
-        behind = root->Child.Left->Child.Left;
-        break;
-
-      case ParseNode::ALTERNATION:
-        /*
-                &           &
-               / \   OR    / \
-              |           |
-             / \         / \
-           ?<= ?<!     ?<! ?<=
-        */
+            |           |
+           / \         / \
+         ?<= ?<!     ?<! ?<=
+      */
+      {
+        ParseNode* alt = root->Child.Left->Child.Left;
+        if ((alt->Child.Left->Type == ParseNode::LOOKBEHIND_POS &&
+             alt->Child.Right->Type == ParseNode::LOOKBEHIND_NEG) ||
+            (alt->Child.Left->Type == ParseNode::LOOKBEHIND_NEG &&
+             alt->Child.Right->Type == ParseNode::LOOKBEHIND_POS))
         {
-          ParseNode* alt = root->Child.Left->Child.Left;
-          if ((alt->Child.Left->Type == ParseNode::LOOKBEHIND_POS &&
-               alt->Child.Right->Type == ParseNode::LOOKBEHIND_NEG) ||
-              (alt->Child.Left->Type == ParseNode::LOOKBEHIND_NEG &&
-               alt->Child.Right->Type == ParseNode::LOOKBEHIND_POS))
-          {
-            behind = alt;
-          }
+          behind = alt;
         }
-        break;
-
-      default:
-        break;
       }
+      break;
 
-      // check for lookaheads
-      ParseNode* gp = root;
-      ParseNode* p = root->Child.Left;
-      ParseNode* a = p->Child.Right;
-      while (a->Type == ParseNode::CONCATENATION) {
-        gp = p;
-        p = a;
-        a = a->Child.Right;
-      }
+    default:
+      break;
+    }
 
-      switch (a->Type) {
-      case ParseNode::LOOKAHEAD_POS:
-      case ParseNode::LOOKAHEAD_NEG:
-        /*
+    // check for positive-width lookaheads
+    ParseNode* gp = root;
+    ParseNode* p = root->Child.Left;
+    ParseNode* a = p->Child.Right;
+    while (a->Type == ParseNode::CONCATENATION) {
+      gp = p;
+      p = a;
+      a = a->Child.Right;
+    }
+
+    switch (a->Type) {
+    case ParseNode::LOOKAHEAD_POS:
+      /*
+            &              &
+           / \            / \
               &              &
-             / \            / \
+             / \     OR     / \
+               ...            ...
                 &              &
-               / \     OR     / \
-                 ...            ...
-                  &              &
+               / \            / \
+                 ?=             ?!
+      */
+      ahead = a;
+      break;
+
+    case ParseNode::ALTERNATION:
+      /*
+            &              &
+           / \            / \
+              &              &
+             / \     OR     / \
+               ...            ...
+                &              &
+               / \            / \
+                  |              |
                  / \            / \
-                   ?=             ?!
-        */
+                ?= ?!          ?! ?=
+      */
+      if ((a->Child.Left->Type == ParseNode::LOOKAHEAD_POS &&
+           a->Child.Right->Type == ParseNode::LOOKAHEAD_NEG) ||
+          (a->Child.Left->Type == ParseNode::LOOKAHEAD_NEG &&
+           a->Child.Right->Type == ParseNode::LOOKAHEAD_POS))
+      {
         ahead = a;
-        break;
-
-      case ParseNode::ALTERNATION:
-        /*
-              &              &
-             / \            / \
-                &              &
-               / \     OR     / \
-                 ...            ...
-                  &              &
-                 / \            / \
-                    |              |
-                   / \            / \
-                  ?= ?!          ?! ?=
-        */
-        {
-          if ((a->Child.Left->Type == ParseNode::LOOKAHEAD_POS &&
-               a->Child.Right->Type == ParseNode::LOOKAHEAD_NEG) ||
-              (a->Child.Left->Type == ParseNode::LOOKAHEAD_NEG &&
-               a->Child.Right->Type == ParseNode::LOOKAHEAD_POS))
-          {
-            ahead = a;
-          }
-        }
-        break;
-
-      default:
-        break;
       }
+      break;
 
-      // check for the middle
-      if (behind) {
-        if (!ahead) {
-          /*
-               &
-              / \
-             LB  M
-          */
-          middle = root->Child.Left->Child.Right;
-        }
-        else {
-          /*
-              &
+    default:
+      break;
+    }
+
+    // check for the middle
+    if (behind) {
+      if (!ahead) {
+        /*
+             &
+            / \
+           LB  M
+        */
+        middle = root->Child.Left->Child.Right;
+      }
+      else {
+        /*
+            &
+           / \
+          LB  &
              / \
-            LB  &
+            M0 ...
+                &
                / \
-              M0 ...
-                  &
-                 / \
-                Mk  LA
-          */
-          middle = root->Child.Left->Child.Right->Child.Left;
-          // detach ahead from middle
-          spliceOutParent(gp, p, p->Child.Left);
-        }
-      }
-      else if (ahead) {
-        /*
-              &
-             / \
-            M  LA
+              Mk  LA
         */
-        middle = root->Child.Left->Child.Left;
+        middle = root->Child.Left->Child.Right->Child.Left;
+        // detach ahead from middle
+        spliceOutParent(gp, p, p->Child.Left);
       }
+    }
+    else if (ahead) {
+      /*
+            &
+           / \
+          M  LA
+      */
+      middle = root->Child.Left->Child.Left;
     }
     else {
-      // main operator is not &, therefore we assume no lookarounds
       middle = root->Child.Left;
     }
+  }
+  else {
+    middle = root->Child.Left;
   }
 
   return std::tie(behind, middle, ahead);
