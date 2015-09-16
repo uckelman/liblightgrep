@@ -89,11 +89,13 @@ std::string Instruction::toString() const {
   case HALT_OP:
     buf << "Halt";
     break;
+  case ANCHOR_OP:
+    buf << "Anchor " << (Op.Offset ? "End" : "Start");
+    break;
   default:
     buf << "* UNRECOGNIZED *";
   };
-  ret = buf.str();
-  return ret;
+  return buf.str();
 }
 
 Instruction Instruction::makeByte(byte b, bool negate) {
