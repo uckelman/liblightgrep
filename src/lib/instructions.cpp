@@ -47,9 +47,15 @@ std::string Instruction::toString() const {
   std::string ret;
   std::ostringstream buf;
   switch (OpCode) {
+  case JUMP_TABLE_RANGE_OP:
+    buf << "JmpTblRange 0x" << HexCode<byte>(Op.T2.First) << "/'" << Op.T2.First << "'-0x" << HexCode<byte>(Op.T2.Last) << "/'" << Op.T2.Last << '\'';
+    break;
   case BYTE_OP:
     buf << "Byte " << testNot(Op.T1.Flags) << "0x" << HexCode<byte>(Op.T1.Byte)
       << "/'" << Op.T1.Byte << '\'';
+    break;
+  case BIT_VECTOR_OP:
+    buf << "BitVector";
     break;
   case EITHER_OP:
     buf << "Either " << testNot(Op.T2.Flags) << "0x" << HexCode<byte>(Op.T2.First)
@@ -62,17 +68,14 @@ std::string Instruction::toString() const {
   case ANY_OP:
     buf << "Any";
     break;
-  case BIT_VECTOR_OP:
-    buf << "BitVector";
-    break;
-  case JUMP_OP:
-    buf << "Jump 0x" << HexCode<uint32_t>(*reinterpret_cast<const uint32_t*>(this+1)) << '/' << std::dec << (*reinterpret_cast<const uint32_t*>(this+1));
-    break;
-  case JUMP_TABLE_RANGE_OP:
-    buf << "JmpTblRange 0x" << HexCode<byte>(Op.T2.First) << "/'" << Op.T2.First << "'-0x" << HexCode<byte>(Op.T2.Last) << "/'" << Op.T2.Last << '\'';
+  case FINISH_OP:
+    buf << "Finish";
     break;
   case FORK_OP:
     buf << "Fork 0x" << HexCode<uint32_t>(*reinterpret_cast<const uint32_t*>(this+1)) << '/' << std::dec << (*reinterpret_cast<const uint32_t*>(this+1));
+    break;
+  case JUMP_OP:
+    buf << "Jump 0x" << HexCode<uint32_t>(*reinterpret_cast<const uint32_t*>(this+1)) << '/' << std::dec << (*reinterpret_cast<const uint32_t*>(this+1));
     break;
   case CHECK_HALT_OP:
     buf << "CheckHalt 0x" << HexCode<uint32_t>(Op.Offset) << '/' << std::dec << Op.Offset;
@@ -85,9 +88,6 @@ std::string Instruction::toString() const {
     break;
   case HALT_OP:
     buf << "Halt";
-    break;
-  case FINISH_OP:
-    buf << "Finish";
     break;
   default:
     buf << "* UNRECOGNIZED *";
