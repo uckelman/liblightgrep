@@ -285,10 +285,10 @@ bool reduceUselessRepetitions(ParseNode* n, std::stack<ParseNode*>& branch) {
     if (!n->Child.Left) {
       return ret;
     }
-  case ParseNode::LOOKAHEAD_POS:
-  case ParseNode::LOOKAHEAD_NEG:
   case ParseNode::LOOKBEHIND_POS:
   case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
   case ParseNode::REPETITION:
   case ParseNode::REPETITION_NG:
     ret = prune_useless_repetitions(n->Child.Left, branch);
