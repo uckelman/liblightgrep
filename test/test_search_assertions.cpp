@@ -48,6 +48,7 @@ SCOPE_FIXTURE_CTOR(nonWordBreakTest, STest, STest(R"(\B\w+\B)")) {
   SCOPE_ASSERT_EQUAL(SearchHit(36, 37, 0), fixture.Hits[5]);
   SCOPE_ASSERT_EQUAL(SearchHit(40, 44, 0), fixture.Hits[6]);
 }
+*/
 
 // William Carlos Williams, 1883-1963
 const char wcw[] = R"(This Is Just To Say
@@ -67,6 +68,7 @@ they were delicious
 so sweet
 and so cold)";
 
+/*
 SCOPE_FIXTURE_CTOR(firstWordOnLineSearch, STest, STest(R"(^\w+)")) {
   fixture.search(wcw, wcw + 170, 0);
   SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
@@ -102,6 +104,7 @@ SCOPE_FIXTURE_CTOR(lastWordOnLineSearch, STest, STest(R"(\w+$)")) {
   SCOPE_ASSERT_EQUAL(SearchHit(153, 158, 0), fixture.Hits[11]);
   SCOPE_ASSERT_EQUAL(SearchHit(166, 170, 0), fixture.Hits[12]);
 }
+*/
 
 SCOPE_FIXTURE_CTOR(firstWordSearch, STest, STest(R"(\A\w+)")) {
   fixture.search(wcw, wcw + 170, 0);
@@ -123,6 +126,7 @@ SCOPE_FIXTURE_CTOR(whackZwhackASearch, STest, STest(R"(\Z\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
+/*
 SCOPE_FIXTURE_CTOR(caretDollarSignSearch, STest, STest(R"(^$)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
