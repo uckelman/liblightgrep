@@ -125,7 +125,7 @@ Vm::Vm(ProgramPtr prog):
   #ifdef LBT_TRACE_ENABLED
   BeginDebug(Thread::NONE), EndDebug(Thread::NONE), NextId(0),
   #endif
-  Prog(prog), ProgEnd(&prog->back()-1),
+  Prog(prog), ProgEnd(&prog->back()-2),
   First(), Active(), Next(), AtStartFirst(), SubsequentFirst(),
   CheckLabels(prog->MaxCheck+1),
   LiveNoLabel(false), Live(prog->MaxLabel+1),

@@ -127,20 +127,20 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
       *curOp++ = Instruction::makeCheckHalt(cg.Snippets[v].CheckIndex);
     }
 
-    if (state.AtEnd) {
-      *curOp++ = Instruction::makeEnd();
-    }
-
     if (state.IsMatch) {
-      *curOp++ = Instruction::makeMatch();
-
       if (graph.outDegree(v)) {
         // nonterminal match, fork to FINISH_OP
-        *curOp = Instruction::makeFork(curOp, cg.Guard+1);
+        *curOp++ = Instruction::makeMatch();
+        *curOp = Instruction::makeFork(curOp, cg.Guard + 2 - state.AtEnd);
         curOp += 2;
       }
       else {
         // terminal match, FINISH_OP is next
+        if (state.AtEnd) {
+          *curOp++ = Instruction::makeEnd();
+        }
+
+        *curOp++ = Instruction::makeMatch();
         *curOp++ = Instruction::makeFinish();
       }
     }
@@ -186,7 +186,7 @@ ProgramPtr Compiler::createProgram(const NFA& graph) {
   specialVisit(graph, 0ul, vis);
   // std::cerr << "Determined order in first pass" << std::endl;
 
-  ProgramPtr ret(new Program(cg.Guard+2));
+  ProgramPtr ret(new Program(cg.Guard+3));
   ret->MaxLabel= cg.MaxLabel;
   ret->MaxCheck = cg.MaxCheck;
   std::tie(ret->FilterOff, ret->Filter) = bestPair(graph);
@@ -197,10 +197,12 @@ ProgramPtr Compiler::createProgram(const NFA& graph) {
     // }
     encodeState(graph, v, cg, &(*ret)[0], &(*ret)[cg.Snippets[v].Start]);
   }
-  // penultimate instruction will always be Halt, so Vm can jump there
+  // antepenultimate instruction will always be Halt, so Vm can jump there
   (*ret)[cg.Guard] = Instruction::makeHalt();
+  // penultimate instruction will always be Anchor End
+  (*ret)[cg.Guard+1] = Instruction::makeEnd();
   // last instruction will always be Finish, for handling matches
-  (*ret)[cg.Guard+1] = Instruction::makeFinish();
+  (*ret)[cg.Guard+2] = Instruction::makeFinish();
 
   return ret;
 }
