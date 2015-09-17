@@ -197,6 +197,9 @@ ProgramPtr Compiler::createProgram(const NFA& graph) {
     // }
     encodeState(graph, v, cg, &(*ret)[0], &(*ret)[cg.Snippets[v].Start]);
   }
+
+// FIXME: This is possibly a bit goofy. Is there a good reason for the
+// HALT_OP not to be last?
   // antepenultimate instruction will always be Halt, so Vm can jump there
   (*ret)[cg.Guard] = Instruction::makeHalt();
   // penultimate instruction will always be Anchor End
