@@ -539,6 +539,7 @@ inline void Vm::_cleanup() {
   LiveNoLabel = false;
   Live.clear();
 
+// FIXME: Hoist this out so we don't pay for the branch on every byte
   if (AtStart) {
     // Switch from at-start First to general First
     AtStart = false;
