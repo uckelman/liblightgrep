@@ -30,9 +30,9 @@ uint32_t CodeGenVisitor::calcJumpTableSize(NFA::VertexDescriptor v, const NFA& g
     TransitionTbl tbl(pivotStates(v, graph));
     if (maxOutbound(tbl) < outDegree) {
       uint32_t sizeIndirectTables = 0,
-             num,
-             first = 256,
-             last  = 0;
+               num,
+               first = 256,
+               last  = 0;
 
       for (uint32_t i = 0; i < 256; ++i) {
         num = tbl[i].size();
