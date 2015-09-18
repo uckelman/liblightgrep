@@ -35,16 +35,17 @@ struct Glushkov {
   static const uint32_t NOLABEL;
 
   Glushkov():
-    Trans(nullptr), IsMatch(false),
-    AtStart(false), AtEnd(false), Label(NOLABEL) {}
+    Trans(nullptr), Label(NOLABEL),
+    IsMatch(false), AtStart(false), AtEnd(false) {}
 
   std::string label() const;
 
   Transition* Trans;
+  uint32_t Label;
+// FIXME: Maybe combine the flags into a uint8_t?
   bool IsMatch;
   bool AtStart;
   bool AtEnd;
-  uint32_t Label;
 };
 
 struct Empty {};
