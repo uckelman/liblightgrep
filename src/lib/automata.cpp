@@ -20,9 +20,9 @@
 
 #include <limits>
 
-const uint32_t Glushkov::NOLABEL = std::numeric_limits<uint32_t>::max();
+const uint32_t GlushkovState::NOLABEL = std::numeric_limits<uint32_t>::max();
 
-std::string Glushkov::label() const {
+std::string GlushkovState::label() const {
   std::ostringstream buf;
   if (Trans) {
     buf << Trans->label();

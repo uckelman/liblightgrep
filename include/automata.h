@@ -31,10 +31,10 @@ struct Properties {
   std::shared_ptr<TransitionFactory> TransFac;
 };
 
-struct Glushkov {
+struct GlushkovState {
   static const uint32_t NOLABEL;
 
-  Glushkov():
+  GlushkovState():
     Trans(nullptr), Label(NOLABEL),
     IsMatch(false), AtStart(false), AtEnd(false) {}
 
@@ -50,5 +50,5 @@ struct Glushkov {
 
 struct Empty {};
 
-typedef Graph<Properties,Glushkov,Empty,VectorFamily> NFA;
+using NFA = Graph<Properties,GlushkovState,Empty,VectorFamily>;
 

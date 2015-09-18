@@ -27,14 +27,14 @@ template <class GraphType,
 class Graph;
 
 struct Properties;
-struct Glushkov;
+struct GlushkovState;
 struct Empty;
 template <typename T> class VectorFamily;
 
-typedef Graph<Properties, Glushkov, Empty, VectorFamily> NFA;
+using NFA = Graph<Properties, GlushkovState, Empty, VectorFamily>;
 
-typedef std::shared_ptr<NFA> NFAPtr;
+using NFAPtr = std::shared_ptr<NFA>;
 
 class Program;
 
-typedef std::shared_ptr<Program> ProgramPtr;
+using ProgramPtr = std::shared_ptr<Program>;
