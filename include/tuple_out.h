@@ -40,7 +40,7 @@ namespace detail {
   // empty tuple specialization
   template <class T>
   struct tuple_printer<T, 0> {
-    static void print(std::ostream& o, const T& t) {}
+    static void print(std::ostream&, const T&) {}
   };
 }
 
