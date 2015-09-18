@@ -467,14 +467,18 @@ void NFABuilder::lookahead_pos(const ParseNode& n) {
 }
 
 void NFABuilder::finish(const ParseNode& n) {
+  // Stack size MUST be 2 when we arrive here: The bottom of the stack is
+  // the start fragment, the top is the fragment for the rest of the NFA.
   if (Stack.size() == 2) {
     concatenate(n);
-    Fragment& start(Stack.top());
+    const Fragment& start(Stack.top());
 
     for (const auto& i: start.OutList) {
       // std::cout << "marking " << *it << " as a match" << std::endl;
-      NFA::VertexDescriptor v = i.first;
-      if (0 == v) { // State 0 is not allowed to be a match state; i.e. 0-length REs are not allowed
+      const NFA::VertexDescriptor v = i.first;
+      if (v == 0) {
+        // State 0 is not allowed to be a match state;
+        // i.e. 0-length REs are not allowed
         reset();
         return;
       }
