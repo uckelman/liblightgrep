@@ -126,7 +126,6 @@ SCOPE_FIXTURE_CTOR(whackZwhackASearch, STest, STest(R"(\Z\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(caretDollarSignSearch, STest, STest(R"(^$)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -135,6 +134,7 @@ SCOPE_FIXTURE_CTOR(dollarSignCaretSearch, STest, STest(R"($^)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
+/*
 SCOPE_FIXTURE_CTOR(paperSizeSearch, STest, STest(R"(PC LOAD \K\w+)")) {
   const char text[] = "PC LOAD LETTER";
   fixture.search(text, text + 14, 0);
