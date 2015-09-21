@@ -35,6 +35,10 @@ namespace {
     const std::string::size_type cr = pattern.rfind('{', pattern.length()-3);
     return cr > 0 && cr != std::string::npos;
   }
+
+  bool containsPossibleLookaroundAssertion(const std::string& pattern) {
+    return pattern.find("(?") != std::string::npos;
+  }
 }
 
 std::tuple<ParseTree,ParseTree,ParseTree> parseAndReduce(const Pattern& pattern) {
