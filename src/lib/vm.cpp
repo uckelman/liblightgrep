@@ -666,6 +666,8 @@ uint64_t Vm::search(const byte* const beg, const byte* const end, const uint64_t
     _cleanup();
   }
 
+// FIXME: should check that cur < end
+
   // handle last byte
   {
     PossiblyAtEnd = true;
