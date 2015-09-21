@@ -197,4 +197,11 @@ SCOPE_FIXTURE_CTOR(killPrecedence2Search, STest, STest(R"(a\K(b|c))")) {
   SCOPE_ASSERT_EQUAL(SearchHit(1, 2, 0), fixture.Hits[0]);
 }
 
+SCOPE_FIXTURE_CTOR(jennySearch, STest, STest(R"((?<!\d)\d+(?!\d))")) {
+  const char text[] = "abc8675309abc";
+  fixture.search(text, text + 13, 0);
+  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
+  SCOPE_ASSERT_EQUAL(SearchHit(3, 10, 0), fixture.Hits[0]);
+}
+
 */
