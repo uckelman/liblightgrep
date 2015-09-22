@@ -45,6 +45,10 @@ public:
 
   template <class... Args>
   ParseNode* add(Args&&... args) {
+    if (Store.size() == Store.capacity()) {
+      throw std::logic_error("Your bound is wrong.");
+    }
+
     Store.emplace_back(std::forward<Args>(args)...);
     return &Store[Store.size()-1];
   }
