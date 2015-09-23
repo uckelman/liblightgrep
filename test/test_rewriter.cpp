@@ -622,6 +622,13 @@ SCOPE_TEST(reduceNegativeLookarounds_LPLAaOrbRP_Test) {
   SCOPE_ASSERT_EQUAL("((?=[^a])|(?!.))((?=[^b])|(?!.))", unparse(tree));
 }
 
+SCOPE_TEST(reduceNegativeLookarounds_LPLBWhackdRPWhadkdPLPLAWhackdRP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(?<!\\d)\\d+(?!\\d)", false, false}, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
+  SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[^0-9]))[0-9]+((?=[^0-9])|(?!.))", unparse(tree));
+}
+
 SCOPE_TEST(reduceNegativeLookbehindLiteral_Dot) {
   ParseTree tree;
   tree.init(100);
