@@ -525,6 +525,10 @@ bool reduceTrailingNongreedyThenGreedy(ParseNode* n, std::stack<ParseNode*>& bra
     if (!n->Child.Left) {
       return ret;
     }
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
   case ParseNode::REPETITION:
   case ParseNode::REPETITION_NG:
     ret = reduceTrailingNongreedyThenGreedy(n->Child.Left, branch);
@@ -627,6 +631,10 @@ bool reduceTrailingNongreedyThenEmpty(ParseNode* n, std::stack<ParseNode*>& bran
     if (!n->Child.Left) {
       return ret;
     }
+  case ParseNode::LOOKBEHIND_POS:
+  case ParseNode::LOOKBEHIND_NEG:
+  case ParseNode::LOOKAHEAD_POS:
+  case ParseNode::LOOKAHEAD_NEG:
   case ParseNode::REPETITION:
     ret = reduceTrailingNongreedyThenEmpty(n->Child.Left, branch);
     break;
