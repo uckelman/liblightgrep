@@ -118,9 +118,6 @@ std::shared_ptr<VmInterface> VmInterface::create(ProgramPtr prog) {
   return std::shared_ptr<VmInterface>(new Vm(prog));
 }
 
-// TODO: Handle \A with a special start set for the first byte
-// TODO: Handle \Z in closeOut
-
 Vm::Vm(ProgramPtr prog):
   #ifdef LBT_TRACE_ENABLED
   BeginDebug(Thread::NONE), EndDebug(Thread::NONE), NextId(0),
