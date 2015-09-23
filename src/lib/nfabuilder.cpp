@@ -623,6 +623,7 @@ void NFABuilder::traverse(const ParseNode* root) {
 
     if ((n->Type == ParseNode::ALTERNATION ||
          n->Type == ParseNode::CONCATENATION) && n->Child.Right) {
+      // This node also has a right child.
       wind.push(n->Child.Right);
     }
   }
