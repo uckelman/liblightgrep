@@ -342,16 +342,13 @@ void NFABuilder::repetition(const ParseNode& n) {
   if (n.Child.Rep.Min == 0) {
     if (n.Child.Rep.Max == 1) {
       question(n);
-      return;
     }
     else if (n.Child.Rep.Max == UNBOUNDED) {
       star(n);
-      return;
     }
   }
   else if (n.Child.Rep.Min == 1 && n.Child.Rep.Max == UNBOUNDED) {
     plus(n);
-    return;
   }
 
   // all other cases are already reduced by traverse
@@ -361,16 +358,13 @@ void NFABuilder::repetition_ng(const ParseNode& n) {
   if (n.Child.Rep.Min == 0) {
     if (n.Child.Rep.Max == 1) {
       question_ng(n);
-      return;
     }
     else if (n.Child.Rep.Max == UNBOUNDED) {
       star_ng(n);
-      return;
     }
   }
   else if (n.Child.Rep.Min == 1 && n.Child.Rep.Max == UNBOUNDED) {
     plus_ng(n);
-    return;
   }
 
   // all other cases are already reduced by traverse
