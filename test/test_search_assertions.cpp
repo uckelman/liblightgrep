@@ -68,7 +68,6 @@ they were delicious
 so sweet
 and so cold)";
 
-/*
 SCOPE_FIXTURE_CTOR(firstWordOnLineSearch, STest, STest(R"(^\w+)")) {
   fixture.search(wcw, wcw + 170, 0);
   SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
@@ -104,7 +103,6 @@ SCOPE_FIXTURE_CTOR(lastWordOnLineSearch, STest, STest(R"(\w+$)")) {
   SCOPE_ASSERT_EQUAL(SearchHit(153, 158, 0), fixture.Hits[11]);
   SCOPE_ASSERT_EQUAL(SearchHit(166, 170, 0), fixture.Hits[12]);
 }
-*/
 
 SCOPE_FIXTURE_CTOR(firstWordSearch, STest, STest(R"(\A\w+)")) {
   fixture.search(wcw, wcw + 170, 0);
