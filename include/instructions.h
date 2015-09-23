@@ -57,7 +57,7 @@ struct InstructionType2 {
 };
 
 union Operand {
-  unsigned  Offset : 24;
+  unsigned Offset : 24;
 
   InstructionType1 T1;
   InstructionType2 T2;
