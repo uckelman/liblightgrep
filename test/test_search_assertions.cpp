@@ -198,7 +198,7 @@ SCOPE_FIXTURE_CTOR(killPrecedence2Search, STest, STest(R"(a\K(b|c))")) {
 }
 */
 
-SCOPE_FIXTURE_CTOR(jennyNegativeSearch, STest, STest(R"((?<!\d)\d+(?!\d))")) {
+SCOPE_FIXTURE_CTOR(jennyNegativeSearch, STest, STest(R"((?<!\d)\d{7}(?!\d))")) {
   const char text[] = "8675309jenny086753090jenny8675309";
   fixture.search(text, text + 32, 0);
   SCOPE_ASSERT_EQUAL(2u, fixture.Hits.size());
@@ -206,7 +206,7 @@ SCOPE_FIXTURE_CTOR(jennyNegativeSearch, STest, STest(R"((?<!\d)\d+(?!\d))")) {
   SCOPE_ASSERT_EQUAL(SearchHit(26, 32, 0), fixture.Hits[1]);
 }
 
-SCOPE_FIXTURE_CTOR(jennyPositiveSearch, STest, STest(R"((?<=\D)\d+(?=\D))")) {
+SCOPE_FIXTURE_CTOR(jennyPositiveSearch, STest, STest(R"((?<=\D)\d{7}(?=\D))")) {
   const char text[] = "8675309jenny8675309jenny8675309";
   fixture.search(text, text + 30, 0);
   SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
