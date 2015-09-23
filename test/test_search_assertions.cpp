@@ -171,6 +171,13 @@ SCOPE_FIXTURE_CTOR(forwardLookingSearch, STest, STest(R"(pro(?=active))")) {
   SCOPE_ASSERT_EQUAL(SearchHit(19, 22, 0), fixture.Hits[0]);
 }
 
+SCOPE_FIXTURE_CTOR(backwardLookingSearch, STest, STest(R"((?<=retro)spective)")) {
+  const char text[] = "retrograde retro retrospective retroactive";
+  fixture.search(text, text + 44, 0);
+  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
+  SCOPE_ASSERT_EQUAL(SearchHit(22, 30, 0), fixture.Hits[0]);
+}
+
 SCOPE_FIXTURE_CTOR(crossedEyesSearch, STest, STest(R"((?=ii)i(?<=ii))")) {
   const char text[] = "xixixiiixiiiiixii";
   fixture.search(text, text + 17, 0);
