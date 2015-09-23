@@ -24,8 +24,8 @@
 
 #include <vector>
 
-typedef std::vector<NFA::VertexDescriptor> InListT;
-typedef std::vector<std::pair<NFA::VertexDescriptor, uint32_t>> OutListT;
+using InListT = std::vector<NFA::VertexDescriptor>;
+using OutListT = std::vector<std::pair<NFA::VertexDescriptor, uint32_t>>;
 
 static const uint32_t NOSKIP = std::numeric_limits<uint32_t>::max();
 
