@@ -56,6 +56,11 @@ std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseT
   bool rewrite = makeBinopsRightAssociative(tree.Root);
   rewrite |= combineConsecutiveRepetitions(tree.Root);
 
+  if (containsPossibleLookaroundAssertion(text)) {
+    rewrite |= reduceNegativeLookarounds(tree);
+    rewrite |= shoveLookaroundsOutward(tree);
+  }
+
   if (containsPossibleNongreedy(text)) {
     rewrite |= reduceTrailingNongreedyThenEmpty(tree.Root);
     rewrite |= reduceTrailingNongreedyThenGreedy(tree.Root);
