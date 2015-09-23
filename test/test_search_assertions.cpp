@@ -155,6 +155,7 @@ SCOPE_FIXTURE_CTOR(dontLookBackInAngerTest, STest, STest(R"((?<!in Anger)\w+)"))
   SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
   SCOPE_ASSERT_EQUAL(SearchHit(0, 5, 0), fixture.Hits[0]);
 }
+*/
 
 SCOPE_FIXTURE_CTOR(sixteenDigitCreditCardNumberSearch, STest, STest(R"((?<!\d)\d{16}(?!\d))")) {
   const char text[] = "4012888888881881 41111111111111114 411111111111111 4111111111111111 510510510510510051051051051051005105105105105100 5105105105105100";
@@ -182,6 +183,7 @@ SCOPE_FIXTURE_CTOR(crossedEyesSearch, STest, STest(R"((?=ii)i(?<=ii))")) {
   SCOPE_ASSERT_EQUAL(SearchHit(12, 13, 0), fixture.Hits[3]);
 }
 
+/*
 SCOPE_FIXTURE_CTOR(killPrecedence1Search, STest, STest(R"(a\Kb|c)")) {
   const char text[] = "abc";
   fixture.search(text, text + 3, 0);
