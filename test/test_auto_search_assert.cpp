@@ -15,38 +15,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest2, STest, STest(R"(\K)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest3, STest, STest(R"(\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest4, STest, STest(R"(\B)")) {
@@ -62,34 +31,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest6, STest, STest(R"($)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest7, STest, STest(R"((?<=a))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(16u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[15]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest8, STest, STest(R"((?<!a))")) {
@@ -97,34 +39,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest8, STest, STest(R"((?<!a))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest9, STest, STest(R"((?=a))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(16u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[15]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest10, STest, STest(R"((?!a))")) {
@@ -161,46 +76,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest12, STest, STest(R"((?<=\A))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest13, STest, STest(R"((?<!\A))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(28u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(9, 9, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(20, 20, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(21, 21, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[24]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[25]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[26]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[27]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest14, STest, STest(R"((?=\A))")) {
@@ -208,46 +84,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest14, STest, STest(R"((?=\A))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest15, STest, STest(R"((?!\A))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(28u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(9, 9, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(20, 20, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(21, 21, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[24]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[25]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[26]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[27]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest16, STest, STest(R"((\A))")) {
@@ -259,46 +96,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest17, STest, STest(R"((?<=\Z))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest18, STest, STest(R"((?<!\Z))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(28u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(9, 9, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(20, 20, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(21, 21, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[24]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[25]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[26]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[27]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest19, STest, STest(R"((?=\Z))")) {
@@ -306,46 +104,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest19, STest, STest(R"((?=\Z))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest20, STest, STest(R"((?!\Z))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(28u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(9, 9, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(20, 20, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(21, 21, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[24]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[25]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[26]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[27]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest21, STest, STest(R"((\Z))")) {
@@ -357,18 +116,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest22, STest, STest(R"((?<=\K))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest23, STest, STest(R"((?<!\K))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest24, STest, STest(R"((?=\K))")) {
@@ -376,18 +124,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest24, STest, STest(R"((?=\K))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest25, STest, STest(R"((?!\K))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest26, STest, STest(R"((\K))")) {
@@ -395,38 +132,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest26, STest, STest(R"((\K))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest27, STest, STest(R"((?<=\b))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest28, STest, STest(R"((?<!\b))")) {
@@ -434,38 +140,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest28, STest, STest(R"((?<!\b))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest29, STest, STest(R"((?=\b))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest30, STest, STest(R"((?!\b))")) {
@@ -473,38 +148,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest30, STest, STest(R"((?!\b))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest31, STest, STest(R"((\b))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest32, STest, STest(R"((?<=\B))")) {
@@ -512,38 +156,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest32, STest, STest(R"((?<=\B))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest33, STest, STest(R"((?<!\B))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest34, STest, STest(R"((?=\B))")) {
@@ -551,38 +164,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest34, STest, STest(R"((?=\B))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest35, STest, STest(R"((?!\B))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest36, STest, STest(R"((\B))")) {
@@ -594,43 +176,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest37, STest, STest(R"((?<=^))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest38, STest, STest(R"((?<!^))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(25u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[24]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest39, STest, STest(R"((?=^))")) {
@@ -638,43 +184,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest39, STest, STest(R"((?=^))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest40, STest, STest(R"((?!^))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(25u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[24]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest41, STest, STest(R"((^))")) {
@@ -686,43 +196,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest42, STest, STest(R"((?<=$))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest43, STest, STest(R"((?<!$))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(25u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[24]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest44, STest, STest(R"((?=$))")) {
@@ -730,43 +204,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest44, STest, STest(R"((?=$))")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest45, STest, STest(R"((?!$))")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(25u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 1, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 2, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 5, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(6, 6, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 7, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 13, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(14, 14, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(17, 17, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(18, 18, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(25, 25, 0), fixture.Hits[22]);
-  SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[23]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[24]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest46, STest, STest(R"(($))")) {
@@ -789,6 +227,7 @@ ccca)";
   SCOPE_ASSERT_EQUAL(SearchHit(0, 1, 0), fixture.Hits[0]);
 }
 
+// FIXME: Why does this crash?
 /*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest48, STest, STest(R"(\Za)")) {
   const char text[] = R"(aaa
@@ -950,19 +389,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest58, STest, STest(R"(\K\A)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest59, STest, STest(R"(\b\A)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest60, STest, STest(R"(\B\A)")) {
@@ -1006,19 +433,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest66, STest, STest(R"(\K\Z)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest67, STest, STest(R"(\b\Z)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[0]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest68, STest, STest(R"(\B\Z)")) {
@@ -1071,38 +486,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest74, STest, STest(R"(\K\K)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest75, STest, STest(R"(\b\K)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest76, STest, STest(R"(\B\K)")) {
@@ -1137,176 +521,31 @@ ccca)";
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest80, STest, STest(R"(\A\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest81, STest, STest(R"(\Z\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[0]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest82, STest, STest(R"(\K\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest83, STest, STest(R"(\b\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest84, STest, STest(R"(\B\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest85, STest, STest(R"(^\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[12]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest86, STest, STest(R"($\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[12]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest87, STest, STest(R"(a\B)")) {
@@ -1343,18 +582,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest90, STest, STest(R"(\K\B)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest91, STest, STest(R"(\b\B)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest92, STest, STest(R"(\B\B)")) {
@@ -1370,18 +598,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest94, STest, STest(R"($\B)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest95, STest, STest(R"(a^)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest96, STest, STest(R"(\A^)")) {
@@ -1397,31 +614,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest98, STest, STest(R"(\K^)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest99, STest, STest(R"(\b^)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[12]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest100, STest, STest(R"(\B^)")) {
@@ -1468,31 +661,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest106, STest, STest(R"(\K$)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest107, STest, STest(R"(\b$)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[12]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest108, STest, STest(R"(\B$)")) {
@@ -1508,108 +677,31 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest110, STest, STest(R"($$)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest111, STest, STest(R"(\A*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest112, STest, STest(R"(\Z*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest113, STest, STest(R"(\K*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest114, STest, STest(R"(\b*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest115, STest, STest(R"(\B*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest116, STest, STest(R"(^*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest117, STest, STest(R"($*)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest118, STest, STest(R"(\A|a)")) {
@@ -1625,41 +717,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest120, STest, STest(R"(\K|a)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest121, STest, STest(R"(\b|a)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(23u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 2, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 6, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 8, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 14, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[21]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 28, 0), fixture.Hits[22]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest122, STest, STest(R"(\B|a)")) {
@@ -1796,40 +854,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest149, STest, STest(R"($|\K)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest150, STest, STest(R"(a|\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(22u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 2, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 5, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 6, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 8, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 14, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 17, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[19]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[20]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 28, 0), fixture.Hits[21]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest151, STest, STest(R"(\A|\b)")) {
@@ -1845,38 +870,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest153, STest, STest(R"(\K|\b)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest154, STest, STest(R"(\b|\b)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(20u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 0, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(3, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 4, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(8, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 10, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(11, 11, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(12, 12, 0), fixture.Hits[9]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[10]);
-  SCOPE_ASSERT_EQUAL(SearchHit(15, 15, 0), fixture.Hits[11]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 16, 0), fixture.Hits[12]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[13]);
-  SCOPE_ASSERT_EQUAL(SearchHit(19, 19, 0), fixture.Hits[14]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[15]);
-  SCOPE_ASSERT_EQUAL(SearchHit(22, 22, 0), fixture.Hits[16]);
-  SCOPE_ASSERT_EQUAL(SearchHit(23, 23, 0), fixture.Hits[17]);
-  SCOPE_ASSERT_EQUAL(SearchHit(24, 24, 0), fixture.Hits[18]);
-  SCOPE_ASSERT_EQUAL(SearchHit(28, 28, 0), fixture.Hits[19]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest155, STest, STest(R"(\B|\b)")) {
