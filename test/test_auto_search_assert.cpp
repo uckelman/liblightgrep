@@ -10,7 +10,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest1, STest, STest(R"(\Z)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest2, STest, STest(R"(\K)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -131,7 +130,6 @@ ccca)";
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest10, STest, STest(R"((?!a))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest11, STest, STest(R"((a))")) {
   const char text[] = R"(aaa
@@ -158,7 +156,6 @@ ccca)";
   SCOPE_ASSERT_EQUAL(SearchHit(27, 28, 0), fixture.Hits[9]);
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest12, STest, STest(R"((?<=\A))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -252,13 +249,11 @@ ccca)";
   SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[26]);
   SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[27]);
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest16, STest, STest(R"((\A))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest17, STest, STest(R"((?<=\Z))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -352,13 +347,11 @@ ccca)";
   SCOPE_ASSERT_EQUAL(SearchHit(26, 26, 0), fixture.Hits[26]);
   SCOPE_ASSERT_EQUAL(SearchHit(27, 27, 0), fixture.Hits[27]);
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest21, STest, STest(R"((\Z))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest22, STest, STest(R"((?<=\K))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -779,7 +772,6 @@ ccca)";
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest46, STest, STest(R"(($))")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest47, STest, STest(R"(\Aa)")) {
   const char text[] = R"(aaa
@@ -812,6 +804,7 @@ ccca)";
   fixture.search(text, text + 28, 0);
   SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
 }
+*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest49, STest, STest(R"(\Ka)")) {
   const char text[] = R"(aaa
@@ -911,7 +904,6 @@ ccca)";
   fixture.search(text, text + 28, 0);
   SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest54, STest, STest(R"(ab)")) {
   const char text[] = R"(aaa
@@ -953,7 +945,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest57, STest, STest(R"(\Z\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest58, STest, STest(R"(\K\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -985,7 +976,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest61, STest, STest(R"(^\A)")) {
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest62, STest, STest(R"($\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest63, STest, STest(R"(a\Z)")) {
   const char text[] = R"(aaa
@@ -1011,7 +1001,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest65, STest, STest(R"(\Z\Z)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest66, STest, STest(R"(\K\Z)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -1622,7 +1611,6 @@ ccca)";
   fixture.search(text, text + 28, 0);
   SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest118, STest, STest(R"(\A|a)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
@@ -1632,7 +1620,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest119, STest, STest(R"(\Z|a)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest120, STest, STest(R"(\K|a)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -1686,7 +1673,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest123, STest, STest(R"(^|a)")) {
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest124, STest, STest(R"($|a)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest125, STest, STest(R"(a|b)")) {
   const char text[] = R"(aaa
@@ -1721,7 +1707,6 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest127, STest, STest(R"(\A|\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest128, STest, STest(R"(\Z|\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
@@ -2001,4 +1986,3 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest180, STest, STest(R"(^|$)")) {
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest181, STest, STest(R"($|$)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
