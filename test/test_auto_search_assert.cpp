@@ -359,22 +359,9 @@ ccca)";
   SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest55, STest, STest(R"(a\A)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest56, STest, STest(R"(\A\A)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
