@@ -18,6 +18,8 @@
 
 #include "stest.h"
 
+#include <scope/test.h>
+
 namespace {
   void collector(void* userData, const LG_SearchHit* const hit) {
     STest* stest = static_cast<STest*>(userData);
@@ -99,11 +101,13 @@ void STest::init(const std::vector<Pattern>& pats) {
 }
 
 void STest::search(const char* begin, const char* end, uint64_t offset) {
+  SCOPE_ASSERT(Ctx);
   RetVal = lg_search(Ctx.get(), begin, end, offset, this, collector);
   lg_closeout_search(Ctx.get(), this, collector);
 }
 
 void STest::startsWith(const char* begin, const char* end, uint64_t offset) {
+  SCOPE_ASSERT(Ctx);
   lg_starts_with(Ctx.get(), begin, end, offset, this, collector);
 }
 
