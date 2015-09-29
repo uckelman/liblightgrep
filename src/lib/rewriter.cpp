@@ -1527,7 +1527,28 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
 
         restartShove(root, check);
         ret = true;
+        break;
       }
+
+      if ((n->Child.Left->Type == ParseNode::LOOKBEHIND_POS &&
+          n->Child.Right->Type == ParseNode::LOOKBEHIND_NEG) ||
+          (n->Child.Left->Type == ParseNode::LOOKAHEAD_NEG &&
+          n->Child.Right->Type == ParseNode::LOOKAHEAD_POS)) {
+        /*
+          Force anchors in alternations to the outsides. 
+
+              |           |              |           |
+             / \         / \            / \         / \
+           ?<= ?<!  => ?<! ?<=        ?!  ?=   =>  ?= ?!
+            |   |       |   |          |   |        |  |
+            T   .       .   T          .   T        T  .
+        */
+        std::swap(n->Child.Left, n->Child.Right);
+        restartShove(root, check);
+        ret = true;
+        break;
+      }
+
       break;
 
     case ParseNode::CONCATENATION:
