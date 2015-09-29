@@ -1180,69 +1180,6 @@ bool matchesBeforeStart(const ParseNode* n) {
   }
 }
 
-bool shoveAnchorsOutward(ParseNode* p, ParseNode* n) {
-  bool ret = false;
-
-  if (n->Type == ParseNode::CONCATENATION) {
-    if (n->Child.Left->Type == ParseNode::LOOKAHEAD_NEG) {
-      /*
-          Where X is any internal node:
-
-             X         X                        X
-             |         |                        |
-             &    =>  ?!  if T matches    [^\z00-\zFF]  otherwise
-            / \        |  at end,
-           ?!  T       .
-           |
-           .
-      */
-      if (matchesAtEnd(n->Child.Right)) {
-        spliceOutParent(p, n, n->Child.Left);
-      }
-      else {
-        *n = ParseNode(ParseNode::CHAR_CLASS, ByteSet());
-      }
-      ret = true;
-    }
-    else if (n->Child.Right->Type == ParseNode::LOOKBEHIND_NEG) {
-      /*
-          Where X is any internal node:
-
-             X         X                        X
-             |         |                        |
-             &    =>  ?<!  if T matches    [^\z00-\zFF]  otherwise
-            / \        |   before start,
-           T ?<!       .
-              |
-              .
-      */
-      if (matchesBeforeStart(n->Child.Left)) {
-        spliceOutParent(p, n, n->Child.Right);
-      }
-      else {
-        *n = ParseNode(ParseNode::CHAR_CLASS, ByteSet());
-      }
-      ret = true;
-    }
-  }
-
-  return ret;
-}
-
-void distributeDisjunctionOverPositiveLookarounds(ParseNode* n) {
-  ParseNode* l = n->Child.Left;
-  ParseNode* r = n->Child.Right;
-  ParseNode* s = l->Child.Left;
-  ParseNode* t = r->Child.Left;
-
-  n->Type = l->Type;
-  n->Child.Right = nullptr;
-
-  l->Type = ParseNode::ALTERNATION;
-  l->Child.Left = s;
-  l->Child.Right = t;
-}
-
 bool isLiteral(ParseNode* n) {
   switch (n->Type) {
   case ParseNode::DOT:
