@@ -371,26 +371,24 @@ void NFABuilder::repetition_ng(const ParseNode& n) {
 }
 
 void NFABuilder::alternate(const ParseNode& n) {
-  Fragment second;
-  second.assign(Stack.top());
+  TempFrag.assign(Stack.top());
   Stack.pop();
-
   Fragment& first(Stack.top());
 
   if (first.Skippable != NOSKIP) {
     // leave first.Skippable unchanged
   }
-  else if (second.Skippable != NOSKIP) {
-    first.Skippable = first.InList.size() + second.Skippable;
+  else if (TempFrag.Skippable != NOSKIP) {
+    first.Skippable = first.InList.size() + TempFrag.Skippable;
   }
   else {
     first.Skippable = NOSKIP;
   }
 
   first.InList.insert(first.InList.end(),
-                      second.InList.begin(), second.InList.end());
+                      TempFrag.InList.begin(), TempFrag.InList.end());
   first.OutList.insert(first.OutList.end(),
-                       second.OutList.begin(), second.OutList.end());
+                       TempFrag.OutList.begin(), TempFrag.OutList.end());
 
   first.N = n;
 }
