@@ -656,3 +656,25 @@ SCOPE_TEST(testPruneBranches) {
   ASSERT_EQUAL_LABELS(exp, g);
   ASSERT_EQUAL_MATCHES(exp, g);
 }
+
+SCOPE_TEST(testOptimizeWhackAWhackwP) {
+  const ByteSet bs({ {'0','9'+1}, {'A', 'Z'+1}, {'_', '_'+1}, {'a', 'z'+1} });
+
+  NFA g;
+  edge(0, 1, g, nullptr);
+  edge(1, 2, g, g.TransFac->getByteSet(bs));
+  edge(2, 2, g, g.TransFac->getByteSet(bs));
+
+  g[1].AtStart = true;
+  g[2].Label = 0;
+  g[2].IsMatch = true;
+
+  const NFA exp = g;
+
+  NFAOptimizer comp;
+  comp.pruneBranches(g);
+
+  ASSERT_EQUAL_GRAPHS(exp, g);
+  ASSERT_EQUAL_LABELS(exp, g);
+  ASSERT_EQUAL_MATCHES(exp, g);
+}
