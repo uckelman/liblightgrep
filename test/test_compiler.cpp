@@ -399,3 +399,32 @@ SCOPE_TEST(endAnchorProgram) {
   SCOPE_ASSERT_EQUAL(Instruction::makeEnd(), prog[6]);
   SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[7]);
 }
+
+SCOPE_TEST(startAnchorLoopProgram) {
+  const ByteSet bs({ {'0','9'+1}, {'A', 'Z'+1}, {'_', '_'+1}, {'a', 'z'+1} });
+
+  NFA g;
+  edge(0, 1, g, nullptr);
+  edge(1, 2, g, g.TransFac->getByteSet(bs));
+  edge(2, 2, g, g.TransFac->getByteSet(bs));
+
+  g[1].AtStart = true;
+  g[2].Label = 0;
+  g[2].IsMatch = true;
+
+  ProgramPtr p = Compiler::createProgram(g);
+  Program& prog(*p);
+
+  SCOPE_ASSERT_EQUAL(20u, prog.size());
+  SCOPE_ASSERT_EQUAL(Instruction::makeBegin(), prog[0]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeBitVector(), prog[1]);
+  SCOPE_ASSERT_EQUAL(bs, reinterpret_cast<ByteSet&>(prog[2]));
+  SCOPE_ASSERT_EQUAL(Instruction::makeLabel(0), prog[10]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeCheckHalt(1), prog[11]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeMatch(), prog[12]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeFork(&prog[0], 19), prog[13]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeJump(&prog[0], 1), prog[15]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeHalt(), prog[17]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeEnd(), prog[18]);
+  SCOPE_ASSERT_EQUAL(Instruction::makeFinish(), prog[19]);
+}
