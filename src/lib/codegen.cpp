@@ -90,7 +90,7 @@ void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
 
   size += Helper.Snippets[v].CheckIndex != NONE;
 
-  const uint32_t eval = v == 0 ? 0 : graph[v].Trans->numInstructions();
+  const uint32_t eval = graph[v].Trans ? graph[v].Trans->numInstructions() : 0;
   Helper.addSnippet(v, eval, size);
 }
 

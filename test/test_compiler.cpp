@@ -356,11 +356,12 @@ SCOPE_TEST(testFirstChildPrev) {
 
 SCOPE_TEST(startAnchorProgram) {
   NFA g;
-  edge(0, 1, g, g.TransFac->getByte('x'));
+  edge(0, 1, g, nullptr);
+  edge(1, 2, g, g.TransFac->getByte('x'));
 
-  g[1].Label = 0;
-  g[1].IsMatch = true;
   g[1].AtStart = true;
+  g[2].Label = 0;
+  g[2].IsMatch = true;
 
   ProgramPtr p = Compiler::createProgram(g);
   Program& prog(*p);
@@ -379,10 +380,11 @@ SCOPE_TEST(startAnchorProgram) {
 SCOPE_TEST(endAnchorProgram) {
   NFA g;
   edge(0, 1, g, g.TransFac->getByte('x'));
+  edge(1, 2, g, nullptr);
 
   g[1].Label = 0;
-  g[1].IsMatch = true;
-  g[1].AtEnd = true;
+  g[2].IsMatch = true;
+  g[2].AtEnd = true;
 
   ProgramPtr p = Compiler::createProgram(g);
   Program& prog(*p);

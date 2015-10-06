@@ -49,7 +49,14 @@ std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph) {
     // put successors in the queue if they're at lmin + 1 or less
     if (depth < lmin + 1) {
       for (const NFA::VertexDescriptor t : graph.outVertices(h)) {
-        next.emplace(depth+1, t);
+        if (graph[t].AtEnd) {
+          if (depth < lmin) {
+            lmin = depth;
+          }
+        }
+        else {
+          next.emplace(depth+1-graph[t].AtStart, t);
+        }
       }
     }
 
@@ -62,6 +69,10 @@ std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph) {
     uint8_t* const bb = reinterpret_cast<uint8_t* const>(&b[depth]);
 
     for (const NFA::VertexDescriptor t0 : graph.outVertices(h)) {
+      if (graph[t0].AtStart || graph[t0].AtEnd) {
+        continue;
+      }
+
       ByteSet first;
       graph[t0].Trans->orBytes(first);
 
@@ -74,6 +85,10 @@ std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph) {
       else {
         // no match; record each first byte followed by each second byte
         for (const NFA::VertexDescriptor t1 : graph.outVertices(t0)) {
+          if (graph[t1].AtStart || graph[t1].AtEnd) {
+            continue;
+          }
+
           ByteSet second;
           graph[t1].Trans->orBytes(second);
 

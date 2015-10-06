@@ -111,10 +111,6 @@ bool targetCodeFollowsSource(const CodeGenHelper& cg, const NFA::VertexDescripto
 void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper& cg, Instruction const* const base, Instruction* curOp) {
   const NFA::Vertex& state(graph[v]);
   if (state.Trans) {
-    if (state.AtStart) {
-      *curOp++ = Instruction::makeBegin();
-    }
-
     state.Trans->toInstruction(curOp);
     curOp += state.Trans->numInstructions();
     // std::cerr << "wrote " << i << std::endl;
@@ -136,14 +132,19 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
       }
       else {
         // terminal match, FINISH_OP is next
-        if (state.AtEnd) {
-          *curOp++ = Instruction::makeEnd();
-        }
-
         *curOp++ = Instruction::makeMatch();
         *curOp++ = Instruction::makeFinish();
       }
     }
+  }
+  else if (state.AtStart) {
+    *curOp++ = Instruction::makeBegin();
+  }
+  else if (state.AtEnd) {
+    // NB: End anchor states must be matches, i.e, AtEnd -> IsMatch.
+    *curOp++ = Instruction::makeEnd();
+    *curOp++ = Instruction::makeMatch();
+    *curOp++ = Instruction::makeFinish();
   }
 
   if (JUMP_TABLE_RANGE_OP == cg.Snippets[v].Op) {

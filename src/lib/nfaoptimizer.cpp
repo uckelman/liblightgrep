@@ -64,7 +64,12 @@ bool NFAOptimizer::canMerge(const NFA& dst, NFA::VertexDescriptor dstTail, const
   {
     const std::map<NFA::VertexDescriptor, std::vector<NFA::VertexDescriptor>>::const_iterator i(Dst2Src.find(dstTail));
     if (i == Dst2Src.end() || 1 == src.inDegree(i->second.front())) {
-      dstTrans->getBytes(dstBits);
+      if (dstTrans) {
+        dstTrans->getBytes(dstBits);
+      }
+      else {
+        dstBits.reset();
+      }
       return dstBits == srcBits;
     }
   }
@@ -91,7 +96,9 @@ NFAOptimizer::StatePair NFAOptimizer::processChild(const NFA& src, NFA& dst, uin
     const Transition* srcTrans(src[srcTail].Trans);
 
     ByteSet srcBits;
-    srcTrans->getBytes(srcBits);
+    if (srcTrans) {
+      srcTrans->getBytes(srcBits);
+    }
 
     // try to match it with a successor of the destination vertex,
     // preserving the relative order of the source vertex's successors
@@ -229,28 +236,30 @@ void NFAOptimizer::pruneBranches(NFA& g) {
         next.push(tail);
       }
 
-      g[tail].Trans->getBytes(obs);
+      if (g[tail].Trans) {
+        g[tail].Trans->getBytes(obs);
 
 //      nbs = obs & ~mbs;
-      obs &= ~mbs;
+        obs &= ~mbs;
 
 //      if (nbs.none()) {
-      if (obs.none()) {
-        g.removeEdge(g.outEdge(head, i--));
-      }
+        if (obs.none()) {
+          g.removeEdge(g.outEdge(head, i--));
+        }
 /*
-      else if (nbs != obs) {
-        Transition* ot = g[tail];
-        Transition* nt = new ByteSetState(nbs);
-        nt->IsMatch = ot->IsMatch;
-        nt->Label = ot->Label;
-        g.setTran(tail, nt);
-        delete ot;
-      }
+        else if (nbs != obs) {
+          Transition* ot = g[tail];
+          Transition* nt = new ByteSetState(nbs);
+          nt->IsMatch = ot->IsMatch;
+          nt->Label = ot->Label;
+          g.setTran(tail, nt);
+          delete ot;
+        }
 */
 
-      if (g[tail].IsMatch) {
-        mbs |= obs;
+        if (g[tail].IsMatch) {
+          mbs |= obs;
+        }
       }
     }
   }
@@ -287,9 +296,13 @@ void NFAOptimizer::propagateMatchLabels(NFA& g) {
 
       // check each parent of the current state
       for (const NFA::VertexDescriptor h : g.inVertices(t)) {
-        if (!g[h].Trans) {
+        if (h == 0) {
           // Skip the initial state.
           continue;
+        }
+        else if (!g[h].Trans) {
+          // Mark start anchors as unlabelable.
+          g[h].Label = UNLABELABLE;
         }
         else if (g[h].Label == NONE) {
           // Mark unmarked parents with our label and walk back to them.
@@ -318,7 +331,7 @@ void NFAOptimizer::propagateMatchLabels(NFA& g) {
             g[u].Label = UNLABELABLE;
 
             for (const NFA::VertexDescriptor uh : g.inVertices(u)) {
-              if (g[uh].Trans && g[uh].Label != UNLABELABLE) {
+              if (uh != 0 && g[uh].Label != UNLABELABLE) {
                 // Walking on all nodes not already marked unlabelable
                 unext.push(uh);
               }
@@ -405,11 +418,13 @@ struct SubsetStateComp {
 void makePerByteOutNeighborhoods(const NFA& src, const NFA::VertexDescriptor srcHead, ByteToVertices& srcTailLists, ByteSet& outBytes) {
   // for each srcTail, add it to srcHead's per-byte outneighborhood
   for (const NFA::VertexDescriptor srcTail : src.outVertices(srcHead)) {
-    src[srcTail].Trans->getBytes(outBytes);
+    if (src[srcTail].Trans) {
+      src[srcTail].Trans->getBytes(outBytes);
 
-    for (uint32_t b = 0; b < 256; ++b) {
-      if (outBytes[b]) {
-        srcTailLists[b].push_back(srcTail);
+      for (uint32_t b = 0; b < 256; ++b) {
+        if (outBytes[b]) {
+          srcTailLists[b].push_back(srcTail);
+        }
       }
     }
   }
@@ -460,7 +475,8 @@ void makeDestinationState(const NFA& src, NFA& dst, const NFA::VertexDescriptor 
     // new sublist dst vertex
     dstList2Dst[ss] = dstTail = dst.addVertex();
     dstStack.push(ss);
-    dst[dstTail].Trans = dst.TransFac->getSmallest(bs);
+    dst[dstTail].Trans = src[dstList.front()].Trans ?
+      dst.TransFac->getSmallest(bs) : nullptr;
   }
   else {
     // old sublist vertex
@@ -478,6 +494,10 @@ void makeDestinationState(const NFA& src, NFA& dst, const NFA::VertexDescriptor 
 
   if (src[dstList.front()].AtEnd) {
     dst[dstTail].AtEnd = true;
+  }
+
+  if (src[dstList.front()].Assert) {
+    dst[dstTail].Assert = true;
   }
 
   dst.addEdge(dstHead, dstTail);
