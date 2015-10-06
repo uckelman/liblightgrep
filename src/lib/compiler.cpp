@@ -188,7 +188,7 @@ ProgramPtr Compiler::createProgram(const NFA& graph) {
   // std::cerr << "Determined order in first pass" << std::endl;
 
   ProgramPtr ret(new Program(cg.Guard+3));
-  ret->MaxLabel= cg.MaxLabel;
+  ret->MaxLabel = cg.MaxLabel;
   ret->MaxCheck = cg.MaxCheck;
   std::tie(ret->FilterOff, ret->Filter) = bestPair(graph);
 
