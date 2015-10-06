@@ -1393,3 +1393,28 @@ SCOPE_TEST(parse_WhackAWhackwP) {
   SCOPE_ASSERT(!fsm[1].AtEnd);
   SCOPE_ASSERT(!fsm[2].AtEnd);
 }
+
+SCOPE_TEST(parse_WhackwPWhackZ) {
+  NFABuilder nfab;
+  ParseTree tree;
+  NFA& fsm(*nfab.getFsm());
+  SCOPE_ASSERT(parse({"\\w+\\Z", false, false}, tree));
+  SCOPE_ASSERT(nfab.build(tree));
+
+  SCOPE_ASSERT_EQUAL(3u, fsm.verticesSize());
+  SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(0));
+  SCOPE_ASSERT_EQUAL(2u, fsm.outDegree(1));
+  SCOPE_ASSERT_EQUAL(0u, fsm.outDegree(2));
+
+  SCOPE_ASSERT(!fsm[0].IsMatch);
+  SCOPE_ASSERT(!fsm[1].IsMatch);
+  SCOPE_ASSERT(fsm[2].IsMatch);
+
+  SCOPE_ASSERT(!fsm[0].AtStart);
+  SCOPE_ASSERT(!fsm[1].AtStart);
+  SCOPE_ASSERT(!fsm[2].AtStart);
+
+  SCOPE_ASSERT(!fsm[0].AtEnd);
+  SCOPE_ASSERT(!fsm[1].AtEnd);
+  SCOPE_ASSERT(fsm[2].AtEnd);
+}
