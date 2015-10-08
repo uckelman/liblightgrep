@@ -22,6 +22,8 @@
 
 #include <string>
 
+#include <boost/lexical_cast.hpp>
+
 namespace {
   bool containsPossibleNongreedy(const std::string& pattern) {
     // The trailing '?' of a nongreedy operator must have at least
@@ -36,8 +38,38 @@ namespace {
     return cr > 0 && cr != std::string::npos;
   }
 
-  bool containsPossibleLookaroundAssertion(const std::string& pattern) {
-    return pattern.find("(?") != std::string::npos;
+  bool containsPositiveLookaheadAssertion(const ParseNode* n) {
+    switch (n->Type) {
+    case ParseNode::REGEXP:
+      return !n->Child.Left ? false : containsPositiveLookaheadAssertion(n->Child.Left);
+
+    case ParseNode::LOOKBEHIND_POS:
+    case ParseNode::LOOKBEHIND_NEG:
+    case ParseNode::LOOKAHEAD_NEG:
+      return false;
+
+    case ParseNode::LOOKAHEAD_POS:
+      return true;
+
+    case ParseNode::ALTERNATION:
+    case ParseNode::CONCATENATION:
+      return containsPositiveLookaheadAssertion(n->Child.Left) ||
+             containsPositiveLookaheadAssertion(n->Child.Right);
+
+    case ParseNode::REPETITION:
+    case ParseNode::REPETITION_NG:
+      return containsPositiveLookaheadAssertion(n->Child.Left);
+
+    case ParseNode::DOT:
+    case ParseNode::CHAR_CLASS:
+    case ParseNode::LITERAL:
+    case ParseNode::BYTE:
+      return false;
+
+    default:
+      // WTF?
+      throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+    }
   }
 }
 
@@ -56,7 +88,7 @@ std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseT
   bool rewrite = makeBinopsRightAssociative(tree.Root);
   rewrite |= combineConsecutiveRepetitions(tree.Root);
 
-  if (containsPossibleLookaroundAssertion(text)) {
+  if (containsLookaroundAssertion(tree.Root)) {
     rewrite |= reduceNegativeLookarounds(tree);
     rewrite |= shoveLookaroundsOutward(tree);
   }
@@ -71,7 +103,18 @@ std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseT
     reduceUselessRepetitions(tree.Root);
   }
 
+  if (containsPositiveLookaheadAssertion(tree.Root)) {
+    THROW_RUNTIME_ERROR_WITH_CLEAN_OUTPUT("Contains positive lookahead");
+  }
+
+  if (hasZeroLengthMatch(tree.Root)) {
+    THROW_RUNTIME_ERROR_WITH_CLEAN_OUTPUT("Has empty matches.");
+  }
+
+/*
   return containsLookaroundAssertion(tree.Root) ?
     splitLookarounds(tree) :
     std::make_tuple(ParseTree(), std::move(tree), ParseTree());
+*/
+  return std::make_tuple(ParseTree(), std::move(tree), ParseTree());
 }

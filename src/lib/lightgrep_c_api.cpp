@@ -136,6 +136,19 @@ namespace {
     const uint32_t label = hMap->Patterns.size();
     hFsm->Impl->addPattern(hPattern->Tree, encoding, label);
     hMap->addPattern(hPattern->Pat.Expression.c_str(), encoding);
+
+/*
+    if (!hPattern->Behind.empty()) {
+      hFsm->Impl->addPattern(hPattern->Behind, encoding, label+1);
+      hMap->addPattern(hPattern->Pat.Expression.c_str(), encoding);
+    }
+
+    if (!hPattern->Ahead.empty()) {
+      hFsm->Impl->addPattern(hPattern->Ahead, encoding, label+2);
+      hMap->addPattern(hPattern->Pat.Expression.c_str(), encoding);
+    }
+*/
+
     return static_cast<int>(label);
   }
 }
