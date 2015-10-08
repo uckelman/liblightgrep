@@ -300,7 +300,7 @@ void NFAOptimizer::propagateMatchLabels(NFA& g) {
           // Skip the initial state.
           continue;
         }
-        else if (!g[h].Trans) {
+        else if (g[h].AtStart) {
           // Mark start anchors as unlabelable.
           g[h].Label = UNLABELABLE;
         }
