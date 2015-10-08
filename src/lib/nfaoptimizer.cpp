@@ -396,8 +396,11 @@ void NFAOptimizer::removeNonMinimalLabels(NFA& g) {
 }
 
 using VDList = std::vector<NFA::VertexDescriptor>;
+
 using SubsetState = std::pair<ByteSet, VDList>;
-using ByteToVertices = std::array<VDList,256>;
+
+// NB: element 256 represents a non-byte transition
+using ByteToVertices = std::array<VDList, 257>;
 
 struct SubsetStateComp {
   bool operator()(const SubsetState& a, const SubsetState& b) const {
@@ -427,6 +430,10 @@ void makePerByteOutNeighborhoods(const NFA& src, const NFA::VertexDescriptor src
         }
       }
     }
+    else {
+      // 256 is not a byte value, represents no transition
+      srcTailLists[256].push_back(srcTail);
+    }
   }
 }
 
@@ -439,10 +446,13 @@ void makeByteSetsWithDistinctOutNeighborhoods(const ByteToVertices& srcTailLists
 
   // mark the outgoing byte for each out neighborhood
   const ByteToVertices::const_iterator beg(srcTailLists.begin());
-  const ByteToVertices::const_iterator end(srcTailLists.end());
+  const ByteToVertices::const_iterator end(srcTailLists.end()-1);
   for (ByteToVertices::const_iterator i(beg); i != end; ++i) {
     srcList2Bytes[*i][i - beg] = true;
   }
+
+  // use an empty set for the no-transition neighborhood
+  srcList2Bytes.emplace(*end, ByteSet());
 
   // invert the map
   for (const VerticesToBytes::value_type& v : srcList2Bytes) {
