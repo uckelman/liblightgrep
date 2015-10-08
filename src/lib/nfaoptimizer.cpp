@@ -395,9 +395,9 @@ void NFAOptimizer::removeNonMinimalLabels(NFA& g) {
   }
 }
 
-typedef std::vector<NFA::VertexDescriptor> VDList;
-typedef std::pair<ByteSet, VDList> SubsetState;
-typedef std::array<VDList,256> ByteToVertices;
+using VDList = std::vector<NFA::VertexDescriptor>;
+using SubsetState = std::pair<ByteSet, VDList>;
+using ByteToVertices = std::array<VDList,256>;
 
 struct SubsetStateComp {
   bool operator()(const SubsetState& a, const SubsetState& b) const {
@@ -430,10 +430,10 @@ void makePerByteOutNeighborhoods(const NFA& src, const NFA::VertexDescriptor src
   }
 }
 
-typedef std::map<ByteSet, VDList> BytesToVertices;
+using BytesToVertices = std::map<ByteSet, VDList>;
 
 void makeByteSetsWithDistinctOutNeighborhoods(const ByteToVertices& srcTailLists, BytesToVertices& bytes2SrcList) {
-  typedef std::map<VDList, ByteSet> VerticesToBytes;
+  using VerticesToBytes = std::map<VDList, ByteSet>;
 
   VerticesToBytes srcList2Bytes;
 
@@ -464,7 +464,7 @@ void addToDeterminizationGroup(const NFA& src, const NFA::VertexDescriptor srcTa
   dstListGroups[bs].back().push_back(srcTail);
 }
 
-typedef std::map<SubsetState, NFA::VertexDescriptor, SubsetStateComp> SubsetStateToState;
+using SubsetStateToState = std::map<SubsetState, NFA::VertexDescriptor, SubsetStateComp>;
 
 void makeDestinationState(const NFA& src, NFA& dst, const NFA::VertexDescriptor dstHead, const ByteSet& bs, const VDList& dstList, SubsetStateToState& dstList2Dst, std::stack<SubsetState>& dstStack) {
   const SubsetState ss(bs, dstList);
