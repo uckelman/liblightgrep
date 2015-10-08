@@ -227,23 +227,9 @@ ccca)";
   SCOPE_ASSERT_EQUAL(SearchHit(0, 1, 0), fixture.Hits[0]);
 }
 
-// FIXME: Why does this crash?
-/*
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest48, STest, STest(R"(\Za)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(0u, fixture.Hits.size());
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
-*/
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest49, STest, STest(R"(\Ka)")) {
   const char text[] = R"(aaa
