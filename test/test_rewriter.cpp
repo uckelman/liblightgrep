@@ -629,6 +629,13 @@ SCOPE_TEST(reduceNegativeLookarounds_LPLBWhackdRPWhadkdPLPLAWhackdRP_Test) {
   SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[^0-9]))[0-9]+((?=[^0-9])|(?!.))", unparse(tree));
 }
 
+SCOPE_TEST(reduceNegativeLookarounds_CaretWhackwP_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"^\\w+", false, false}, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
+  SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[\\n-\\r\\x85]))[0-9A-Z_a-z]+", unparse(tree));
+}
+
 SCOPE_TEST(reduceNegativeLookbehindLiteral_Dot) {
   ParseTree tree;
   tree.init(100);

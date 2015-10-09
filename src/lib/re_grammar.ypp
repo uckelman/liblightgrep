@@ -357,6 +357,7 @@ atom:
     ctx->USet.set(0x85);              // NEL
     ctx->USet.set(0x2028);            // LINE SEPARATOR
     ctx->USet.set(0x2029);            // PARAGRAPH SEPARATOR
+    ctx->USet.flip();
 
     ParseNode *linebreak = ctx->add(ParseNode::CHAR_CLASS, ctx->USet);
     $$ = ctx->add(ParseNode::LOOKBEHIND_NEG, linebreak);
@@ -368,6 +369,7 @@ atom:
     ctx->USet.set(0x85);              // NEL
     ctx->USet.set(0x2028);            // LINE SEPARATOR
     ctx->USet.set(0x2029);            // PARAGRAPH SEPARATOR
+    ctx->USet.flip();
 
     ParseNode *linebreak = ctx->add(ParseNode::CHAR_CLASS, ctx->USet);
     $$ = ctx->add(ParseNode::LOOKAHEAD_NEG, linebreak);

@@ -1770,21 +1770,20 @@ SCOPE_TEST(parseCaretTest) {
   ParseTree expected;
   expected.init(3);
 
+  UnicodeSet u{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029};
+  u.flip();
+
   expected.Root = expected.add(
     ParseNode::REGEXP,
     expected.add(
       ParseNode::LOOKBEHIND_NEG,
-      expected.add(
-        ParseNode::CHAR_CLASS,
-        UnicodeSet{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029}
-      )
+      expected.add(ParseNode::CHAR_CLASS, u)
     )
   );
 
-  const std::string p = "^";
   ParseTree actual;
   actual.init(3);
-  SCOPE_ASSERT(parse({p, false, false}, actual));
+  SCOPE_ASSERT(parse({"^", false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
 }
@@ -1793,21 +1792,20 @@ SCOPE_TEST(parseDollarSignTest) {
   ParseTree expected;
   expected.init(3);
 
+  UnicodeSet u{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029};
+  u.flip();
+
   expected.Root = expected.add(
     ParseNode::REGEXP,
     expected.add(
       ParseNode::LOOKAHEAD_NEG,
-      expected.add(
-        ParseNode::CHAR_CLASS,
-        UnicodeSet{'\n', '\v', '\f', '\r', 0x85, 0x2028, 0x2029}
-      )
+      expected.add(ParseNode::CHAR_CLASS, u)
     )
   );
 
-  const std::string p = "$";
   ParseTree actual;
   actual.init(3);
-  SCOPE_ASSERT(parse({p, false, false}, actual));
+  SCOPE_ASSERT(parse({"$", false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
 }
