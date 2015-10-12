@@ -19,6 +19,7 @@
 #include "automata.h"
 
 #include <limits>
+#include <string>
 
 const uint32_t GlushkovState::NOLABEL = std::numeric_limits<uint32_t>::max();
 
@@ -31,4 +32,38 @@ std::string GlushkovState::label() const {
     }
   }
   return buf.str();
+}
+
+template <>
+void writeVertex<Properties,GlushkovState,Empty,VectorFamily>(std::ostream& out, typename NFA::VertexDescriptor v, const NFA& g) {
+  out << "  " << v << " [label=\"" << v << "\"";
+
+  if (g[v].IsMatch) {
+    // double ring for match states
+    out << ", peripheries=2";
+  }
+
+  out << "];\n";
+}
+
+namespace {
+
+std::string escape(char c, const std::string& text) {
+  // escape a character in the given string
+  std::string repl(text);
+  for (std::string::size_type next = repl.find(c);
+       next != std::string::npos; next = repl.find(c, next)) {
+    repl.insert(next, 1, '\\');
+    next += 2;
+  }
+  return repl;
+}
+
+}
+
+template <>
+void writeEdge<Properties,GlushkovState,Empty,VectorFamily>(std::ostream& out, typename NFA::VertexDescriptor v, typename NFA::VertexDescriptor u, uint32_t index, const NFA& g) {
+  out << "  " << v << " -> " << u << " ["
+      << "label=\"" << escape('"', escape('\\', g[u].label())) << "\", "
+      << "taillabel=\"" << index << "\"];\n";
 }

@@ -16,6 +16,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "automata.h"
 #include "utility.h"
 
 #include <algorithm>
@@ -145,50 +146,4 @@ uint32_t maxOutbound(const std::vector<std::vector<NFA::VertexDescriptor>>& tran
       return l.size() < r.size();
     }
   )->size();
-}
-
-void writeVertex(std::ostream& out, NFA::VertexDescriptor v, const NFA& graph) {
-  out << "  " << v << " [label=\"" << v << "\"";
-
-  if (graph[v].IsMatch) {
-    // double ring for match states
-    out << ", peripheries=2";
-  }
-
-  out << "];\n";
-}
-
-std::string escape(char c, const std::string& text) {
-  // escape a character in the given string
-  std::string repl(text);
-  for (std::string::size_type next = repl.find(c);
-       next != std::string::npos; next = repl.find(c, next)) {
-    repl.insert(next, 1, '\\');
-    next += 2;
-  }
-  return repl;
-}
-
-void writeEdge(std::ostream& out, NFA::VertexDescriptor v, NFA::VertexDescriptor u, uint32_t priority, const NFA& graph) {
-  const std::string esclabel = escape('"', escape('\\', graph[u].label()));
-
-  out << "  " << v << " -> " << u << " ["
-      << "label=\"" << esclabel << "\", "
-      << "taillabel=\"" << priority << "\"];\n";
-}
-
-void writeGraphviz(std::ostream& out, const NFA& graph) {
-  out << "digraph G {\n  rankdir=LR;\n  ranksep=equally;\n  node [shape=\"circle\"];" << std::endl;
-
-  for (const NFA::VertexDescriptor v : graph.vertices()) {
-    writeVertex(out, v, graph);
-  }
-
-  for (const NFA::VertexDescriptor head : graph.vertices()) {
-    for (uint32_t j = 0; j < graph.outDegree(head); ++j) {
-      writeEdge(out, head, graph.outVertex(head, j), j, graph);
-    }
-  }
-
-  out << "}" << std::endl;
 }

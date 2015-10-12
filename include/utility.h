@@ -19,12 +19,11 @@
 #pragma once
 
 #include "basic.h"
+#include "automata.h"
+#include "pattern.h"
 
 #include <string>
 #include <vector>
-
-#include "automata.h"
-#include "pattern.h"
 
 struct SearchInfo {};
 
@@ -58,5 +57,3 @@ std::pair<uint32_t,std::bitset<256*256>> bestPair(const NFA& graph);
 std::vector<std::vector<NFA::VertexDescriptor>> pivotStates(NFA::VertexDescriptor source, const NFA& graph);
 
 uint32_t maxOutbound(const std::vector<std::vector<NFA::VertexDescriptor>>& tranTable);
-
-void writeGraphviz(std::ostream& out, const NFA& graph);

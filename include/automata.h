@@ -24,6 +24,9 @@
 #include "transitionfactory.h"
 #include "vectorfamily.h"
 
+#include <ostream>
+#include <string>
+
 struct Properties {
   Properties(): Deterministic(true), TransFac(new TransitionFactory()) {}
 
@@ -46,9 +49,15 @@ struct GlushkovState {
   bool IsMatch;
   bool AtStart;
   bool AtEnd;
+  bool Assert;
 };
 
 struct Empty {};
 
 using NFA = Graph<Properties,GlushkovState,Empty,VectorFamily>;
 
+template <>
+void writeVertex<Properties,GlushkovState,Empty,VectorFamily>(std::ostream& out, typename NFA::VertexDescriptor v, const NFA& g);
+
+template <>
+void writeEdge<Properties,GlushkovState,Empty,VectorFamily>(std::ostream& out, typename NFA::VertexDescriptor v, typename NFA::VertexDescriptor u, uint32_t index, const NFA& g);

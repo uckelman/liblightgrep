@@ -415,19 +415,25 @@ private:
 };
 
 template <class G, class V, class E, template <typename> class S>
+void writeVertex(std::ostream& out, typename Graph<G,V,E,S>::VertexDescriptor v, const Graph<G,V,E,S>& g);
+
+template <class G, class V, class E, template <typename> class S>
+void writeEdge(std::ostream& out, typename Graph<G,V,E,S>::VertexDescriptor v, typename Graph<G,V,E,S>::VertexDescriptor u, uint32_t index, const Graph<G,V,E,S>& g);
+
+template <class G, class V, class E, template <typename> class S>
 std::ostream& operator<<(std::ostream& out, const Graph<G,V,E,S>& g) {
-  const typename Graph<G,V,E,S>::VertexSizeType vnum = g.verticesSize();
+  out << "digraph G {\n  rankdir=LR;\n  ranksep=equally;\n  node [shape=\"circle\"];\n";
 
-  // print graph size
-  out << "|g| = " << vnum << '\n';
+  for (const auto v : g.vertices()) {
+    writeVertex(out, v, g);
+  }
 
-  // print out edges for each vertex
-  for (typename Graph<G,V,E,S>::VertexSizeType v = 0; v < vnum; ++v) {
-    const typename Graph<G,V,E,S>::EdgeSizeType odeg = g.outDegree(v);
-    for (typename Graph<G,V,E,S>::EdgeSizeType o = 0; o < odeg; ++o) {
-      out << v << " -> " << g.outVertex(v, o) << '\n';
+  for (const auto head : g.vertices()) {
+    for (uint32_t tail = 0; tail < g.outDegree(head); ++tail) {
+      writeEdge(out, head, g.outVertex(head, tail), tail, g);
     }
   }
 
+  out << "}";
   return out;
 }
