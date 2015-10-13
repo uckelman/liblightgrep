@@ -29,12 +29,6 @@
 
 #include "test_helper.h"
 
-#include <iostream>
-
-void parseOutput(std::string type, ParseNode n) {
-  std::cout << type << ": " << n.Val << std::endl;
-}
-
 SCOPE_TEST(parseAorB) {
   NFABuilder nfab;
   NFA& fsm(*nfab.getFsm());
@@ -116,21 +110,12 @@ SCOPE_TEST(parseGroup) {
 SCOPE_TEST(parseQuestionMark) {
   NFABuilder nfab;
   ParseTree tree;
-  // SCOPE_ASSERT(parse({"a?", false, false}, tree std::bind(&parseOutput, _1, _2)));
-  // tree.Store.clear();
-  // SCOPE_ASSERT(parse({"a?", false, false}, tree std::bind(&Parser::callback, &p, _1, _2)));
-  // SCOPE_ASSERT(!p.good());
-  // tree.Store.clear();
   SCOPE_ASSERT(parse({"ab?", false, false}, tree));
   SCOPE_ASSERT(nfab.build(tree));
 
   NFA& fsm(*nfab.getFsm());
 
-  // both s1 and s2 should be match states... it appears that there's an edge duplication???
-  // writeGraphviz(std::cerr, fsm);
-
   SCOPE_ASSERT_EQUAL(3u, fsm.verticesSize());
-  // get really invasive with testing here
   SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(0));
   SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(1));
   SCOPE_ASSERT_EQUAL(0u, fsm.outDegree(2));
