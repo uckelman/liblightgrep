@@ -1420,11 +1420,10 @@ SCOPE_TEST(parse_WhackwPWhackZ) {
 }
 
 SCOPE_TEST(parse_CaretWhackwP) {
+  const ParseTree tree = std::get<1>(parseAndReduce({"^\\w+", false, false}));
   NFABuilder nfab;
-  ParseTree tree;
-  NFA& fsm(*nfab.getFsm());
-  SCOPE_ASSERT(parse({"^\\w+", false, false}, tree));
   SCOPE_ASSERT(nfab.build(tree));
+  NFA& fsm(*nfab.getFsm());
 
   SCOPE_ASSERT_EQUAL(4u, fsm.verticesSize());
   SCOPE_ASSERT_EQUAL(2u, fsm.outDegree(0));
