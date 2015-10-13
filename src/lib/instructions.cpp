@@ -89,8 +89,19 @@ std::string Instruction::toString() const {
   case HALT_OP:
     buf << "Halt";
     break;
-  case ANCHOR_OP:
-    buf << "Anchor " << (Op.Offset ? "End" : "Start");
+  case ASSERT_OP:
+    buf << "Assert ";
+    switch (Op.Offset) {
+    case 0:
+      buf << "Start";
+      break;
+    case 1:
+      buf << "End";
+      break;
+    case 2:
+      buf << "Assert";
+      break;
+    }
     break;
   default:
     buf << "* UNRECOGNIZED *";
@@ -207,23 +218,23 @@ Instruction Instruction::makeFinish() {
   return i;
 }
 
-Instruction makeAnchor(byte end) {
+Instruction Instruction::makeAssert(byte type) {
   Instruction i;
-  i.OpCode = ANCHOR_OP;
-  i.Op.Offset = end;
+  i.OpCode = ASSERT_OP;
+  i.Op.Offset = type;
   return i;
 }
 
 Instruction Instruction::makeBegin() {
-  return makeAnchor(0);
+  return makeAssert(0);
 }
 
 Instruction Instruction::makeEnd() {
-  return makeAnchor(1);
+  return makeAssert(1);
 }
 
 Instruction Instruction::makeAssert() {
-  return makeAnchor(2);
+  return makeAssert(2);
 }
 
 Instruction Instruction::makeRaw32(uint32_t val) {

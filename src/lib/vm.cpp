@@ -390,11 +390,11 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
     t->PC = nullptr;
     return false;
 
-  case ANCHOR_OP:
+  case ASSERT_OP:
     switch (instr.Op.Offset) {
     case 0:
       if (AtStart) {
-        t->advance(InstructionSize<ANCHOR_OP>::VAL);
+        t->advance(InstructionSize<ASSERT_OP>::VAL);
         return true;
       }
       else {
@@ -408,7 +408,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
         return false;
       }
       else if (AtEnd) {
-        t->advance(InstructionSize<ANCHOR_OP>::VAL);
+        t->advance(InstructionSize<ASSERT_OP>::VAL);
         return true;
       }
       else {
@@ -417,7 +417,7 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
 
     default:
       t->Start = offset + 1;
-      t->advance(InstructionSize<ANCHOR_OP>::VAL);
+      t->advance(InstructionSize<ASSERT_OP>::VAL);
       return true;
     }
   }
@@ -615,7 +615,7 @@ uint64_t Vm::_startOfLeftmostLiveThread(const uint64_t offset) const {
   for (ThreadList::const_iterator t(Active.begin()); t != e; ++t) {
     const unsigned char op = t->PC->OpCode;
     if (op == HALT_OP || op == FINISH_OP ||
-        (op == ANCHOR_OP && t->PC->Op.Offset)) {
+        (op == ASSERT_OP && t->PC->Op.Offset == 1)) {
       continue;
     }
     // this is a live thread
@@ -737,7 +737,7 @@ void Vm::closeOut(HitCallback hitFn, void* userData) {
 
   for (ThreadList::iterator t(Active.begin()); t != Active.end(); ++t) {
     // advance any threads which are at an end anchor
-    if (t->PC->OpCode == ANCHOR_OP && t->PC->Op.Offset) {
+    if (t->PC->OpCode == ASSERT_OP && t->PC->Op.Offset == 1) {
       _executeEpSequence<10>(&(*Prog)[0], t, LastOffset);
     }
 
