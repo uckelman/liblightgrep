@@ -439,7 +439,12 @@ void NFABuilder::end_anchor(const ParseNode& n) {
   Stack.push(TempFrag);
 }
 
-void NFABuilder::lookbehind_pos(const ParseNode& n) {
+void NFABuilder::lookbehind_pos(const ParseNode&) {
+  const Fragment& lookbehind = Stack.top();
+  for (const auto& i: lookbehind.OutList) {
+    const NFA::VertexDescriptor v = i.first;
+    (*Fsm)[v].Assert = true;
+  }
 }
 
 void NFABuilder::lookahead_pos(const ParseNode& n) {
@@ -494,7 +499,9 @@ void NFABuilder::traverse(const ParseNode* root) {
          n->Type == ParseNode::ALTERNATION ||
          n->Type == ParseNode::CONCATENATION ||
          n->Type == ParseNode::REPETITION ||
-         n->Type == ParseNode::REPETITION_NG) && n->Child.Left) {
+         n->Type == ParseNode::REPETITION_NG ||
+         n->Type == ParseNode::LOOKBEHIND_POS ||
+         n->Type == ParseNode::LOOKAHEAD_POS) && n->Child.Left) {
       // This node has a left child
       if ((n->Type == ParseNode::REPETITION ||
            n->Type == ParseNode::REPETITION_NG) &&

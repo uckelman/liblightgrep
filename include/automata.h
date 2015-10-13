@@ -38,8 +38,8 @@ struct GlushkovState {
   static const uint32_t NOLABEL;
 
   GlushkovState():
-    Trans(nullptr), Label(NOLABEL),
-    IsMatch(false), AtStart(false), AtEnd(false) {}
+    Trans(nullptr), Label(NOLABEL), IsMatch(false),
+    AtStart(false), AtEnd(false), Assert(false) {}
 
   std::string label() const;
 

@@ -115,6 +115,10 @@ void encodeState(const NFA& graph, NFA::VertexDescriptor v, const CodeGenHelper&
     curOp += state.Trans->numInstructions();
     // std::cerr << "wrote " << i << std::endl;
 
+    if (state.Assert) {
+      *curOp++ = Instruction::makeAssert();
+    }
+
     if (state.Label != NOLABEL) {
       *curOp++ = Instruction::makeLabel(state.Label);
     }

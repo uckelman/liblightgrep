@@ -111,6 +111,7 @@ struct Instruction {
   static Instruction makeFinish();
   static Instruction makeBegin();
   static Instruction makeEnd();
+  static Instruction makeAssert();
   static Instruction makeRaw32(uint32_t val);
   static Instruction makeRaw24(uint32_t val);
 };

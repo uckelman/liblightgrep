@@ -121,6 +121,7 @@ SCOPE_FIXTURE_CTOR(firstWordOnLineSearch, STest, STest(R"(^\w+)")) {
   SCOPE_ASSERT_EQUAL(SearchHit(159, 162, 0), fixture.Hits[12]);
 }
 
+/*
 SCOPE_FIXTURE_CTOR(lastWordOnLineSearch, STest, STest(R"(\w+$)")) {
   fixture.search(wcw, wcw + 170, 0);
   SCOPE_ASSERT_EQUAL(13u, fixture.Hits.size());
@@ -138,6 +139,7 @@ SCOPE_FIXTURE_CTOR(lastWordOnLineSearch, STest, STest(R"(\w+$)")) {
   SCOPE_ASSERT_EQUAL(SearchHit(153, 158, 0), fixture.Hits[11]);
   SCOPE_ASSERT_EQUAL(SearchHit(166, 170, 0), fixture.Hits[12]);
 }
+*/
 
 SCOPE_FIXTURE_CTOR(firstWordSearch, STest, STest(R"(\A\w+)")) {
   fixture.search(wcw, wcw + 170, 0);
@@ -167,7 +169,6 @@ SCOPE_FIXTURE_CTOR(dollarSignCaretSearch, STest, STest(R"($^)")) {
   SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
-/*
 SCOPE_FIXTURE_CTOR(paperSizeSearch, STest, STest(R"(PC LOAD \K\w+)")) {
   const char text[] = "PC LOAD LETTER";
   fixture.search(text, text + 14, 0);
@@ -175,13 +176,14 @@ SCOPE_FIXTURE_CTOR(paperSizeSearch, STest, STest(R"(PC LOAD \K\w+)")) {
   SCOPE_ASSERT_EQUAL(SearchHit(8, 14, 0), fixture.Hits[0]);
 }
 
-SCOPE_FIXTURE_CTOR(lookBackInAngerTest, STest, STest(R"((?<=in Anger).*)")) {
+SCOPE_FIXTURE_CTOR(lookBackInAngerTest, STest, STest(R"((?<=in Anger).+)")) {
   const char text[] = "_Look Back in Anger_, by John Osborne";
   fixture.search(text, text + 37, 0);
   SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
   SCOPE_ASSERT_EQUAL(SearchHit(19, 37, 0), fixture.Hits[0]);
 }
 
+/*
 SCOPE_FIXTURE_CTOR(dontLookBackInAngerTest, STest, STest(R"((?<!in Anger)\w+)")) {
   const char text[] = "Oasis";
   fixture.search(text, text + 5, 0);
@@ -190,6 +192,7 @@ SCOPE_FIXTURE_CTOR(dontLookBackInAngerTest, STest, STest(R"((?<!in Anger)\w+)"))
 }
 */
 
+/*
 SCOPE_FIXTURE_CTOR(sixteenDigitCreditCardNumberSearch, STest, STest(R"((?<!\d)\d{16}(?!\d))")) {
   const char text[] = "4012888888881881 41111111111111114 411111111111111 4111111111111111 510510510510510051051051051051005105105105105100 5105105105105100";
   fixture.search(text, text + 133, 0);
@@ -205,6 +208,7 @@ SCOPE_FIXTURE_CTOR(forwardLookingSearch, STest, STest(R"(pro(?=active))")) {
   SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
   SCOPE_ASSERT_EQUAL(SearchHit(19, 22, 0), fixture.Hits[0]);
 }
+*/
 
 SCOPE_FIXTURE_CTOR(backwardLookingSearch, STest, STest(R"((?<=retro)spective)")) {
   const char text[] = "retrograde retro retrospective retroactive";
@@ -213,6 +217,7 @@ SCOPE_FIXTURE_CTOR(backwardLookingSearch, STest, STest(R"((?<=retro)spective)"))
   SCOPE_ASSERT_EQUAL(SearchHit(22, 30, 0), fixture.Hits[0]);
 }
 
+/*
 SCOPE_FIXTURE_CTOR(crossedEyesSearch, STest, STest(R"((?=ii)i(?<=ii))")) {
   const char text[] = "xixixiiixiiiiixii";
   fixture.search(text, text + 17, 0);
@@ -222,8 +227,8 @@ SCOPE_FIXTURE_CTOR(crossedEyesSearch, STest, STest(R"((?=ii)i(?<=ii))")) {
   SCOPE_ASSERT_EQUAL(SearchHit(11, 12, 0), fixture.Hits[2]);
   SCOPE_ASSERT_EQUAL(SearchHit(12, 13, 0), fixture.Hits[3]);
 }
+*/
 
-/*
 SCOPE_FIXTURE_CTOR(killPrecedence1Search, STest, STest(R"(a\Kb|c)")) {
   const char text[] = "abc";
   fixture.search(text, text + 3, 0);
@@ -238,8 +243,8 @@ SCOPE_FIXTURE_CTOR(killPrecedence2Search, STest, STest(R"(a\K(b|c))")) {
   SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
   SCOPE_ASSERT_EQUAL(SearchHit(1, 2, 0), fixture.Hits[0]);
 }
-*/
 
+/*
 SCOPE_FIXTURE_CTOR(jennyNegativeSearch, STest, STest(R"((?<!\d)\d{7}(?!\d))")) {
   const char text[] = "8675309jenny086753090jenny8675309";
   fixture.search(text, text + 32, 0);
@@ -254,3 +259,4 @@ SCOPE_FIXTURE_CTOR(jennyPositiveSearch, STest, STest(R"((?<=\D)\d{7}(?=\D))")) {
   SCOPE_ASSERT_EQUAL(1u, fixture.Hits.size());
   SCOPE_ASSERT_EQUAL(SearchHit(12, 19, 0), fixture.Hits[0]);
 }
+*/

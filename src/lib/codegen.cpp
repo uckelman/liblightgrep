@@ -68,8 +68,8 @@ void CodeGenVisitor::finish_vertex(NFA::VertexDescriptor v, const NFA& graph) {
     size += 2 + (outDegree > 0);
   }
 
-  // 1 for a start anchor, 1 for an end anchor
-  size += graph[v].AtStart + graph[v].AtEnd;
+  // 1 for a start anchor, 1 for an end anchor, 1 for an assert
+  size += graph[v].AtStart + graph[v].AtEnd + graph[v].Assert;
 
   if (outDegree) {
     uint32_t outOps = calcJumpTableSize(v, graph, outDegree);

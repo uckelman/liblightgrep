@@ -44,6 +44,7 @@ bool NFAOptimizer::canMerge(const NFA& dst, NFA::VertexDescriptor dstTail, const
   //     the same pattern, or are not match states)
   //  3) both or neither are anchored at start
   //  4) both or neither are anchored at end
+  //  5) both or neither are end of an assertion
   //  6) if they are match states, then they have no successors
   //  7) the destination has only one incoming edge
   //  8) the source has only one incoming edge
@@ -55,6 +56,7 @@ bool NFAOptimizer::canMerge(const NFA& dst, NFA::VertexDescriptor dstTail, const
     dst[dstTail].Label == src[srcTail].Label &&
     dst[dstTail].AtStart == src[srcTail].AtStart &&
     dst[dstTail].AtEnd == src[srcTail].AtEnd &&
+    dst[dstTail].Assert == src[srcTail].Assert &&
     (
       dst[dstTail].Label == NOLABEL ||
       (0 == src.outDegree(srcTail) && 0 == dst.outDegree(dstTail))

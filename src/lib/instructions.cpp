@@ -207,7 +207,7 @@ Instruction Instruction::makeFinish() {
   return i;
 }
 
-Instruction makeAnchor(bool end) {
+Instruction makeAnchor(byte end) {
   Instruction i;
   i.OpCode = ANCHOR_OP;
   i.Op.Offset = end;
@@ -215,11 +215,15 @@ Instruction makeAnchor(bool end) {
 }
 
 Instruction Instruction::makeBegin() {
-  return makeAnchor(false);
+  return makeAnchor(0);
 }
 
 Instruction Instruction::makeEnd() {
-  return makeAnchor(true);
+  return makeAnchor(1);
+}
+
+Instruction Instruction::makeAssert() {
+  return makeAnchor(2);
 }
 
 Instruction Instruction::makeRaw32(uint32_t val) {

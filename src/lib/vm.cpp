@@ -391,7 +391,8 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
     return false;
 
   case ANCHOR_OP:
-    if (!instr.Op.Offset) {
+    switch (instr.Op.Offset) {
+    case 0:
       if (AtStart) {
         t->advance(InstructionSize<ANCHOR_OP>::VAL);
         return true;
@@ -400,8 +401,8 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
         t->PC = nullptr;
         return false;
       }
-    }
-    else {
+    
+    case 1:
       if (!PossiblyAtEnd) {
         t->PC = nullptr;
         return false;
@@ -413,6 +414,11 @@ inline bool Vm::_executeEpsilon(const Instruction* const base, ThreadList::itera
       else {
         return false;
       }
+
+    default:
+      t->Start = offset + 1;
+      t->advance(InstructionSize<ANCHOR_OP>::VAL);
+      return true;
     }
   }
 
