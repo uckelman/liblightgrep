@@ -1100,14 +1100,6 @@ void reduceLookaroundRepetitions(ParseNode* n, std::stack<ParseNode*>& branch) {
   }
 }
 
-void reduceNestedLookarounds(ParseNode* n, std::stack<ParseNode*>& branch) {
-  // (?=(?=S))  = (?<=(?=S)   = (?=S)
-  // (?=(?<=S)) = (?<=(?<=S)) = (?<=S)
-  // (?=\A)     = (?<=\A)     = \A
-  // (?=\Z)     = (?<=\Z)     = \Z
-  spliceOutParent(branch.top(), n, n->Child.Left);
-}
-
 bool matchesAtEnd(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
@@ -1372,63 +1364,81 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
           break;
         }
 
-        if (n->Type == ParseNode::LOOKBEHIND_POS &&
-            n->Child.Left->Type == ParseNode::CONCATENATION &&
-            n->Child.Left->Child.Left->Type == ParseNode::LOOKBEHIND_POS)
-        {
-          /*
-                 ?<=         ?<=
-                  |           |
-                  &     =>    &
-                 / \         / \
-               ?<=  T       S   T
-                |
-                S
-          */
-          ParseNode* c = n->Child.Left;
-          ParseNode* l = c->Child.Left;
-          ParseNode* s = l->Child.Left;
-
-          spliceOutParent(c, l, s);
-
-          parent[s] = c;
-          l->Type = ParseNode::TEMPORARY;
-
-          restartShove(root, check);
-          ret = true;
-          break;
-        }
-
-        if (n->Type == ParseNode::LOOKAHEAD_POS &&
-            n->Child.Left->Type == ParseNode::CONCATENATION) {
-          p = n;
-          ParseNode* c = n->Child.Left;
-          while (c->Type == ParseNode::CONCATENATION) {
-            p = c;
-            c = c->Child.Right;
+        if (n->Type == ParseNode::LOOKBEHIND_POS) {
+          // look upwards for an ancestral positive lookbehind
+          ParseNode *c = n;
+          while (p) {
+            if ( p->Type == ParseNode::ALTERNATION ||
+                (p->Type == ParseNode::CONCATENATION && c == p->Child.Left))
+            {
+              // n is still potentially leading inside another lookbehind
+              c = p;
+              p = parent[p]; 
+            }
+            else if (p->Type == ParseNode::LOOKBEHIND_POS) {
+              // n is leading within p
+              break;
+            }
+            else {
+              // n is not leading within p
+              p = nullptr;
+            }
           }
 
-          if (c->Type == ParseNode::LOOKAHEAD_POS) {
-            /*
-                  ?=                ?=
-                   |                 |
-                   &                 &
-                  / \               / \
-                 T0  &       =>    T0  &
-                    / \               / \
-                   T1 ...            T1 ...
-                       &                 &
-                      / \               / \
-                     Tk ?=             Tk  S
-                         |
-                         S
-            */
-            spliceOutParent(p, c, c->Child.Left);
-            parent[c->Child.Left] = p;
-            c->Type = ParseNode::TEMPORARY;
+          if (p) {
+            p = parent[n];
+            c = n->Child.Left;
+
+            spliceOutParent(p, n, c);
+            parent[c] = p;
+            n->Type = ParseNode::TEMPORARY;
+
             restartShove(root, check);
             ret = true;
             break;
+          }
+          else {
+            // reset p, as we're not breaking out of the case here
+            p = parent[n];
+          }
+        }
+
+        if (n->Type == ParseNode::LOOKAHEAD_POS) {
+          // look upwards for an ancestral positive lookahead
+          ParseNode *c = n;
+          while (p) {
+            if ( p->Type == ParseNode::ALTERNATION ||
+                (p->Type == ParseNode::CONCATENATION && c == p->Child.Right))
+            {
+              // n is still potentially trailing inside another lookahead
+              c = p;
+              p = parent[p]; 
+            }
+            else if (p->Type == ParseNode::LOOKAHEAD_POS) {
+              // n is trailing within p
+              break;
+            }
+            else {
+              // n is not trailing within p
+              p = nullptr;
+            }
+          }
+
+          if (p) {
+            p = parent[n];
+            c = n->Child.Left;
+
+            spliceOutParent(p, n, c);
+            parent[c] = p;
+            n->Type = ParseNode::TEMPORARY;
+
+            restartShove(root, check);
+            ret = true;
+            break;
+          }
+          else {
+            // reset p, as we're not breaking out of the case here
+            p = parent[n];
           }
         }
       }
