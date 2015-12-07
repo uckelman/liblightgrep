@@ -38,6 +38,44 @@ namespace {
     return cr > 0 && cr != std::string::npos;
   }
 
+  bool containsNestedPositiveLookarounds(const ParseNode* n, bool nested) {
+    switch (n->Type) {
+    case ParseNode::REGEXP:
+      return !n->Child.Left ? false : containsNestedPositiveLookarounds(n->Child.Left, nested);
+
+    case ParseNode::LOOKAHEAD_POS:
+    case ParseNode::LOOKBEHIND_POS:
+      return nested || containsNestedPositiveLookarounds(n->Child.Left, true);
+
+    case ParseNode::LOOKBEHIND_NEG:
+    case ParseNode::LOOKAHEAD_NEG:
+      return false;
+
+    case ParseNode::ALTERNATION:
+    case ParseNode::CONCATENATION:
+      return containsNestedPositiveLookarounds(n->Child.Left, nested) ||
+             containsNestedPositiveLookarounds(n->Child.Right, nested);
+
+    case ParseNode::REPETITION:
+    case ParseNode::REPETITION_NG:
+      return containsNestedPositiveLookarounds(n->Child.Left, nested);
+
+    case ParseNode::DOT:
+    case ParseNode::CHAR_CLASS:
+    case ParseNode::LITERAL:
+    case ParseNode::BYTE:
+      return false;
+
+    default:
+      // WTF?
+      throw std::logic_error(boost::lexical_cast<std::string>(n->Type));
+    }
+  }
+
+  bool containsNestedPositiveLookarounds(const ParseNode* n) {
+    return containsNestedPositiveLookarounds(n, false);
+  }
+
   bool containsPositiveLookaheadAssertion(const ParseNode* n) {
     switch (n->Type) {
     case ParseNode::REGEXP:
@@ -101,6 +139,10 @@ std::tuple<ParseTree,ParseTree,ParseTree> reduce(const std::string& text, ParseT
   if (rewrite || containsPossibleCountedRepetition(text)) {
     reduceEmptySubtrees(tree.Root);
     reduceUselessRepetitions(tree.Root);
+  }
+
+  if (containsNestedPositiveLookarounds(tree.Root)) {
+    THROW_RUNTIME_ERROR_WITH_CLEAN_OUTPUT("Contains nested positive lookarounds");
   }
 
   if (containsPositiveLookaheadAssertion(tree.Root)) {
