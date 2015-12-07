@@ -1108,6 +1108,20 @@ SCOPE_TEST(shoveLookaroundsOutward_LPLAPCCacaRPLPCCabOrCCcdRP) {
   SCOPE_ASSERT_EQUAL("([a]|[c])(?=a)", unparse(tree));
 }
 
+SCOPE_TEST(shoveLookaroundsOutward_LPLANxyRPz) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"((?<!.)|(?<=[^y])|(?<=((?<!.)|(?<=[^x]))y))z", false, false}, tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
+  SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[^y])|(?<=((?<!.)|[^x])y))z", unparse(tree));
+}
+
+SCOPE_TEST(shoveLookaroundsOutward_xLPLBNyzRP) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"x(?=[^y])|(?!.)|(?=y((?=[^z])|(?!.)))", false, false}, tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
+  SCOPE_ASSERT_EQUAL("x(?=[^y])|(?!.)|(?=y([^z]|(?!.)))", unparse(tree));
+}
+
 SCOPE_TEST(splitLookarounds_a) {
   ParseNode a(ParseNode::LITERAL, 'a'),
             root(ParseNode::REGEXP, &a);
