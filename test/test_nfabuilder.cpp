@@ -1431,3 +1431,51 @@ SCOPE_TEST(parse_CaretWhackwP) {
   SCOPE_ASSERT(!fsm[2].AtEnd);
   SCOPE_ASSERT(!fsm[3].AtEnd);
 }
+
+SCOPE_TEST(parse_LPLBNxyRPz) {
+  const ParseTree tree = std::get<1>(parseAndReduce({"(?<!xy)z", false, false}));
+  NFABuilder nfab;
+  SCOPE_ASSERT(nfab.build(tree));
+  NFA& fsm(*nfab.getFsm());
+
+  SCOPE_ASSERT_EQUAL(7u, fsm.verticesSize());
+  SCOPE_ASSERT_EQUAL(4u, fsm.outDegree(0));
+  SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(1));
+  SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(2));
+  SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(3));
+  SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(4));
+  SCOPE_ASSERT_EQUAL(1u, fsm.outDegree(5));
+  SCOPE_ASSERT_EQUAL(0u, fsm.outDegree(6));
+
+  SCOPE_ASSERT(!fsm[0].IsMatch);
+  SCOPE_ASSERT(!fsm[1].IsMatch);
+  SCOPE_ASSERT(!fsm[2].IsMatch);
+  SCOPE_ASSERT(!fsm[3].IsMatch);
+  SCOPE_ASSERT(!fsm[4].IsMatch);
+  SCOPE_ASSERT(!fsm[5].IsMatch);
+  SCOPE_ASSERT(fsm[6].IsMatch);
+
+  SCOPE_ASSERT(!fsm[0].AtStart);
+  SCOPE_ASSERT(fsm[1].AtStart);
+  SCOPE_ASSERT(!fsm[2].AtStart);
+  SCOPE_ASSERT(fsm[3].AtStart);
+  SCOPE_ASSERT(!fsm[4].AtStart);
+  SCOPE_ASSERT(!fsm[5].AtStart);
+  SCOPE_ASSERT(!fsm[6].AtStart);
+
+  SCOPE_ASSERT(!fsm[0].AtEnd);
+  SCOPE_ASSERT(!fsm[1].AtEnd);
+  SCOPE_ASSERT(!fsm[2].AtEnd);
+  SCOPE_ASSERT(!fsm[3].AtEnd);
+  SCOPE_ASSERT(!fsm[4].AtEnd);
+  SCOPE_ASSERT(!fsm[5].AtEnd);
+  SCOPE_ASSERT(!fsm[6].AtEnd);
+
+  SCOPE_ASSERT(!fsm[0].Assert);
+  SCOPE_ASSERT(!fsm[1].Assert);
+  SCOPE_ASSERT(fsm[2].Assert);
+  SCOPE_ASSERT(!fsm[3].Assert);
+  SCOPE_ASSERT(!fsm[4].Assert);
+  SCOPE_ASSERT(fsm[5].Assert);
+  SCOPE_ASSERT(!fsm[6].Assert);
+}
