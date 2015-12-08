@@ -636,6 +636,13 @@ SCOPE_TEST(reduceNegativeLookarounds_CaretWhackwP_Test) {
   SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[\\n-\\r\\x85]))[0-9A-Z_a-z]+", unparse(tree));
 }
 
+SCOPE_TEST(reduceNegativeLookarounds_Careta_Test) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"^a", false, false}, tree));
+  SCOPE_ASSERT(reduceNegativeLookarounds(tree));
+  SCOPE_ASSERT_EQUAL("((?<!.)|(?<=[\\n-\\r\\x85]))a", unparse(tree));
+}
+
 SCOPE_TEST(reduceNegativeLookbehindLiteral_Dot) {
   ParseTree tree;
   tree.init(100);
