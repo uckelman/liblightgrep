@@ -32,7 +32,7 @@ SCOPE_TEST(parseCC_A_Test) {
 
   const std::string p = "[A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -49,7 +49,7 @@ SCOPE_TEST(parseCC_AtoZ_Test) {
 
   const std::string p = "[A-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -58,7 +58,7 @@ SCOPE_TEST(parseCC_AtoZ_Test) {
 SCOPE_TEST(parseCC_ZtoA_Test) {
   const std::string p = "[Z-A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -81,7 +81,7 @@ SCOPE_TEST(parseCC_A_CaseInsensitiveTest) {
 
   const std::string p = "[A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -106,7 +106,7 @@ SCOPE_TEST(parseCC_AtoZ_CaseInsensitiveTest) {
 
   const std::string p = "[A-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -123,7 +123,7 @@ SCOPE_TEST(parseCC_Whack_b_Test) {
 
   const std::string p = "[\\b]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -140,7 +140,7 @@ SCOPE_TEST(parseCC_Whack_b_CaseInsensitiveTest) {
 
   const std::string p = "[\\b]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -157,7 +157,7 @@ SCOPE_TEST(parse_FF_BreakoutTest) {
 
   const std::string p = "\\zFF";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -174,7 +174,7 @@ SCOPE_TEST(parse_FF_BreakoutCaseInsensitiveTest) {
 
   const std::string p = "\\zFF";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -191,7 +191,7 @@ SCOPE_TEST(parseCC_FF_BreakoutTest) {
 
   const std::string p = "[\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -208,7 +208,7 @@ SCOPE_TEST(parseCC_FF_BreakoutCaseInsensitiveTest) {
 
   const std::string p = "[\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -225,7 +225,7 @@ SCOPE_TEST(parseCC_00toFF_BreakoutTest) {
 
   const std::string p = "[\\z00-\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -234,7 +234,7 @@ SCOPE_TEST(parseCC_00toFF_BreakoutTest) {
 SCOPE_TEST(parseCC_FFto00_BreakoutTest) {
   const std::string p = "[\\zFF-\\z00]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -257,7 +257,7 @@ SCOPE_TEST(parseCC_A_FF_BreakoutTest) {
 
   const std::string p = "[A\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -274,7 +274,7 @@ SCOPE_TEST(parseCC_A_FF_BreakoutCaseInsensitiveTest) {
 
   const std::string p = "[A\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -293,7 +293,7 @@ SCOPE_TEST(parseCC_AtoZ_00toFF_BreakoutTest) {
 
   const std::string p = "[A-Z\\z00-\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -312,7 +312,7 @@ SCOPE_TEST(parseCC_00toFF_AtoZ_BreakoutTest) {
 
   const std::string p = "[\\z00-\\zFFA-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -321,7 +321,7 @@ SCOPE_TEST(parseCC_00toFF_AtoZ_BreakoutTest) {
 SCOPE_TEST(parseCC_AtoFF_BreakoutTest) {
   const std::string p = "[A-\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -336,7 +336,7 @@ SCOPE_TEST(parseCC_AtoFF_BreakoutTest) {
 SCOPE_TEST(parseCC_00toA_BreakoutTest) {
   const std::string p = "[\\z00-A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -359,7 +359,7 @@ SCOPE_TEST(parseNegCC_A_Test) {
 
   const std::string p = "[^A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -376,7 +376,7 @@ SCOPE_TEST(parseNegCC_AtoZ_Test) {
 
   const std::string p = "[^A-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -385,7 +385,7 @@ SCOPE_TEST(parseNegCC_AtoZ_Test) {
 SCOPE_TEST(parseNegCC_ZtoA_Test) {
   const std::string p = "[^Z-A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -408,7 +408,7 @@ SCOPE_TEST(parseNegCC_A_CaseInsensitiveTest) {
 
   const std::string p = "[^A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -433,7 +433,7 @@ SCOPE_TEST(parseNegCC_AtoZ_CaseInsensitiveTest) {
 
   const std::string p = "[^A-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -450,7 +450,7 @@ SCOPE_TEST(parseNegCC_FF_BreakoutTest) {
 
   const std::string p = "[^\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -467,7 +467,7 @@ SCOPE_TEST(parseNegCC_FF_BreakoutCaseInsensitiveTest) {
 
   const std::string p = "[^\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -476,7 +476,7 @@ SCOPE_TEST(parseNegCC_FF_BreakoutCaseInsensitiveTest) {
 SCOPE_TEST(parseNegCC_00toFF_BreakoutTest) {
   const std::string p = "[^\\z00-\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -499,7 +499,7 @@ SCOPE_TEST(parseNegCC_00to7F_BreakoutTest) {
 
   const std::string p = "[^\\z00-\\z7F]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -508,7 +508,7 @@ SCOPE_TEST(parseNegCC_00to7F_BreakoutTest) {
 SCOPE_TEST(parseNegCC_FFto00_BreakoutTest) {
   const std::string p = "[^\\zFF-\\z00]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -531,7 +531,7 @@ SCOPE_TEST(parseNegCC_A_FF_BreakoutTest) {
 
   const std::string p = "[^A\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -550,7 +550,7 @@ SCOPE_TEST(parseNegCC_A_FF_BreakoutCaseInsensitiveTest) {
 
   const std::string p = "[^A\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, true}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -569,7 +569,7 @@ SCOPE_TEST(parseNegCC_AtoZ_00toFF_BreakoutTest) {
 
   const std::string p = "[^A-Z\\z00-\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -588,7 +588,7 @@ SCOPE_TEST(parseNegCC_AtoZ_00to7F_BreakoutTest) {
 
   const std::string p = "[^A-Z\\z00-\\z7F]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -607,7 +607,7 @@ SCOPE_TEST(parseNegCC_00toFF_AtoZ_BreakoutTest) {
 
   const std::string p = "[^\\z00-\\zFFA-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -626,7 +626,7 @@ SCOPE_TEST(parseNegCC_00to7F_AtoZ_BreakoutTest) {
 
   const std::string p = "[^\\z00-\\z7FA-Z]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -635,7 +635,7 @@ SCOPE_TEST(parseNegCC_00to7F_AtoZ_BreakoutTest) {
 SCOPE_TEST(parseNegCC_AtoFF_BreakoutTest) {
   const std::string p = "[^A-\\zFF]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -650,7 +650,7 @@ SCOPE_TEST(parseNegCC_AtoFF_BreakoutTest) {
 SCOPE_TEST(parseNegCC_00toA_BreakoutTest) {
   const std::string p = "[^\\z00-A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
 
   try {
     parse({p, false, false}, actual);
@@ -853,7 +853,7 @@ SCOPE_TEST(parseAAmp_Test) {
 
   const std::string p = "[a&]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -870,7 +870,7 @@ SCOPE_TEST(parseATilde_Test) {
 
   const std::string p = "[a~]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -887,7 +887,7 @@ SCOPE_TEST(parseAHyphen_Test) {
 
   const std::string p = "[a-]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -904,7 +904,7 @@ SCOPE_TEST(parseAmpA_Test) {
 
   const std::string p = "[&a]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -921,7 +921,7 @@ SCOPE_TEST(parseTildeA_Test) {
 
   const std::string p = "[~a]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -938,7 +938,7 @@ SCOPE_TEST(parseHyphenA_Test) {
 
   const std::string p = "[-a]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -955,7 +955,7 @@ SCOPE_TEST(parseAAmpB_Test) {
 
   const std::string p = "[a&b]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -972,7 +972,7 @@ SCOPE_TEST(parseATildeB_Test) {
 
   const std::string p = "[a~b]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1257,7 +1257,7 @@ SCOPE_TEST(parseAtoCHyphenE_Test) {
 
   const std::string p = "[a-c-e]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1274,7 +1274,7 @@ SCOPE_TEST(parseAHyphenHyphenHyphen_Test) {
 
   const std::string p = "[a---]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1293,7 +1293,7 @@ SCOPE_TEST(parseDigitHyphenA_Test) {
 
   const std::string p = "[\\d-A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1312,7 +1312,7 @@ SCOPE_TEST(parseNegDigitHyphenA_Test) {
 
   const std::string p = "[^\\d-A]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1332,7 +1332,7 @@ SCOPE_TEST(parseAHyphenDigit_Test) {
 
   const std::string p = "[A-\\d]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1352,7 +1352,7 @@ SCOPE_TEST(parseNegAHyphenDigit_Test) {
 
   const std::string p = "[^A-\\d]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1373,7 +1373,7 @@ SCOPE_TEST(parseDigitHyphenByte_Test) {
 
   const std::string p = "[\\d-\\z00]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1394,7 +1394,7 @@ SCOPE_TEST(parseNegDigitHyphenByte_Test) {
 
   const std::string p = "[^\\d-\\z00]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1414,7 +1414,7 @@ SCOPE_TEST(parseByteHyphenDigit_Test) {
 
   const std::string p = "[\\z00-\\d]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1435,7 +1435,7 @@ SCOPE_TEST(parseNegByteHyphenDigit_Test) {
 
   const std::string p = "[^\\z00-\\d]";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1443,7 +1443,7 @@ SCOPE_TEST(parseNegByteHyphenDigit_Test) {
 
 SCOPE_TEST(parseHyphenHyphenTest) {
   ParseTree expected;
-  expected.init(2);
+  expected.init(4);
 
   expected.Root = expected.add(
     ParseNode::REGEXP,
@@ -1456,7 +1456,7 @@ SCOPE_TEST(parseHyphenHyphenTest) {
 
   const std::string p = "--";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1464,7 +1464,7 @@ SCOPE_TEST(parseHyphenHyphenTest) {
 
 SCOPE_TEST(parseAmpAmpTest) {
   ParseTree expected;
-  expected.init(2);
+  expected.init(4);
 
   expected.Root = expected.add(
     ParseNode::REGEXP,
@@ -1477,7 +1477,7 @@ SCOPE_TEST(parseAmpAmpTest) {
 
   const std::string p = "&&";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1485,7 +1485,7 @@ SCOPE_TEST(parseAmpAmpTest) {
 
 SCOPE_TEST(parseTildeTildeTest) {
   ParseTree expected;
-  expected.init(2);
+  expected.init(4);
 
   expected.Root = expected.add(
     ParseNode::REGEXP,
@@ -1498,7 +1498,7 @@ SCOPE_TEST(parseTildeTildeTest) {
 
   const std::string p = "~~";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1616,7 +1616,7 @@ SCOPE_TEST(parseAKillBOrCTest) {
 
   const std::string p = "A\\KB|C";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1636,7 +1636,7 @@ SCOPE_TEST(parsePositiveLookbehindATest) {
 
   const std::string p = "(?<=A)";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1656,7 +1656,7 @@ SCOPE_TEST(parseNegativeLookbehindATest) {
 
   const std::string p = "(?<!A)";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1676,7 +1676,7 @@ SCOPE_TEST(parsePositiveLookaheadATest) {
 
   const std::string p = "(?=A)";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1696,7 +1696,7 @@ SCOPE_TEST(parseNegativeLookaheadATest) {
 
   const std::string p = "(?!A)";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1716,7 +1716,7 @@ SCOPE_TEST(parseWhackATest) {
 
   const std::string p = "\\A";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1724,7 +1724,7 @@ SCOPE_TEST(parseWhackATest) {
 
 SCOPE_TEST(parseWhackAaTest) {
   ParseTree expected;
-  expected.init(4);
+  expected.init(5);
 
   expected.Root = expected.add(
     ParseNode::REGEXP,
@@ -1740,7 +1740,7 @@ SCOPE_TEST(parseWhackAaTest) {
 
   const std::string p = "\\Aa";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(5);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1760,7 +1760,7 @@ SCOPE_TEST(parseWhackZTest) {
 
   const std::string p = "\\Z";
   ParseTree actual;
-  actual.init(p.length());
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1844,7 +1844,7 @@ SCOPE_TEST(parseWordBoundaryTest) {
 
   const std::string p = "\\b";
   ParseTree actual;
-  actual.init(10);
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);
@@ -1884,7 +1884,7 @@ SCOPE_TEST(parseNonWordBoundaryTest) {
 
   const std::string p = "\\B";
   ParseTree actual;
-  actual.init(10);
+  actual.init(p);
   SCOPE_ASSERT(parse({p, false, false}, actual));
 
   SCOPE_ASSERT_EQUAL(expected, actual);

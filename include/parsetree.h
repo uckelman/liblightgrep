@@ -21,6 +21,7 @@
 #include "basic.h"
 #include "parsenode.h"
 
+#include <algorithm>
 #include <iosfwd>
 #include <stdexcept>
 #include <vector>
@@ -53,31 +54,62 @@ public:
     return &Store[Store.size()-1];
   }
 
+  void init(size_t len) {
+    Root = nullptr;
+    Store.clear();
+    Store.reserve(len);
+  }
+
   //
   // Sizing explanation:
   //
-  // * Every character in a pattern contributes at most one node to
-  // the parse tree. Some characters, such as parentheses, the square
-  // brackets for character classes, and the nongreedy marker '?'
-  // contribute none.
+  // * Every character in a pattern (with a few exceptions, see below)
+  // contributes at most one node to the parse tree. Some characters, such
+  // as parentheses, the square brackets for character classes, and the
+  // nongreedy marker '?' contribute none.
+  //
+  // * \b, \B contribute 12 nodes, 8 in excess of the maximum that two
+  // literals can contribute.
+  //
+  // * ^, $ contribute 2 nodes without considering any concatenations.
   //
   // * Concatenation is implicit in patterns. Each intercharacter
   // position potentially contributes one node to the parse tree.
   //
   // * The root is one node in the parse tree.
   //
-  // The worst case is a pattern made up of n literals, which will
-  // generate n nodes for the literals, n-1 nodes for the concatenations,
-  // and one node for the root. n + n - 1 + 1 = 2n.
+  // The worst case (not involving \b, \B, ^, $) is a pattern made up of n
+  // literals, which will generate n nodes for the literals, n-1 nodes for
+  // the concatenations, and one node for the root. n + n - 1 + 1 = 2n.
   //
-  // Therefore, sizing the vector to twice the length of the pattern
-  // ensures that the vector will never resize on us and invalidate our
-  // ParseNode pointers.
+  // Therefore, sizing the vector to twice the length of the pattern and
+  // adjusting for \b, B, ^, $ ensures that the vector will never resize on
+  // us and invalidate our ParseNode pointers.
   //
-  void init(size_t len) {
-    Root = nullptr;
-    Store.clear();
-    Store.reserve(2*len);
+  template <class C>
+  auto init(const C& c) -> decltype(std::begin(c), std::end(c), void()) {
+    size_t len = 2*std::distance(std::begin(c), std::end(c));
+
+    const char t[] = { '\\', '^', '$' };
+    const auto end = std::end(c);
+
+    for (auto r = std::begin(c);
+         (r = std::find_first_of(
+            r, end, std::begin(t), std::end(t))) != end; ++r)
+    {
+      if (*r == '^' || *r == '$') {
+        ++len;
+      }
+      else {
+        // *r == '\\'
+        ++r;
+        if (r != end && (*r == 'b' || *r == 'B')) {
+          len += 8;
+        }
+      }
+    }
+
+    init(len);
   }
 
   bool expand(size_t size);

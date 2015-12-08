@@ -1440,7 +1440,7 @@ bool parse(const Pattern& p, ParseTree& tree) {
   ctx.TextEnd = ctx.Text + cp.size();
 
   ctx.Tree = &tree;
-  ctx.Tree->init(cp.size());
+  ctx.Tree->init(cp);
 
 #if YYDEBUG
   yydebug = 1;
