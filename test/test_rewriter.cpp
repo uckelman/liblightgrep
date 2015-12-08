@@ -1115,6 +1115,13 @@ SCOPE_TEST(shoveLookaroundsOutward_aLPWhackAOrLPLBPNegCCbRP) {
   SCOPE_ASSERT_EQUAL("[a]", unparse(tree));
 }
 
+SCOPE_TEST(shoveLookaroundsOutward_LPWhackZOrLPLAPNegCCbRPa) {
+  ParseTree tree;
+  SCOPE_ASSERT(parse({"(\\Z|(?=[^b]))a", false, false}, tree));
+  SCOPE_ASSERT(shoveLookaroundsOutward(tree));
+  SCOPE_ASSERT_EQUAL("[a]", unparse(tree));
+}
+
 /*
 // TODO: unsupported rewriting
 SCOPE_TEST(shoveLookaroundsOutward_LPLAPCCacaRPLPCCabOrCCcdRP) {

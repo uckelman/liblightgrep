@@ -2183,8 +2183,6 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
   return ret;
 }
 
-// TODO: combine concatenations of same-type lookarounds
-
 size_t blowupTreeSize(const ParseNode* n) {
   switch (n->Type) {
   case ParseNode::REGEXP:
