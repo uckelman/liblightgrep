@@ -1740,6 +1740,48 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         }
       }
 
+      if (n->Child.Right->Type == ParseNode::ALTERNATION &&
+          ((n->Child.Right->Child.Left->Type == ParseNode::LOOKBEHIND_POS &&
+            n->Child.Right->Child.Right->Type == ParseNode::LOOKBEHIND_NEG) ||
+           (n->Child.Right->Child.Left->Type == ParseNode::LOOKBEHIND_NEG &&
+            n->Child.Right->Child.Right->Type == ParseNode::LOOKBEHIND_POS)))
+      {
+        /*
+          Apply De Morgan's Law to distribute alternations of lookbehinds
+          leftwards over concatenation:
+
+            &              |
+           / \           /   \
+          T   |    =>   &     &
+             / \       / \   / \
+            S   U     T   S T   U
+
+          This case is inflationary.
+        */
+        ParseNode* t = n->Child.Left;
+        ParseNode* a = n->Child.Right;
+        ParseNode* s = a->Child.Left;
+        ParseNode* u = a->Child.Right;
+
+        a->Type = ParseNode::CONCATENATION;
+        a->Child.Left = t;
+        parent[t] = a;
+        a->Child.Right = s;
+
+        ParseNode* tdup = tree.copySubtree(t);
+        makeParentMap(tdup, parent);
+
+        n->Type = ParseNode::ALTERNATION;
+        n->Child.Left = a;
+        n->Child.Right = tree.add(ParseNode::CONCATENATION, tdup, u);
+        parent[u] = parent[tdup] = n->Child.Right;
+        parent[n->Child.Right] = n;
+ 
+        restartShove(root, check);
+        ret = true;
+        break;
+      }
+
       if (n->Child.Right->Type == ParseNode::LOOKBEHIND_POS) {
         /*
              &            &
