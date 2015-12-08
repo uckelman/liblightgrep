@@ -1766,14 +1766,54 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
         a->Type = ParseNode::CONCATENATION;
         a->Child.Left = t;
         parent[t] = a;
-        a->Child.Right = s;
+        a->Child.Right = u;
 
         ParseNode* tdup = tree.copySubtree(t);
         makeParentMap(tdup, parent);
 
         n->Type = ParseNode::ALTERNATION;
-        n->Child.Left = a;
-        n->Child.Right = tree.add(ParseNode::CONCATENATION, tdup, u);
+        n->Child.Left = tree.add(ParseNode::CONCATENATION, tdup, s);
+        parent[s] = parent[tdup] = n->Child.Left;
+        parent[n->Child.Left] = n;
+
+        restartShove(root, check);
+        ret = true;
+        break;
+      }
+
+      if (n->Child.Left->Type == ParseNode::ALTERNATION &&
+          ((n->Child.Left->Child.Left->Type == ParseNode::LOOKAHEAD_POS &&
+            n->Child.Left->Child.Right->Type == ParseNode::LOOKAHEAD_NEG) ||
+           (n->Child.Left->Child.Left->Type == ParseNode::LOOKAHEAD_NEG &&
+            n->Child.Left->Child.Right->Type == ParseNode::LOOKAHEAD_POS)))
+      {
+        /*
+          Apply De Morgan's Law to distribute alternations of lookaheads
+          rightwards over concatenation:
+
+              &              |
+             / \           /   \
+            |   T    =>   &     &
+           / \           / \   / \
+          S   U         S   T U   T
+
+          This case is inflationary.
+        */
+        ParseNode* t = n->Child.Right;
+        ParseNode* a = n->Child.Left;
+        ParseNode* s = a->Child.Left;
+        ParseNode* u = a->Child.Right;
+
+        a->Type = ParseNode::CONCATENATION;
+        a->Child.Left = s;
+        a->Child.Right = t;
+        parent[t] = a;
+
+        ParseNode* tdup = tree.copySubtree(t);
+        makeParentMap(tdup, parent);
+
+        n->Type = ParseNode::ALTERNATION;
+        n->Child.Right = tree.add(ParseNode::CONCATENATION, u, tdup);
         parent[u] = parent[tdup] = n->Child.Right;
         parent[n->Child.Right] = n;
  
