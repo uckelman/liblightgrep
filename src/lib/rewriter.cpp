@@ -2015,8 +2015,8 @@ bool shoveLookaroundsOutward(ParseTree& tree) {
                   |                  |
                  / \       ??       / \        ?
                {0}  T  =>   |      T  {0}  =>  |
-                |           T      |           T
-                x                  x
+                |           T          |       T
+                x                      x
             */
             ParseNode* t = n == p->Child.Left ? p->Child.Right : p->Child.Left;
             p->Type = n == p->Child.Left ? ParseNode::REPETITION_NG : ParseNode::REPETITION;
