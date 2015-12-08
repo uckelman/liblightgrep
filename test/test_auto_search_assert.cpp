@@ -232,28 +232,7 @@ SCOPE_FIXTURE_CTOR(autoPatternAssertTest48, STest, STest(R"(\Za)")) {
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest49, STest, STest(R"(\Ka)")) {
-  const char text[] = R"(aaa
-aaca
-
-a
-cac
-acc
-
-
-c
-ccca)";
-  fixture.search(text, text + 28, 0);
-  SCOPE_ASSERT_EQUAL(10u, fixture.Hits.size());
-  SCOPE_ASSERT_EQUAL(SearchHit(0, 1, 0), fixture.Hits[0]);
-  SCOPE_ASSERT_EQUAL(SearchHit(1, 2, 0), fixture.Hits[1]);
-  SCOPE_ASSERT_EQUAL(SearchHit(2, 3, 0), fixture.Hits[2]);
-  SCOPE_ASSERT_EQUAL(SearchHit(4, 5, 0), fixture.Hits[3]);
-  SCOPE_ASSERT_EQUAL(SearchHit(5, 6, 0), fixture.Hits[4]);
-  SCOPE_ASSERT_EQUAL(SearchHit(7, 8, 0), fixture.Hits[5]);
-  SCOPE_ASSERT_EQUAL(SearchHit(10, 11, 0), fixture.Hits[6]);
-  SCOPE_ASSERT_EQUAL(SearchHit(13, 14, 0), fixture.Hits[7]);
-  SCOPE_ASSERT_EQUAL(SearchHit(16, 17, 0), fixture.Hits[8]);
-  SCOPE_ASSERT_EQUAL(SearchHit(27, 28, 0), fixture.Hits[9]);
+  SCOPE_ASSERT(fixture.parsesButNotValid());
 }
 
 SCOPE_FIXTURE_CTOR(autoPatternAssertTest50, STest, STest(R"(\ba)")) {
